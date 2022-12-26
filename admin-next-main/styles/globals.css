@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --sidebar-width: 250px;
+}
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+#wrapper {
+  min-height: 100vh;
+}
+
+#sidebar {
+  height: 100%;
+  width: var(--sidebar-width);
+  @apply bg-gray-900 text-white overflow-y-auto fixed left-0 top-0 shadow-2xl;
+  @apply transition-all duration-200 ease-in-out;
+}
+
+#sidebar::-webkit-scrollbar {
+  width: 10px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+  width: 10px;
+  @apply rounded-lg bg-gray-100 bg-opacity-25;
+}
+
+#content-wrapper {
+  margin-left: var(--sidebar-width);
+}
+
+#topnav {
+  @apply shadow bg-white h-14 flex justify-between items-center p-2;
+}
+
+.icon-button {
+  @apply flex justify-center items-center hover:bg-gray-100 p-2 rounded;
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.sidebar-menu .sidebar-link-dropdown {
+  @apply relative;
+}
+
+.sidebar-menu .sidebar-link-dropdown .caret {
+  @apply absolute right-2 transform rotate-0;
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.sidebar-menu .sidebar-link-dropdown.show .caret {
+  @apply transform rotate-180;
+}
+
+.sidebar-menu .sidebar-link {
+  @apply p-4 py-3 block hover:bg-gray-800 relative text-sm;
+  @apply rounded transition-all duration-200 ease-in-out;
+  @apply flex items-center mb-1;
+}
+
+.sidebar-menu .sidebar-item .sub-sidebar-menu {
+  @apply hidden;
+}
+
+.sidebar-menu .sidebar-item .sub-sidebar-menu.show {
+  @apply block;
+}
+
+.sidebar-menu .sidebar-item .sub-sidebar-menu .sidebar-item {
+  @apply pl-4;
+}
+
+.dropdown-content {
+  min-width: 240px;
+  @apply absolute left-0 top-11 shadow p-2;
+  @apply bg-white rounded-md border border-gray-100;
+}
+
+.dropdown-content-right {
+  min-width: 240px;
+  @apply absolute right-0 top-11 shadow p-2;
+  @apply bg-white rounded-md border border-gray-100;
+}
+
+.dropdown-button {
+  @apply p-2 px-3 rounded flex flex-row justify-center items-center gap-x-2;
+  @apply hover:bg-gray-50 transition-all duration-200 ease-in-out;
+}
+
+.button {
+  @apply p-2 px-3 rounded block w-full transition-all duration-200 ease-in-out gap-x-2;
+  @apply border border-gray-100 hover:bg-gray-50 flex items-center justify-center;
+}
+
+/* Smartphone */
+@media (max-width: 576px) {
+  #content-wrapper {
+    margin-left: 0;
+  }
+
+  #sidebar {
+    width: 100%;
+    margin-left: -105%;
+  }
+
+  #sidebar.show {
+    margin-left: 0;
+  }
+}
