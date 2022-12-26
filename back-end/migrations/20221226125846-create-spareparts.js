@@ -1,21 +1,30 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('TeliPengirimans', {
+    await queryInterface.createTable('Spareparts', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      pengirimanId: {
-        type: Sequelize.INTEGER
+      sparepart: {
+        type: Sequelize.STRING
       },
-      teliId: {
-        type: Sequelize.INTEGER
+      namaBarang: {
+        type: Sequelize.STRING
       },
-      tonase: {
-        type: Sequelize.DOUBLE
+      merk: {
+        type: Sequelize.STRING
+      },
+      spesifikasi: {
+        type: Sequelize.STRING
+      },
+      kategori: {
+        type: Sequelize.STRING
+      },
+      stok: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -28,6 +37,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('TeliPengirimans');
+    await queryInterface.dropTable('Spareparts');
   }
 };

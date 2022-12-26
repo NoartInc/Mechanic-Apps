@@ -1,4 +1,4 @@
-const { Users } = require("../models");
+const { Roles, RoleAccess } = require("../models");
 const {
   getRequestData,
   getSearchConditions,
@@ -7,27 +7,25 @@ const {
 
 const dataRelations = [
   {
-    association: "userRole",
+    association: "userRoles",
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
-    include: [
-      {
-        association: "roleAccess",
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-      },
-    ],
+  },
+  {
+    association: "roleAccess",
+    attributes: {
+      exclude: ["createdAt", "updatedAt"],
+    },
   },
 ];
 
-const searchable = ["fullName", "userName", "jabatan", "email", "contact"];
+const searchable = ["roleName"];
 
 const getRow = async (id) => {
-  return await Users.findByPk(id, {
+  return await Roles.findByPk(id, {
     attributes: {
-      exclude: ["createdAt", "updatedAt", "password"],
+      exclude: ["createdAt", "updatedAt"],
     },
     include: dataRelations,
   });
@@ -38,12 +36,12 @@ exports.findAll = async (req, res) => {
   try {
     let conditions = getSearchConditions(req, searchable);
     const request = getRequestData(req, {
-      orderBy: "fullName",
+      orderBy: "roleName",
       orderDir: "ASC",
     });
-    const data = await Users.findAndCountAll({
+    const data = await Roles.findAndCountAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt", "password"],
+        exclude: ["createdAt", "updatedAt"],
       },
       distinct: true,
       where: conditions,
@@ -70,9 +68,13 @@ exports.findOne = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const data = await Users.create(req.body);
+    // Create role dengan role access'nya
+    // lihat request body pada postman
+    const data = await Roles.create(req.body, {
+      include: [{ association: "roleAccess" }],
+    });
     res.json({
-      message: "User Created successfully",
+      message: "Role Created successfully",
       data: await getRow(data?.id),
     });
   } catch (err) {
@@ -82,11 +84,24 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    await Users.update(req.body, {
+    // Hapus dulu role access dengan role id bersangkutan
+    await RoleAccess.destroy({
+      where: { role: req.params.id },
+    });
+    // Update data role'nya
+    await Roles.update(req.body, {
       where: { id: req.params.id },
+    }).then(() => {
+      // Buat ulang role access'nya
+      RoleAccess.bulkCreate(
+        req.body.roleAccess.map((item) => ({
+          ...item,
+          role: req.params.id,
+        }))
+      );
     });
     res.json({
-      message: "User Updated successfully",
+      message: "Role Updated successfully",
       data: await getRow(req.params.id),
     });
   } catch (err) {
@@ -96,11 +111,18 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    await Users.destroy({
+    // Hapus data role'nya
+    await Roles.destroy({
       where: { id: req.params.id },
     });
-    res.json({ message: "User Deleted successfully" });
+    // Hapus data role access'nya
+    await RoleAccess.destroy({
+      where: { role: req.params.id },
+    });
+    res.json({ message: "Role Deleted successfully" });
   } catch (err) {
     res.json({ message: err.message });
   }
 };
+
+exports = { getRow };
