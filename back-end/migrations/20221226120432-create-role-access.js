@@ -1,24 +1,33 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Telis', {
+    await queryInterface.createTable('RoleAccesses', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      fullName: {
+      role: {
+        type: Sequelize.INTEGER
+      },
+      path: {
         type: Sequelize.STRING
       },
-      location: {
-        type: Sequelize.ENUM('genteng','deck')
+      view: {
+        type: Sequelize.BOOLEAN
       },
-      contact: {
-        type: Sequelize.STRING
+      create: {
+        type: Sequelize.BOOLEAN
       },
-      status: {
-        type: Sequelize.ENUM('active','inactive')
+      update: {
+        type: Sequelize.BOOLEAN
+      },
+      delete: {
+        type: Sequelize.BOOLEAN
+      },
+      export: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -31,6 +40,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Telis');
+    await queryInterface.dropTable('RoleAccesses');
   }
 };

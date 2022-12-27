@@ -1,33 +1,18 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Customers', {
+    await queryInterface.createTable('PerbaikanMechanics', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      customer: {
-        type: Sequelize.STRING
-      },
-      pic: {
-        type: Sequelize.STRING
-      },
-      contact: {
-        type: Sequelize.STRING
-      },
-      address: {
-        type: Sequelize.TEXT
-      },
-      sales: {
+      perbaikan: {
         type: Sequelize.INTEGER
       },
-      coordinate: {
-        type: Sequelize.STRING
-      },
-      status: {
-        type: Sequelize.ENUM('active','inactive')
+      mekanik: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +25,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Customers');
+    await queryInterface.dropTable('PerbaikanMechanics');
   }
 };
