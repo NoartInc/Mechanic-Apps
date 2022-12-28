@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IconUser, IconMenu2, IconLogout } from '@tabler/icons'
 import Dropdown from '../widgets/Dropdown'
 
 const Topnav = ({ sidebarToggle }) => {
+    const [showDropdown, setShowDropdown] =  useState(false);
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    }
     return (
         <header id="topnav">
             <div className="flex-shrink-0">

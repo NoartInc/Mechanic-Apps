@@ -1,10 +1,25 @@
-import { IconDashboard, IconArchive, IconFileAnalytics } from "@tabler/icons";
+import { IconDashboard, IconArchive, IconFileAnalytics, IconAxe } from "@tabler/icons";
 
 const menu = [
   {
     path: "/",
-    title: "Dashboard",
+    title: "Overview",
     icon: IconDashboard,
+  },
+  {
+    path: "#",
+    title: "Perbaikan",
+    icon: IconAxe,
+    children: [
+      {
+        path: "/perbaikan/tambahPerbaikan",
+        title: "Tambah Perbaikan",
+      },
+      {
+        path: "/perbaikan/tambahPerbaikan",
+        title: "List Perbaikan",
+      },
+    ],
   },
   {
     path: "#",
@@ -14,6 +29,14 @@ const menu = [
       {
         path: "/master/mekanik",
         title: "Mekanik",
+      },
+      {
+        path: "/master/mesin",
+        title: "Mesin",
+      },
+      {
+        path: "/master/sparepart",
+        title: "Sparepart",
       },
       {
         path: "/master/pengguna",
@@ -27,12 +50,12 @@ const menu = [
     icon: IconFileAnalytics,
     children: [
       {
-        path: "/transaksi/transaksi1",
-        title: "Transaksi 1",
+        path: "/transaksi/transaksiSparepart",
+        title: "Transaksi Sparepart",
       },
       {
-        path: "/transaksi/transaksi2",
-        title: "Transaksi 2",
+        path: "/transaksi/gudangMekanik",
+        title: "Gudang Mekanik",
       },
     ],
   },
