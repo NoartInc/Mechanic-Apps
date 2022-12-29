@@ -24,11 +24,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var rolesRouter = require("./routes/roles");
+var mekanikRouter = require("./routes/mekanik");
+var kerusakanRouter = require("./routes/kerusakan");
 var authRouter = require("./routes/auth");
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/roles", rolesRouter);
+app.use("/mekanik", mekanikRouter);
+app.use("/kerusakan", kerusakanRouter);
 app.use("/auth", authRouter);
 
 // determining upload location
