@@ -1,4 +1,5 @@
 import React from 'react'
+import Footer from './Footer'
 import Sidebar from './Sidebar'
 import Topnav from './Topnav'
 
@@ -19,6 +20,7 @@ const Layout = ({ children }) => {
                 <main className="p-4">
                     {children}
                 </main>
+                <Footer sidebarToggle={sidebarToggle} />
             </div>
         </div>
     )
