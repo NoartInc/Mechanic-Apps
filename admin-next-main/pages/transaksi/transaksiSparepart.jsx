@@ -3,7 +3,7 @@ import Layout from '../../components/layouts/Layout'
 
 function transaksiSparepart() {
   return (
-    <Layout>
+    <Layout pageTitle={"Transaksi Sparepart"}>
         <div>transaksiSparepart</div>
     </Layout>
   )

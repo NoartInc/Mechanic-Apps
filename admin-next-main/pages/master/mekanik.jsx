@@ -3,7 +3,7 @@ import Layout from "../../components/layouts/Layout";
 
 const mekanik = () => {
   return (
-    <Layout>
+    <Layout pageTitle="Mekanik">
       <div>mekanik</div>
     </Layout>
   );

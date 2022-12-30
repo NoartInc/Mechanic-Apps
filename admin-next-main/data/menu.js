@@ -16,7 +16,7 @@ const menu = [
         title: "Tambah Perbaikan",
       },
       {
-        path: "/perbaikan/tambahPerbaikan",
+        path: "/perbaikan/listPerbaikan",
         title: "List Perbaikan",
       },
     ],
@@ -41,6 +41,10 @@ const menu = [
       {
         path: "/master/pengguna",
         title: "Pengguna",
+      },
+      {
+        path: "/master/kerusakan",
+        title: "Kerusakan",
       },
     ],
   },

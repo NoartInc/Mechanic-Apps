@@ -1,9 +1,9 @@
-import React from 'react'
-import Layout from '../../components/layouts/Layout'
+import React from 'react';
+import Layout from '../../components/layouts/Layout';
 
 const pengguna = () => {
   return (
-     <Layout>  
+     <Layout pageTitle={"Pengguna"}>  
         <div>pengguna</div>
      </Layout>
     )

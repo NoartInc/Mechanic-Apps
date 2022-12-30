@@ -3,7 +3,7 @@ import Layout from '../../components/layouts/Layout'
 
 function tambahPerbaikan() {
   return (
-    <Layout>
+    <Layout pageTitle={"Tambah Perbaikan"}>
         <div>tambahPerbaikan</div>
     </Layout>
   )

@@ -26,13 +26,22 @@ var usersRouter = require("./routes/users");
 var rolesRouter = require("./routes/roles");
 var mekanikRouter = require("./routes/mekanik");
 var kerusakanRouter = require("./routes/kerusakan");
+var sparepartRouter = require("./routes/sparepart");
+var machineRouter = require("./routes/machine");
+var transaksiSparepartRouter = require("./routes/transaksiSparepart");
+var gudangMekanikRouter = require("./routes/gudangMekanik");
 var authRouter = require("./routes/auth");
+
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/roles", rolesRouter);
 app.use("/mekanik", mekanikRouter);
 app.use("/kerusakan", kerusakanRouter);
+app.use("/sparepart", sparepartRouter);
+app.use("/machine", machineRouter);
+app.use("/transaksiSparepart", transaksiSparepartRouter);
+app.use("/gudangMekanik", gudangMekanikRouter);
 app.use("/auth", authRouter);
 
 // determining upload location

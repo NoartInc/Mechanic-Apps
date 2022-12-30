@@ -3,7 +3,7 @@ import Layout from '../../components/layouts/Layout'
 
 function listPerbaikan() {
   return (
-    <Layout>
+    <Layout pageTitle={"List Perbaikan"}>
         <div>listPerbaikan</div>
     </Layout>
   )

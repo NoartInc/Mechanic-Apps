@@ -3,7 +3,7 @@ import Layout from '../../components/layouts/Layout'
 
 function gudangMekanik() {
   return (
-    <Layout>
+    <Layout pageTitle={"Gudang Mekanik"}>
         <div>gudangMekanik</div>
     </Layout>
   )

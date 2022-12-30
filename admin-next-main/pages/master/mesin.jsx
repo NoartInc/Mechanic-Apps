@@ -1,9 +1,9 @@
-import React from 'react'
-import Layout from '../../components/layouts/Layout'
+import React from 'react';
+import Layout from '../../components/layouts/Layout';
 
 const mesin = () => {
   return (
-    <Layout>
+    <Layout pageTitle={"Mesin"}>
         <div>mesin</div>
     </Layout>
   )
