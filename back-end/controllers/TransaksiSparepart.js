@@ -1,20 +1,41 @@
-const { TransaksiSpareparts } = require("../models");
+const {
+  TransaksiSpareparts,
+  Spareparts,
+  GudangMechanics,
+} = require("../models");
 const {
   getRequestData,
   getSearchConditions,
   paginatedData,
 } = require("../utils/helper");
 
-const dataRelations = [];
+const dataRelations = [
+  {
+    association: "sparepartDetail",
+    attributes: {
+      exclude: ["createdAt", "updatedAt"],
+    },
+    through: {
+      attributes: ["jumlah", "harga"],
+    },
+  },
+];
 
-const searchable = ["noReferensi", "supplier", "name", "date", "type", "adjust"];
+const searchable = [
+  "noReferensi",
+  "supplier",
+  "name",
+  "date",
+  "type",
+  "adjust",
+];
 
 const getRow = async (id) => {
   return await TransaksiSpareparts.findByPk(id, {
     attributes: {
-      exclude: ["createdAt", "updatedAt"],
+      exclude: ["updatedAt", "date"],
     },
-    // include: dataRelations,
+    include: dataRelations,
   });
 };
 
@@ -28,11 +49,11 @@ exports.findAll = async (req, res) => {
     });
     const data = await TransaksiSpareparts.findAndCountAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt"],
+        exclude: ["updatedAt", "date"],
       },
       distinct: true,
       where: conditions,
-      //   include: dataRelations,
+      include: dataRelations,
       order: [[request.orderby, request.orderdir]],
       limit: Number(request.limit),
       offset: Number(request.offset),
@@ -55,7 +76,62 @@ exports.findOne = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const data = await TransaksiSpareparts.create(req.body);
+    const { sparepartHubs } = req.body;
+    const data = await TransaksiSpareparts.create(req.body, {
+      include: [{ association: "sparepartHubs" }],
+    }).then(async (result) => {
+      await sparepartHubs.forEach(async (item) => {
+        const sparepart = await Spareparts.findByPk(item.sparepart);
+        if (sparepart) {
+          await Spareparts.update(
+            {
+              stok:
+                result.type === "in"
+                  ? sparepart.stok + item.jumlah
+                  : sparepart.stok - item.jumlah,
+            },
+            {
+              where: { id: item.sparepart },
+            }
+          );
+        }
+
+        if (result.type === "out") {
+          const gudangmekanik = await GudangMechanics.findOne({
+            where: { sparepart: sparepart.sparepart },
+          });
+
+          // kalau ada datanya
+          // update
+          if (gudangmekanik) {
+            GudangMechanics.update(
+              {
+                merk: sparepart.merk,
+                stok: gudangmekanik.stok + item.jumlah,
+                namaBarang: sparepart.namaBarang,
+                spesifikasi: sparepart.spesifikasi,
+                kategori: sparepart.kategori,
+              },
+              {
+                where: {
+                  sparepart: sparepart.sparepart,
+                },
+              }
+            );
+          } else {
+            // kalau gak ada, insert
+            GudangMechanics.create({
+              sparepart: sparepart.sparepart,
+              merk: sparepart.merk,
+              stok: item.jumlah,
+              namaBarang: sparepart.namaBarang,
+              spesifikasi: sparepart.spesifikasi,
+              kategori: sparepart.kategori,
+            });
+          }
+        }
+      });
+    });
     res.json({
       message: "Transaksi Created successfully",
       data: await getRow(data?.id),
