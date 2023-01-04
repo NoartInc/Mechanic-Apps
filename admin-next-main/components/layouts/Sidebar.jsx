@@ -3,8 +3,10 @@ import React from 'react'
 import menu from '../../data/menu'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 function Sidebar({ sidebarToggle }) {
+    const { pathname } = useRouter();
     return (
         <aside id="sidebar" className="relative">
             <button
@@ -20,7 +22,7 @@ function Sidebar({ sidebarToggle }) {
             <div className="p-4">
                 <ul className="sidebar-menu">
                     {menu.map((item, index) => (
-                        <SidebarItem key={index} {...item} />
+                        <SidebarItem key={index} {...item} currentPath={pathname} />
                     ))}
                 </ul>
             </div>
@@ -28,17 +30,28 @@ function Sidebar({ sidebarToggle }) {
     )
 }
 
-const SidebarItem = ({ path, title, icon = null, children = null }) => {
+const SidebarItem = ({ path, title, icon = null, children = null, currentPath = "/" }) => {
     const [showDropdown, setShowDropdown] = React.useState(false);
     const Icon = icon ? icon : null;
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     }
+    const childrenPathCheck = () => {
+        let hasActive = false;
+        if (children) {
+            children.forEach(child => {
+                if (currentPath !== "/" && child.path.match(currentPath)) {
+                    hasActive = true;
+                }
+            })
+        }
+        return hasActive;
+    }
     return (
         <li className="sidebar-item">
             <Link
                 href={path}
-                className={`sidebar-link ${children ? `sidebar-link-dropdown ${showDropdown ? 'show' : ''}` : ''}`}
+                className={`sidebar-link ${children ? `sidebar-link-dropdown ${showDropdown || childrenPathCheck() ? 'show' : ''}` : ''} ${currentPath === path ? 'active' : ''}`}
                 onClick={toggleDropdown}
             >
                 {Icon && <Icon size={20} />}
@@ -50,9 +63,9 @@ const SidebarItem = ({ path, title, icon = null, children = null }) => {
                 )}
             </Link>
             {children && (
-                <ul className={`sub-sidebar-menu ${showDropdown ? 'show' : ''}`}>
+                <ul className={`sub-sidebar-menu ${showDropdown || childrenPathCheck() ? 'show' : ''}`}>
                     {children?.map((child, index) => (
-                        <SidebarItem key={index} {...child} />
+                        <SidebarItem key={index} {...child} currentPath={currentPath} />
                     ))}
                 </ul>
             )}

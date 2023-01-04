@@ -30,6 +30,7 @@ var sparepartRouter = require("./routes/sparepart");
 var machineRouter = require("./routes/machine");
 var transaksiSparepartRouter = require("./routes/transaksiSparepart");
 var gudangMekanikRouter = require("./routes/gudangMekanik");
+var perbaikanRouter = require("./routes/perbaikan");
 var authRouter = require("./routes/auth");
 
 
@@ -42,6 +43,7 @@ app.use("/sparepart", sparepartRouter);
 app.use("/machine", machineRouter);
 app.use("/transaksiSparepart", transaksiSparepartRouter);
 app.use("/gudangMekanik", gudangMekanikRouter);
+app.use("/perbaikan", perbaikanRouter);
 app.use("/auth", authRouter);
 
 // determining upload location

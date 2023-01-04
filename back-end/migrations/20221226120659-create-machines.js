@@ -20,9 +20,6 @@ module.exports = {
       merk: {
         type: Sequelize.STRING,
       },
-      perbaikan: {
-        type: Sequelize.INTEGER,
-      },
       status: {
         type: Sequelize.ENUM("active", "inactive"),
       },

@@ -1,10 +1,19 @@
-import Head from 'next/head'
 import React from 'react'
-import Footer from './Footer'
 import Sidebar from './Sidebar'
 import Topnav from './Topnav'
+import Head from 'next/head'
+import Breadcrumb from '../widgets/Breadcrumb'
+import { useRouter } from 'next/router'
+import Footer from './Footer'
 
-const Layout = ({ children, pageTitle }) => {
+const Layout = ({ children, title = "App Title" }) => {
+    const { pathname } = useRouter();
+    const [breadCrumb, setBreadcrumb] = React.useState([
+        {
+            path: "/",
+            title: "Home"
+        }
+    ]);
     const sidebarToggle = () => {
         let sidebarEl = document.querySelector("#sidebar");
         if (sidebarEl.classList.contains("show")) {
@@ -13,23 +22,36 @@ const Layout = ({ children, pageTitle }) => {
             sidebarEl.classList.add("show");
         }
     }
+    React.useEffect(() => {
+        setBreadcrumb(prevState => [
+            ...prevState,
+            {
+                path: pathname,
+                title: title
+            }
+        ])
+    }, [pathname]);
     return (
-        <>
-        <Head>
-            <title>Aplikasi Mekanik | {pageTitle}</title>
-            <meta name="description" content="Web Application Mekanik BRM" />
-        </Head>
         <div id="wrapper">
+            <Head>
+                <title>{title}</title>
+            </Head>
             <Sidebar sidebarToggle={sidebarToggle} />
-            <div id="content-wrapper">
+            <div id="content-wrapper" className="bg-gray-50 min-h-screen">
                 <Topnav sidebarToggle={sidebarToggle} />
-                <main className="p-4">
-                    {children}
+                <main className="p-4 min-h-screen">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex-shrink-0">
+                            <Breadcrumb breadcrumb={breadCrumb} />
+                        </div>
+                    </div>
+                    <div>
+                        {children}
+                    </div>
                 </main>
-                <Footer sidebarToggle={sidebarToggle} />
+                    <Footer />
             </div>
         </div>
-        </>
     )
 }
 

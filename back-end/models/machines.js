@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
       kategori: DataTypes.STRING,
       lokasi: DataTypes.STRING,
       merk: DataTypes.STRING,
-      perbaikan: DataTypes.INTEGER,
       status: DataTypes.ENUM("active", "inactive"),
     },
     {
