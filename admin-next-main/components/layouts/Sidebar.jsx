@@ -19,13 +19,18 @@ function Sidebar({ sidebarToggle }) {
             <header className="px-8 pb-5 pt-8">
                 <Image src="/images/logo.png" width={180} height={45} alt="" style={{ height: 'auto', width: 'auto' }} priority />
             </header>
-            <div className="p-4">
+            <div className="p-4 sidebar-content">
                 <ul className="sidebar-menu">
                     {menu.map((item, index) => (
                         <SidebarItem key={index} {...item} currentPath={pathname} />
                     ))}
                 </ul>
             </div>
+            <footer className="p-3">
+                <p className="text-center text-gray-500" style={{ fontSize: 12 }}>
+                    &copy; 2023 <Link href="/">IT BRM.</Link> Your Best Roofing Solution.
+                </p>
+            </footer>
         </aside>
     )
 }
