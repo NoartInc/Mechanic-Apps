@@ -1,10 +1,13 @@
 import React from 'react'
 import Layout from '../../components/layouts/Layout'
+import DataTable from '../../components/widgets/DataTable'
 
-function transaksiSparepart() {
+const transaksiSparepart = () => {
+  const title = 'Transaksi Sparepart';
+
   return (
-    <Layout pageTitle={"Transaksi Sparepart"}>
-        <div>transaksiSparepart</div>
+    <Layout title={title}>
+        <DataTable title={title} />
     </Layout>
   )
 }

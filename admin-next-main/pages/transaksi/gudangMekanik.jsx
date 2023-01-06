@@ -1,10 +1,13 @@
 import React from 'react'
 import Layout from '../../components/layouts/Layout'
+import DataTable from '../../components/widgets/DataTable';
 
-function gudangMekanik() {
+const gudangMekanik = () => {
+  const title = "Gudang Mekanik";
+
   return (
-    <Layout pageTitle={"Gudang Mekanik"}>
-        <div>gudangMekanik</div>
+    <Layout title={title}>
+        <DataTable title={title} />
     </Layout>
   )
 }
