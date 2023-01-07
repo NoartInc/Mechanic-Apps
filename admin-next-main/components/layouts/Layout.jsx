@@ -4,7 +4,6 @@ import Topnav from './Topnav'
 import Head from 'next/head'
 import Breadcrumb from '../widgets/Breadcrumb'
 import { useRouter } from 'next/router'
-import Footer from './Footer'
 
 const Layout = ({ children, title = "App Title" }) => {
     const { pathname } = useRouter();
@@ -30,6 +29,7 @@ const Layout = ({ children, title = "App Title" }) => {
                 title: title
             }
         ])
+        // eslint-disable-next-line
     }, [pathname]);
     return (
         <div id="wrapper">
@@ -39,7 +39,7 @@ const Layout = ({ children, title = "App Title" }) => {
             <Sidebar sidebarToggle={sidebarToggle} />
             <div id="content-wrapper" className="bg-gray-50 min-h-screen">
                 <Topnav sidebarToggle={sidebarToggle} />
-                <main className="p-4 min-h-screen">
+                <main className="p-4 mb-3">
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex-shrink-0">
                             <Breadcrumb breadcrumb={breadCrumb} />
@@ -49,7 +49,6 @@ const Layout = ({ children, title = "App Title" }) => {
                         {children}
                     </div>
                 </main>
-                    <Footer />
             </div>
         </div>
     )
