@@ -43,6 +43,10 @@ const menu = [
         title: "Pengguna",
       },
       {
+        path: "/master/role",
+        title: "Role",
+      },
+      {
         path: "/master/kerusakan",
         title: "Kerusakan",
       },
