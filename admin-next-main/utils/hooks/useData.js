@@ -69,7 +69,7 @@ export const useData = (url = "/") => {
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yakin!",
-      cancelButtonText: "Tidak Jadi",
+      cancelButtonText: "Batal!",
     }).then((result) => {
       if (result.isConfirmed) {
         destroy(`${url}/${item?.id}`)

@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 
 const DataTable = (props) => {
   const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem } = props;
-  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl } = props;
+  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true } = props;
   const limits = [10, 15, 25, 50, 100];
   const router = useRouter();
 
@@ -53,7 +53,9 @@ const DataTable = (props) => {
         <div className="flex-shrink-0">
           <div className="flex flex-row items-center gap-x-2">
             <SearchBox onChange={onSearchChange} />
-            <AddButton onClick={() => router.push(`${pageUrl}/form`)} />
+            {action && (
+              <AddButton onClick={() => router.push(`${pageUrl}/form`)} />
+            )}
           </div>
         </div>
       </div>
@@ -82,9 +84,11 @@ const DataTable = (props) => {
                   ) : null}
                 </th>
               ))}
-              <th className="th-table" style={{ width: "80px" }}>
-                <IconSettings className="block mx-auto" />
-              </th>
+              {action && (
+                <th className="th-table" style={{ width: "80px" }}>
+                  <IconSettings className="block mx-auto" />
+                </th>
+              )}
             </tr>
           </thead>
           {/* Table Row Data */}
@@ -100,7 +104,8 @@ const DataTable = (props) => {
                     {col?.render ? col.render({ item, value: item[col?.name] }) : item[col?.name]}
                   </td>
                 ))}
-                <td className="td-table td-table-action">
+                {action && (
+                  <td className="td-table td-table-action">
                   <button
                     type="button"
                     className="button button-outline-danger"
@@ -116,6 +121,7 @@ const DataTable = (props) => {
                     <IconEdit size={18} />
                   </button>
                 </td>
+                )}
               </tr>
             )) : ( // If Data Not Found
               <tr>
