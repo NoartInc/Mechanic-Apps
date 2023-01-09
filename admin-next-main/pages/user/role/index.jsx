@@ -4,7 +4,7 @@ import DataTable from "../../../components/widgets/DataTable";
 import { useData } from "../../../utils/hooks/useData";
 
 const title = "Role";
-const pageUrl = "/master/roles";
+const pageUrl = "/user/role";
 export const apiUrl = "/roles";
 
 const Role = () => {
@@ -15,9 +15,12 @@ const Role = () => {
       title: "Role"
     },
     {
-      name: "roleAccess",
-      title: "Role Access"
-    }    
+      name: "userRoles",
+      title: "Pengguna",
+      render: ({ value }) => (
+        <span className="p-1 px-2 text-sm rounded bg-green-600 text-white">{value?.length} Pengguna</span>
+      )
+    }   
   ];
 
   return (

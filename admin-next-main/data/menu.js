@@ -1,4 +1,4 @@
-import { IconDashboard, IconArchive, IconFileAnalytics, IconAxe } from "@tabler/icons";
+import { IconDashboard, IconArchive, IconFileAnalytics, IconAxe, IconUser } from "@tabler/icons";
 
 const menu = [
   {
@@ -39,14 +39,6 @@ const menu = [
         title: "Sparepart",
       },
       {
-        path: "/master/pengguna",
-        title: "Pengguna",
-      },
-      {
-        path: "/master/role",
-        title: "Role",
-      },
-      {
         path: "/master/kerusakan",
         title: "Kerusakan",
       },
@@ -67,6 +59,21 @@ const menu = [
       },
     ],
   },
+  {
+    path: "#",
+    title: "User",
+    icon: IconUser,
+    children: [
+      {
+        path: "/user/pengguna",
+        title: "Pengguna",
+      },
+      {
+        path: "/user/role",
+        title: "Role",
+      },
+    ]
+  }
 ];
 
 export default menu;

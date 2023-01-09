@@ -27,7 +27,7 @@ const searchable = ["fullName", "userName", "jabatan", "email", "contact"];
 const getRow = async (id) => {
   return await Users.findByPk(id, {
     attributes: {
-      exclude: ["createdAt", "updatedAt", "password"],
+      exclude: ["createdAt", "updatedAt"],
     },
     include: dataRelations,
   });
@@ -43,7 +43,7 @@ exports.findAll = async (req, res) => {
     });
     const data = await Users.findAndCountAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt", "password"],
+        exclude: ["createdAt", "updatedAt"],
       },
       distinct: true,
       where: conditions,

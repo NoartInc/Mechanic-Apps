@@ -4,7 +4,7 @@ import DataTable from "../../../components/widgets/DataTable";
 import { useData } from "../../../utils/hooks/useData";
 
 const title = "Pengguna";
-const pageUrl = "/master/pengguna";
+const pageUrl = "/user/pengguna";
 export const apiUrl = "/users";
 
 const Pengguna = () => {
@@ -25,6 +25,9 @@ const Pengguna = () => {
     {
       name: "role",
       title: "Role",
+      render: ({ item }) => (
+        <span>{item?.userRole?.roleName}</span>
+      )
     },
     {
       name: "jabatan",

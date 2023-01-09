@@ -2,39 +2,25 @@ import React from 'react'
 
 const Checkbox = ({
     label = "Input Label",
-    name = "text_input",
-    form,
-    checkbox = []
+    name = "check_input",
+    id = "check-input",
+    form = null,
+    data = {},
+    access = "view",
+    onChange = () => null,
+    checked = false
 }) => {
-    const inputClass = `text-input ${form.errors[name] && form.touched[name] ? 'border border-red-600' : ''}`.trim(' ');
-    const labelClass = `input-label`;
     return (
-        <div className="relative field-input">
-            <label
-                htmlFor={name}
-                className={labelClass}
-            >{label}</label>
-            <div className="input-column">
-                <select
-                    id={name}
-                    name={name}
-                    className={inputClass}
-                    onChange={form.handleChange}
-                    value={form.values[name]}
-                >
-                    {/* <checkbox value="">- Select Option -</checkbox> */}
-                    {checkbox?.length && checkbox?.map((val, index) => (
-                        <input key={index} value={val?.value}>
-                            {val?.label}
-                        </input>
-                    ))}
-                </select>
-                {form.errors[name] && form.touched[name] ? (
-                    <small className="text-red-600">
-                        {form.errors[name]}
-                    </small>
-                ) : null}
-            </div>
+        <div className="flex gap-x-1">
+            <input 
+                type="checkbox" 
+                id={id}
+                name={name}
+                className=""
+                onChange={(event) => onChange(data?.path, {[access]: event.target.checked})}
+                checked={checked}
+            />
+            <label htmlFor={id} className="cursor-pointer">{label}</label>
         </div>
     )
 }
