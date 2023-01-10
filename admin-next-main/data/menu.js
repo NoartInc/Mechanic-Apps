@@ -1,4 +1,4 @@
-import { IconDashboard, IconArchive, IconFileAnalytics, IconAxe, IconUser } from "@tabler/icons";
+import { IconDashboard, IconFileAnalytics, IconAxe, IconUsers, IconBrandAirtable } from "@tabler/icons";
 
 const menu = [
   {
@@ -24,7 +24,7 @@ const menu = [
   {
     path: "#",
     title: "Data Master",
-    icon: IconArchive,
+    icon: IconBrandAirtable,
     children: [
       {
         path: "/master/mekanik",
@@ -62,7 +62,7 @@ const menu = [
   {
     path: "#",
     title: "User",
-    icon: IconUser,
+    icon: IconUsers,
     children: [
       {
         path: "/user/pengguna",

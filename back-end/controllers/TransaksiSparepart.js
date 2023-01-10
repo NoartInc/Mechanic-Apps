@@ -19,6 +19,12 @@ const dataRelations = [
       attributes: ["jumlah", "harga"],
     },
   },
+  {
+    association: "sparepartHubs",
+    attributes: {
+      exclude: ["createdAt", "updatedAt"]
+    },
+  }
 ];
 
 const searchable = [
@@ -131,6 +137,7 @@ exports.create = async (req, res) => {
           }
         }
       });
+      return result;
     });
     res.json({
       message: "Transaksi Created successfully",

@@ -17,7 +17,7 @@ function Sidebar({ sidebarToggle }) {
                 <IconX />
             </button>
             <header className="px-8 pb-5 pt-8">
-                <Image src="/images/logo.png" width={180} height={45} alt="" style={{ height: 'auto', width: 'auto' }} priority />
+                <Image src="/images/logomechanic.png" width={180} height={45} alt="" style={{ height: 'auto', width: 'auto' }} priority />
             </header>
             <div className="p-4 sidebar-content">
                 <ul className="sidebar-menu">

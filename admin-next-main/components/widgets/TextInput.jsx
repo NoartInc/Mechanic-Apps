@@ -9,6 +9,7 @@ const TextInput = ({
 }) => {
     const inputClass = `text-input ${form.errors[name] && form.touched[name] ? 'border border-red-600' : ''}`.trim(' ');
     const labelClass = `input-label`;
+
     return (
         <div className="relative field-input">
             <label
@@ -33,6 +34,8 @@ const TextInput = ({
             </div>
         </div>
     )
+
+
 }
 
 export default TextInput

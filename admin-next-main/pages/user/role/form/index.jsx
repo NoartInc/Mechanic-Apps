@@ -101,6 +101,11 @@ const Add = () => {
         setRoleAccess(updatedAccess);
     }
 
+    const isChecked = (item) => {
+        const result = roleAccess?.find(row => row?.path === item?.path);
+        return result;
+    }
+
     React.useEffect(() => {
         roleAccessInit();
     }, []);
@@ -151,6 +156,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="view"
                                                                 data={child}
+                                                                checked={isChecked(child)?.view}
                                                             />
                                                         </td>
                                                         <td className="p-2">
@@ -161,6 +167,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="create"
                                                                 data={child}
+                                                                checked={isChecked(child)?.create}
                                                                 />
                                                         </td>
                                                         <td className="p-2">
@@ -171,6 +178,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="update"
                                                                 data={child}
+                                                                checked={isChecked(child)?.update}
                                                                 />
                                                         </td>
                                                         <td className="p-2">
@@ -181,6 +189,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="delete"
                                                                 data={child}
+                                                                checked={isChecked(child)?.delete}
                                                                 />
                                                         </td>
                                                         <td className="p-2">
@@ -191,6 +200,7 @@ const Add = () => {
                                                                 onChange={setAccess}
                                                                 access="export"
                                                                 data={child}
+                                                                checked={isChecked(child)?.export}
                                                             />
                                                         </td>
                                                     </tr>
@@ -214,6 +224,7 @@ const Add = () => {
                                                         onChange={setAccess} 
                                                         access="view"
                                                         data={item}
+                                                        checked={isChecked(item)?.view}
                                                     />
                                                 </td>
                                                 {item?.path !== "/" && (
@@ -226,6 +237,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="create"
                                                                 data={item}
+                                                                checked={isChecked(item)?.create}
                                                             />
                                                         </td>
                                                         <td className="p-2">
@@ -236,6 +248,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="update"
                                                                 data={item}
+                                                                checked={isChecked(item)?.update}
                                                             />
                                                         </td>
                                                         <td className="p-2">
@@ -246,6 +259,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="delete"
                                                                 data={item}
+                                                                checked={isChecked(child)?.delete}
                                                             />
                                                         </td>
                                                         <td className="p-2">
@@ -256,6 +270,7 @@ const Add = () => {
                                                                 onChange={setAccess} 
                                                                 access="export"
                                                                 data={item}
+                                                                checked={isChecked(child)?.export}
                                                             />
                                                         </td>
                                                     </>
