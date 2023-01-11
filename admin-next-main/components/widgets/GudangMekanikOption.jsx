@@ -4,7 +4,7 @@ import { Toast } from '../../utils/swal';
 import Select from "react-select";
 import { debounce } from 'lodash';
 
-const SparepartOption = ({
+const GudangMekanikOption = ({
     onChange,
     label = "Pilih Sparepart",
     name = "",
@@ -16,11 +16,12 @@ const SparepartOption = ({
     const [selected, setSelected] = React.useState(null);
 
     const getList = () => {
-        get(`/sparepart`, { search })
+        get(`/gudangMekanik`, { search })
             .then(result => {
                 setData(result?.rows?.map(item => ({
                     value: item?.id,
-                    label: item?.sparepart
+                    label: item?.sparepart,
+                    stok: item?.stok
                 })));
             })
             .catch(error => {
@@ -32,7 +33,7 @@ const SparepartOption = ({
     }
 
     const getValue = (id) => {
-        get(`/sparepart/${id}`)
+        get(`/gudangMekanik/${id}`)
             .then(result => {
                 setSelected({
                     value: result?.id,
@@ -49,7 +50,8 @@ const SparepartOption = ({
     )
 
     const onChangeHandler = (value) => {
-        onChange(value?.value);
+        const getItem = data.find(item => item?.value === value?.value);
+        onChange(value?.value, getItem);
     }
 
     React.useEffect(() => {
@@ -67,10 +69,7 @@ const SparepartOption = ({
     return (
         <div className="relative flex flex-col">
             {!noLabel && (
-                <label
-                    htmlFor={name}
-                    className={labelClass}
-                >{label}</label>
+                <label htmlFor={name} className={labelClass}>{label}</label>
             )}
             <div className="input-column">
                 <Select
@@ -84,4 +83,4 @@ const SparepartOption = ({
     )
 }
 
-export default SparepartOption
+export default GudangMekanikOption

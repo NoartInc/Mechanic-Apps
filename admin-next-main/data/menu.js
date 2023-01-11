@@ -1,4 +1,10 @@
-import { IconDashboard, IconFileAnalytics, IconAxe, IconUsers, IconBrandAirtable } from "@tabler/icons";
+import {
+  IconDashboard,
+  IconFileAnalytics,
+  IconAxe,
+  IconUsers,
+  IconBrandAirtable,
+} from "@tabler/icons";
 
 const menu = [
   {
@@ -12,11 +18,11 @@ const menu = [
     icon: IconAxe,
     children: [
       {
-        path: "/perbaikan/tambahPerbaikan",
+        path: "/perbaikan/form",
         title: "Tambah Perbaikan",
       },
       {
-        path: "/perbaikan/listPerbaikan",
+        path: "/perbaikan",
         title: "List Perbaikan",
       },
     ],
@@ -72,8 +78,8 @@ const menu = [
         path: "/user/role",
         title: "Role",
       },
-    ]
-  }
+    ],
+  },
 ];
 
 export default menu;
