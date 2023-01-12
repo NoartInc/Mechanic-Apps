@@ -106,21 +106,21 @@ const DataTable = (props) => {
                 ))}
                 {action && (
                   <td className="td-table td-table-action">
-                  <button
-                    type="button"
-                    className="button button-outline-danger"
-                    onClick={() => deleteItem(item)}
-                  >
-                    <IconTrash size={18} />
-                  </button>
-                  <button
-                    type="button"
-                    className="button button-outline-primary"
-                    onClick={() => router.push(`${pageUrl}/form/${item?.id}`)}
-                  >
-                    <IconEdit size={18} />
-                  </button>
-                </td>
+                    <button
+                      type="button"
+                      className="button button-outline-danger"
+                      onClick={() => deleteItem(item)}
+                    >
+                      <IconTrash size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      className="button button-outline-primary"
+                      onClick={() => router.push(`${pageUrl}/form/${item?.id}`)}
+                    >
+                      <IconEdit size={18} />
+                    </button>
+                  </td>
                 )}
               </tr>
             )) : ( // If Data Not Found

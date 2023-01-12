@@ -12,8 +12,7 @@ import { useRouter } from "next/router";
 import SelectInput from "../../../../components/widgets/SelectInput";
 import SparepartOption from "../../../../components/widgets/SparepartOption";
 import { randId } from "../../../../utils/helper";
-import InputForm from "../../../../components/widgets/InputForm";
-import { IconTrash } from "@tabler/icons";
+import { IconPlus, IconTrash } from "@tabler/icons";
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -49,14 +48,6 @@ const Add = () => {
   const context = "Transaksi Sparepart";
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
-  const [sparepartHubs, setSparepartHubs] = React.useState([
-    {
-      id: randId(),
-      sparepart: 0,
-      jumlah: 0,
-      harga: 0,
-    },
-  ]);
 
   const form = useFormik({
     validationSchema: validationSchema,
@@ -70,10 +61,7 @@ const Add = () => {
     },
     onSubmit: (values) => {
       setLoading(true);
-      post(apiUrl, {
-        ...values,
-        sparepartHubs: sparepartHubs,
-      })
+      post(apiUrl, values)
         .then((result) => {
           if (result?.data?.id) {
             Toast.fire({
@@ -99,140 +87,192 @@ const Add = () => {
     },
   });
 
-  const onSparepartChange = (item, name, value) => {
-    const updatedSparepart = sparepartHubs.map((val) => {
-      if (val.id === item.id) {
-        return {
-          ...val,
-          [name]: value,
-        };
+  const formSubmit = (event) => {
+    event.preventDefault();
+    if (!form.values?.sparepartHubs.length) {
+      Toast.fire({
+        icon: "error",
+        text: "Mohon tambahkan sparepart!"
+      });
+      return false;
+    } else if (form.values.type === "in") {
+      if (form.values?.sparepartHubs?.some(item => item?.jumlah === 0 || item?.harga === 0)) {
+        Toast.fire({
+          icon: "error",
+          text: "Harga atau jumlah tidak boleh kosong!"
+        });
+        return false;
       }
-      return val;
-    });
-    setSparepartHubs(updatedSparepart);
-  };
-
-  const addSparepart = () => {
-    setSparepartHubs((prevState) => [
-      ...prevState,
-      {
-        id: randId(),
-        sparepart: 0,
-        jumlah: 0,
-        harga: 0,
-      },
-    ]);
-  };
-
-  const removeSparepart = (id) => {
-    const updatedSparepart = sparepartHubs.filter(
-      (item) => String(item?.id) !== String(id)
-    );
-    setSparepartHubs(updatedSparepart);
-  };
+    } else {
+      form.handleSubmit(event);
+    }
+  }
 
   return (
     <Layout title={`Tambah ${context}`}>
-      <div className="card-page">
-        <form onSubmit={form.handleSubmit}>
-          <div>
-            <TextInput form={form} label="No Referensi" name="noReferensi" />
-            {form.values.type === "in" && (
-              <TextInput form={form} label="Supplier" name="supplier" />
-            )}
-            <TextInput form={form} label="Name" name="name" />
-            <SelectInput form={form} label="Type" name="type" options={type} />
-            <SelectInput
-              form={form}
-              label="Status"
-              name="status"
-              options={status}
-            />
-            <hr />
-            <fieldset className="border border-gray-200 rounded">
-              <legend className="p-2 ml-3">
-                <button
-                  type="button"
-                  className="button button-primary"
-                  onClick={addSparepart}
-                >
-                  Tambah
-                </button>
-              </legend>
-              <div className="px-3">
-                <table className="table auto w-full">
-                  <tbody>
-                    {sparepartHubs?.map((detail, index) => (
-                      <tr key={detail?.id}>
-                        <td className="p-2">
-                          <SparepartOption
-                            label="Sparepart"
-                            name="sparepart"
-                            onChange={(value) =>
-                              onSparepartChange(detail, "sparepart", value)
-                            }
-                            value={detail?.sparepart}
-                          />
-                        </td>
-                        {form.values.type ===
-                          "in" && (
-                            <td className="p-2" style={{ width: 200 }}>
-                              <InputForm
-                                label="Harga"
-                                name="harga"
-                                onChange={(event) =>
-                                  onSparepartChange(
-                                    detail,
-                                    event.target.name,
-                                    event.target.value
-                                  )
-                                }
-                                type="number"
-                                placeholder="Harga Sparepart"
-                              />
-                            </td>
-                          )}
-                        <td className="p-2" style={{ width: 150 }}>
-                          <InputForm
-                            label="Kuantitas"
-                            name="jumlah"
-                            onChange={(event) =>
-                              onSparepartChange(
-                                detail,
-                                event.target.name,
-                                Number(event.target.value)
-                              )
-                            }
-                            type="number"
-                            placeholder="Kuantitas"
-                          />
-                        </td>
-                        <td className="p-2" style={{ width: 80 }}>
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              className="mt-8 button button-danger"
-                              onClick={() => removeSparepart(detail?.id)}
-                            >
-                              <IconTrash />
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </fieldset>
+      <form onSubmit={formSubmit}>
+        <div className="card-page mb-8">
+          <div className="flex flex-col md:flex-row">
+            <div className="flex-shrink-0 w-full md:w-2/5">
+              <TextInput form={form} label="No Referensi" name="noReferensi" />
+              <SelectInput form={form} label="Type" name="type" options={type} />
+              <SelectInput
+                form={form}
+                label="Status"
+                name="status"
+                options={status}
+              />
+            </div>
+            <div className="flex-grow">{/* Separator Column Tengah */}</div>
+            <div className="flex-shrink-0 w-full md:w-2/5">
+              {form.values.type === "in" && (
+                <TextInput form={form} label="Supplier" name="supplier" />
+              )}
+              <TextInput form={form} label="Name" name="name" />
+            </div>
           </div>
-          <div className="card-page-footer">
+        </div>
+        <h4 className="text-xl font-bold mb-2">Detail Sparepart</h4>
+        <div className="card-page mb-4">
+          <SparepartHubs form={form} />
+        </div>
+        <div className="card-page">
+          <div className="flex justify-between items-center">
             <BackButton />
             <SubmitButton loading={loading} />
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </Layout>
   );
 };
+
+export const SparepartHubs = ({ form }) => {
+  const [selectedSparepart, setSelectedSparepart] = React.useState(null);
+
+  const onSparepartChange = (data) => {
+    setSelectedSparepart(data);
+  }
+
+  const addSparepart = () => {
+    // Cek jika sparepart (sudah ada / belum)
+    if (!form.values.sparepartHubs.some(item => item?.sparepart === selectedSparepart?.value)) {
+      const updatedList = [...form.values.sparepartHubs, {
+        id: randId(),
+        sparepart: selectedSparepart?.value,
+        label: selectedSparepart?.label,
+        jumlah: 0,
+        harga: 0,
+      }];
+      if (!selectedSparepart) {
+        Toast.fire({
+          icon: "error",
+          text: "Mohon pilih sparepart!"
+        });
+      } else {
+        form.setFieldValue("sparepartHubs", updatedList);
+        setSelectedSparepart(null);
+      }
+    } else {
+      Toast.fire({
+        icon: "error",
+        text: `Sparepart ${selectedSparepart?.label} sudah ada!`
+      });
+    }
+  };
+
+  const onFieldChange = (event, index) => {
+    const { name, value } = event.target;
+    form.setFieldValue(`sparepartHubs[${index}]['${name}']`, Number(value))
+  }
+
+  const removeSparepart = (id) => {
+    const updatedList = form.values.sparepartHubs.filter(item => item?.id !== id);
+    form.setFieldValue("sparepartHubs", updatedList);
+  };
+
+  return (
+    <fieldset className="border border-gray-200 rounded">
+      <legend className="p-2 ml-3">
+        <div className="flex gap-x-2 items-center">
+          <div style={{ width: 200 }}>
+            <SparepartOption
+              noLabel
+              name="sparepart"
+              onChange={onSparepartChange}
+              value={selectedSparepart}
+            />
+          </div>
+          <button type="button" className="button button-primary" onClick={addSparepart} style={{ width: 50 }}>
+            <IconPlus />
+          </button>
+        </div>
+      </legend>
+
+      <div className="md:px-3 overflow-x-auto max-w-max md:max-w-full">
+        {!form.values.sparepartHubs?.length ? (
+          <div className="p-3 flex justify-center items-center mb-3">
+            <h4 className="text-lg mb-2">Belum ada sparepart</h4>
+          </div>
+        ) : (
+          <div className="relative overflow-x-auto mb-3 overflow-y-auto flex-grow data-table-content rounded">
+            <table className="table-auto w-full">
+              <thead>
+                <tr>
+                  <th className="th-table text-left">Sparepart</th>
+                  {form.values.type === "in" && (
+                    <th className="th-table text-right" style={{ width: 200 }}>Harga</th>
+                  )}
+                  <th className="th-table" style={{ width: 100 }}>Kuantitas</th>
+                  <th className="th-table" style={{ width: 50 }}>&times;</th>
+                </tr>
+              </thead>
+              <tbody>
+                {form.values.sparepartHubs?.map((detail, index) => (
+                  <tr className="tr-table" key={detail?.id}>
+                    <td className="td-table">{detail?.label}</td>
+                    {form.values.type === "in" && (
+                      <td className="td-table text-right">
+                        <input
+                          type="number"
+                          className="text-input text-right"
+                          name={`harga`}
+                          id={`harga_${detail?.id}`}
+                          value={detail?.harga}
+                          onChange={(event) => onFieldChange(event, index)}
+                        />
+                      </td>
+                    )}
+                    <td className="td-table text-center">
+                      <input
+                        type="number"
+                        className="text-input text-center"
+                        name={`jumlah`}
+                        id={`jumlah_${detail?.id}`}
+                        value={detail?.jumlah}
+                        min={1}
+                        onChange={(event) => onFieldChange(event, index)}
+                      />
+                    </td>
+                    <td className="td-table">
+                      <button
+                        type="button"
+                        className="button button-danger button-small"
+                        onClick={() => removeSparepart(detail?.id)}
+                      >
+                        <IconTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+    </fieldset>
+  )
+}
 
 export default Add;

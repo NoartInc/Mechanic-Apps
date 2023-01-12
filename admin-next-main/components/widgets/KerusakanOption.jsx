@@ -2,27 +2,26 @@ import React, { useId } from 'react'
 import { get } from '../../utils/api';
 import { Toast } from '../../utils/swal';
 import Select from "react-select";
-import { debounce, uniqBy } from 'lodash';
+import { debounce } from 'lodash';
 
-const MechanicOption = ({
+const KerusakanOption = ({
     onChange,
-    label = "Pilih Mekanik",
+    label = "Pilih Kerusakan",
     name = "",
     noLabel = false,
-    value,
-    layout = "row",
-    edit = false
+    value
 }) => {
     const [data, setData] = React.useState([]);
     const [search, setSearch] = React.useState("");
-    const [selected, setSelected] = React.useState([]);
+    const [selected, setSelected] = React.useState(null);
 
     const getList = () => {
-        get(`/mekanik`, { search })
+        get(`/kerusakan`, { search })
             .then(result => {
                 setData(result?.rows?.map(item => ({
                     value: item?.id,
-                    label: item?.mekanik
+                    label: item?.kerusakan,
+                    durasi: item?.durasi
                 })));
             })
             .catch(error => {
@@ -34,12 +33,16 @@ const MechanicOption = ({
     }
 
     const getValue = (id) => {
-        get(`/mekanik/${id}`)
+        get(`/kerusakan/${id}`)
             .then(result => {
-                setSelected(prevState => uniqBy([...prevState, {
-                    value: result?.id,
-                    label: result?.mekanik
-                }], "value"));
+                if (result?.id) {
+                    setSelected({
+                        value: result?.id,
+                        label: result?.kerusakan
+                    });
+                } else {
+                    setSelected(null)
+                }
             });
     }
 
@@ -51,11 +54,8 @@ const MechanicOption = ({
     )
 
     const onChangeHandler = (value) => {
-        const updatedValue = value?.map(item => ({
-            mekanik: item?.value
-        }));
-        setSelected(value);
-        onChange(updatedValue);
+        const getItem = data.find(item => item?.value === value?.value);
+        onChange(getItem);
     }
 
     React.useEffect(() => {
@@ -63,26 +63,23 @@ const MechanicOption = ({
     }, [search]);
 
     React.useEffect(() => {
-        if (edit) {
-            setTimeout(() => {
-                value.forEach(item => {
-                    getValue(item?.mekanik);
-                })
-            }, 500);
-        }
+        setTimeout(() => {
+            getValue(value?.value);
+        }, 100);
     }, [value]);
 
     const labelClass = `input-label`;
 
     return (
-        <div className={`relative ${layout === "row" ? "field-input" : "flex flex-col"}`}>
+        <div className="relative flex flex-col">
             {!noLabel && (
                 <label htmlFor={name} className={labelClass}>{label}</label>
             )}
             <div className="input-column">
                 <Select
+                    placeholder="Pilih Kerusakan"
                     instanceId={useId()}
-                    isMulti={true}
+                    id={useId()}
                     value={selected}
                     options={data}
                     onInputChange={onInputChange}
@@ -93,4 +90,4 @@ const MechanicOption = ({
     )
 }
 
-export default MechanicOption
+export default KerusakanOption

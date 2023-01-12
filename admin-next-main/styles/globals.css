@@ -125,6 +125,10 @@
   @apply bg-gray-50;
 }
 
+.button-small {
+  @apply p-1 px-2 !important;
+}
+
 .input {
   @apply p-2 px-3 rounded border border-gray-100 hover:bg-gray-50;
   @apply outline-none;
@@ -199,7 +203,7 @@
 
 .input-label {
   @apply block text-gray-700 text-sm font-bold mb-2 pt-1;
-  @apply col-span-2;
+  @apply col-span-3;
 }
 
 .text-input {
@@ -209,7 +213,7 @@
 }
 
 .input-column {
-  @apply col-span-10;
+  @apply col-span-9;
 }
 
 /* Large Desktop */

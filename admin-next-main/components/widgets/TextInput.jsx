@@ -5,17 +5,18 @@ const TextInput = ({
     type = "text",
     name = "text_input",
     placeholder = "",
-    form
+    form,
+    min,
+    classLabel = "",
+    classInput = "",
+    disabled = false
 }) => {
-    const inputClass = `text-input ${form.errors[name] && form.touched[name] ? 'border border-red-600' : ''}`.trim(' ');
-    const labelClass = `input-label`;
+    const inputClass = `text-input ${classInput} ${form.errors[name] && form.touched[name] ? 'border border-red-600' : ''}`.trim(' ');
+    const labelClass = `input-label ${classLabel}`;
 
     return (
         <div className="relative field-input">
-            <label
-                htmlFor={name}
-                className={labelClass}
-            >{label}</label>
+            <label htmlFor={name} className={labelClass}>{label}</label>
             <div className="input-column">
                 <input
                     type={type}
@@ -24,7 +25,9 @@ const TextInput = ({
                     placeholder={placeholder}
                     className={inputClass}
                     onChange={form.handleChange}
-                    value={form.values[name]}
+                    value={form.values[name] ?? undefined}
+                    min={min}
+                    disabled={disabled}
                 />
                 {form.errors[name] && form.touched[name] ? (
                     <small className="text-red-600">
