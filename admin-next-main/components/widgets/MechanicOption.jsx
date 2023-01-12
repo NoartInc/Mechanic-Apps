@@ -1,26 +1,27 @@
-import React from 'react'
+import React, { useId } from 'react'
 import { get } from '../../utils/api';
 import { Toast } from '../../utils/swal';
 import Select from "react-select";
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 
-const SparepartOption = ({
+const MechanicOption = ({
     onChange,
-    label = "Pilih Sparepart",
+    label = "Pilih Mekanik",
     name = "",
     noLabel = false,
-    value
+    value,
+    layout = "row"
 }) => {
     const [data, setData] = React.useState([]);
     const [search, setSearch] = React.useState("");
-    const [selected, setSelected] = React.useState(null);
+    const [selected, setSelected] = React.useState([]);
 
     const getList = () => {
-        get(`/sparepart`, { search })
+        get(`/mekanik`, { search })
             .then(result => {
                 setData(result?.rows?.map(item => ({
                     value: item?.id,
-                    label: item?.sparepart
+                    label: item?.mekanik
                 })));
             })
             .catch(error => {
@@ -32,12 +33,13 @@ const SparepartOption = ({
     }
 
     const getValue = (id) => {
-        get(`/sparepart/${id}`)
+        get(`/mekanik/${id}`)
             .then(result => {
-                setSelected({
+                let newData = _.uniqBy([...selected, {
                     value: result?.id,
-                    label: result?.sparepart
-                });
+                    label: result?.mekanik
+                }], "value");
+                setSelected(newData);
             });
     }
 
@@ -49,31 +51,28 @@ const SparepartOption = ({
     )
 
     const onChangeHandler = (value) => {
-        onChange(value?.value);
+        const updatedValue = value?.map(item => ({
+            mekanik: item?.value
+        }));
+        setSelected(value);
+        onChange(updatedValue);
     }
 
     React.useEffect(() => {
         getList();
     }, [search]);
 
-    React.useEffect(() => {
-        setTimeout(() => {
-            getValue(value);
-        }, 100);
-    }, [value]);
-
     const labelClass = `input-label`;
 
     return (
-        <div className="relative flex flex-col">
+        <div className={`relative ${layout === "row" ? "field-input" : "flex flex-col"}`}>
             {!noLabel && (
-                <label
-                    htmlFor={name}
-                    className={labelClass}
-                >{label}</label>
+                <label htmlFor={name} className={labelClass}>{label}</label>
             )}
             <div className="input-column">
                 <Select
+                    instanceId={useId()}
+                    isMulti={true}
                     value={selected}
                     options={data}
                     onInputChange={onInputChange}
@@ -84,4 +83,4 @@ const SparepartOption = ({
     )
 }
 
-export default SparepartOption
+export default MechanicOption

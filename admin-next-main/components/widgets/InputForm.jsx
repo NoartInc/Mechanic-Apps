@@ -6,7 +6,8 @@ const InputForm = ({
     value,
     type = "text",
     placeholder,
-    label
+    label,
+    disabled = false
 }) => {
     const inputClass = `text-input`.trim(' ');
     const labelClass = `input-label`;
@@ -26,6 +27,7 @@ const InputForm = ({
                     className={inputClass}
                     onChange={(event) => onChange(event)}
                     value={value}
+                    disabled={disabled}
                 />
             </div>
         </div>

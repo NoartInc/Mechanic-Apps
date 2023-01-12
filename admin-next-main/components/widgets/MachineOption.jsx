@@ -1,26 +1,27 @@
-import React from 'react'
+import React, { useId } from 'react'
 import { get } from '../../utils/api';
 import { Toast } from '../../utils/swal';
 import Select from "react-select";
 import { debounce } from 'lodash';
 
-const SparepartOption = ({
+const MachineOption = ({
     onChange,
-    label = "Pilih Sparepart",
+    label = "Pilih Mesin",
     name = "",
     noLabel = false,
-    value
+    value,
+    layout = "row"
 }) => {
     const [data, setData] = React.useState([]);
     const [search, setSearch] = React.useState("");
-    const [selected, setSelected] = React.useState(null);
+    const [selected, setSelected] = React.useState(undefined);
 
     const getList = () => {
-        get(`/sparepart`, { search })
+        get(`/machine`, { search })
             .then(result => {
                 setData(result?.rows?.map(item => ({
                     value: item?.id,
-                    label: item?.sparepart
+                    label: item?.mesin
                 })));
             })
             .catch(error => {
@@ -32,13 +33,15 @@ const SparepartOption = ({
     }
 
     const getValue = (id) => {
-        get(`/sparepart/${id}`)
-            .then(result => {
-                setSelected({
-                    value: result?.id,
-                    label: result?.sparepart
+        if (id) {
+            get(`/machine/${id}`)
+                .then(result => {
+                    setSelected({
+                        value: result?.id,
+                        label: result?.mesin
+                    });
                 });
-            });
+        }
     }
 
     const onInputChange = React.useCallback(
@@ -59,21 +62,19 @@ const SparepartOption = ({
     React.useEffect(() => {
         setTimeout(() => {
             getValue(value);
-        }, 100);
+        }, 500);
     }, [value]);
 
     const labelClass = `input-label`;
 
     return (
-        <div className="relative flex flex-col">
+        <div className={`relative ${layout === "row" ? "field-input" : "flex flex-col"}`}>
             {!noLabel && (
-                <label
-                    htmlFor={name}
-                    className={labelClass}
-                >{label}</label>
+                <label htmlFor={name} className={labelClass}>{label}</label>
             )}
             <div className="input-column">
                 <Select
+                    instanceId={useId()}
                     value={selected}
                     options={data}
                     onInputChange={onInputChange}
@@ -84,4 +85,4 @@ const SparepartOption = ({
     )
 }
 
-export default SparepartOption
+export default MachineOption

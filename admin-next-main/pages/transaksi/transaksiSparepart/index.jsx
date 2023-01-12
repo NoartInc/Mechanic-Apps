@@ -10,12 +10,6 @@ export const apiUrl = "/transaksiSparepart";
 
 const TransaksiSparepart = () => {
   const data = useData(apiUrl);
-  // "noReferensi": "NO10291031",
-	// 		"supplier": "Bambang",
-	// 		"name": "Rudi",
-	// 		"type": "out",
-	// 		"status": "update",
-	// 		"createdAt": "2023-01-02T14:05:37.000Z",
   const columns = [
     {
       name: "noReferensi",

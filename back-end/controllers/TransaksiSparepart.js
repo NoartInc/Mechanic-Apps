@@ -2,6 +2,7 @@ const {
   TransaksiSpareparts,
   Spareparts,
   GudangMechanics,
+  TransaksiSparepartHubs,
 } = require("../models");
 const {
   getRequestData,
@@ -22,9 +23,9 @@ const dataRelations = [
   {
     association: "sparepartHubs",
     attributes: {
-      exclude: ["createdAt", "updatedAt"]
+      exclude: ["createdAt", "updatedAt"],
     },
-  }
+  },
 ];
 
 const searchable = [
@@ -83,9 +84,19 @@ exports.findOne = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const { sparepartHubs } = req.body;
-    const data = await TransaksiSpareparts.create(req.body, {
-      include: [{ association: "sparepartHubs" }],
-    }).then(async (result) => {
+    const data = await TransaksiSpareparts.create(
+      {
+        ...req.body,
+        sparepartHubs: req.body.sparepartHubs.map((item) => ({
+          sparepart: item?.sparepart,
+          jumlah: item?.jumlah,
+          harga: item?.harga,
+        })),
+      },
+      {
+        include: [{ association: "sparepartHubs" }],
+      }
+    ).then(async (result) => {
       await sparepartHubs.forEach(async (item) => {
         const sparepart = await Spareparts.findByPk(item.sparepart);
         if (sparepart) {
@@ -150,9 +161,19 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    await TransaksiSpareparts.update(req.body, {
-      where: { id: req.params.id },
-    });
+    await TransaksiSpareparts.update(
+      {
+        noReferensi: req.body.noReferensi,
+        supplier: req.body.supplier,
+        name: req.body.name,
+        type: req.body.type,
+        status: req.body.status,
+      },
+      {
+        where: { id: req.params.id },
+      }
+    );
+
     res.json({
       message: "Transaksi Updated successfully",
       data: await getRow(req.params.id),
@@ -164,6 +185,73 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
+    const transaksiSparepart = await TransaksiSpareparts.findByPk(
+      req.params.id,
+      {
+        raw: true,
+      }
+    );
+    const sparepartHubs = await TransaksiSparepartHubs.findAll({
+      where: { transaksiSparepart: req.params.id },
+      raw: true,
+    });
+
+    // Jika type IN, sebelum dihapus di tabel sparepartHub
+    // Maka jumlah di tabel sparepart dikurangi dengan jumlah yang ada di spareparthub
+    if (transaksiSparepart.type === "in") {
+      sparepartHubs.map(async (item) => {
+        const sparepart = await Spareparts.findByPk(item?.sparepart, {
+          raw: true,
+        });
+        await Spareparts.update(
+          {
+            stok: sparepart?.stok - item?.jumlah,
+          },
+          {
+            where: { id: sparepart?.id },
+          }
+        );
+      });
+    }
+
+    // Jika type OUT, sebelum dihapus di tabel sparepartHub
+    // Maka jumlah di tabel gudangmekanik dikurangi dengan jumlah yang ada di spareparthub
+    // dan ditambahkan ke stok tabel sparepart
+    if (transaksiSparepart.type === "out") {
+      sparepartHubs.map(async (item) => {
+        const sparepart = await Spareparts.findByPk(item?.sparepart, {
+          raw: true,
+        });
+        const gudangMekanik = await GudangMechanics.findAll({
+          where: { sparepart: sparepart?.sparepart },
+          raw: true,
+        });
+
+        // Kurangin stok di gudangMekanik dengan jumlah yang ada di item (sparepartHub)
+        await GudangMechanics.update(
+          {
+            stok: gudangMekanik?.stok - item?.jumlah,
+          },
+          {
+            where: { sparepart: sparepart?.sparepart },
+          }
+        );
+
+        // Tambahkan stok di tabel sparepart dengan jumlah yang ada di item (sparepartHub)
+        await Spareparts.update(
+          {
+            stok: sparepart?.stok + item?.jumlah,
+          },
+          {
+            where: { id: sparepart?.id },
+          }
+        );
+      });
+    }
+
+    await TransaksiSparepartHubs.destroy({
+      where: { transaksiSparepart: req.params.id },
+    });
     await TransaksiSpareparts.destroy({
       where: { id: req.params.id },
     });
