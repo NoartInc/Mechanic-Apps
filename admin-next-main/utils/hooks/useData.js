@@ -43,7 +43,7 @@ export const useData = (url = "/") => {
     get(url, {
       page,
       limit,
-      search,
+      search: search,
       filters,
       orderby: orderBy,
       orderdir: orderDir,

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 import { get } from '../../utils/api';
 import { Toast } from '../../utils/swal';
 import Select from "react-select";
@@ -35,10 +35,14 @@ const GudangMekanikOption = ({
     const getValue = (id) => {
         get(`/gudangMekanik/${id}`)
             .then(result => {
-                setSelected({
-                    value: result?.id,
-                    label: result?.sparepart
-                });
+                if (result?.id) {
+                    setSelected({
+                        value: result?.id,
+                        label: result?.sparepart
+                    });
+                } else {
+                    setSelected(null)
+                }
             });
     }
 
@@ -51,7 +55,7 @@ const GudangMekanikOption = ({
 
     const onChangeHandler = (value) => {
         const getItem = data.find(item => item?.value === value?.value);
-        onChange(value?.value, getItem);
+        onChange(getItem);
     }
 
     React.useEffect(() => {
@@ -60,7 +64,7 @@ const GudangMekanikOption = ({
 
     React.useEffect(() => {
         setTimeout(() => {
-            getValue(value);
+            getValue(value?.value);
         }, 100);
     }, [value]);
 
@@ -73,6 +77,9 @@ const GudangMekanikOption = ({
             )}
             <div className="input-column">
                 <Select
+                    placeholder="Pilih Sparepart"
+                    instanceId={useId()}
+                    id={useId()}
                     value={selected}
                     options={data}
                     onInputChange={onInputChange}

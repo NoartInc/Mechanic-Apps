@@ -37,14 +37,14 @@ const Perbaikan = () => {
     {
       name: "endDate",
       title: "End",
-      render: ({ value }) => moment(value).format("DD/MM/YYYY HH:mm")
+      render: ({ value }) => value ? moment(value).format("DD/MM/YYYY HH:mm") : "-"
     },
     {
       name: "mekaniks",
       title: "Mekanik",
       render: ({ value }) => {
         return value?.map(item => (
-          <span className="mr-1 p-1 px-2 rounded bg-green-600 text-white">
+          <span key={item?.id} className="mr-1 p-1 px-2 rounded bg-green-600 text-white">
             {item?.mekanik}
           </span>
         ))
@@ -53,6 +53,7 @@ const Perbaikan = () => {
     {
       name: "spareparts",
       title: "Sparepart",
+      className: "text-center",
       render: ({ value }) => (
         <span className={`p-1 px-2 rounded text-white ${value?.length ? 'bg-green-600' : 'bg-gray-700'}`}>
           {value?.length}
@@ -62,6 +63,7 @@ const Perbaikan = () => {
     {
       name: "kerusakans",
       title: "Kerusakan",
+      className: "text-center",
       render: ({ value }) => (
         <span className={`p-1 px-2 rounded text-white ${value?.length ? 'bg-orange-600' : 'bg-gray-700'}`}>
           {value?.length}

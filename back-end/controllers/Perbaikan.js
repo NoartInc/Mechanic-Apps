@@ -1,4 +1,9 @@
-const { Perbaikans, PerbaikanSpareparts, PerbaikanMechanics, PerbaikanKerusakans } = require("../models");
+const {
+  Perbaikans,
+  PerbaikanSpareparts,
+  PerbaikanMechanics,
+  PerbaikanKerusakans,
+} = require("../models");
 const {
   getRequestData,
   getSearchConditions,
@@ -33,6 +38,24 @@ const dataRelations = [
   },
   {
     association: "kerusakans",
+    attributes: {
+      exclude: ["createdAt", "updatedAt"],
+    },
+  },
+  {
+    association: "perbaikanMekaniks",
+    attributes: {
+      exclude: ["createdAt", "updatedAt"],
+    },
+  },
+  {
+    association: "perbaikanSpareparts",
+    attributes: {
+      exclude: ["createdAt", "updatedAt"],
+    },
+  },
+  {
+    association: "perbaikanKerusakans",
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
@@ -86,20 +109,23 @@ exports.create = async (req, res) => {
   try {
     const getLast = await Perbaikans.findAll({
       limit: 1,
-      order: [["id","desc"]]
+      order: [["id", "desc"]],
     })[0];
     const lastId = getLast?.id ? getLast?.id : 1;
     const noLaporan = generateReportNumber(lastId);
-    const data = await Perbaikans.create({
-      ...req.body,
-      noLaporan
-    }, {
-      include: [
-        { association: "perbaikanMekaniks" },
-        { association: "perbaikanSpareparts" },
-        { association: "perbaikanKerusakans" },
-      ], 
-    });
+    const data = await Perbaikans.create(
+      {
+        ...req.body,
+        noLaporan,
+      },
+      {
+        include: [
+          { association: "perbaikanMekaniks" },
+          { association: "perbaikanSpareparts" },
+          { association: "perbaikanKerusakans" },
+        ],
+      }
+    );
     res.json({
       message: "Perbaikan Created successfully",
       data: await getRow(data?.id),
@@ -114,40 +140,39 @@ exports.update = async (req, res) => {
     await Perbaikans.update(req.body, {
       where: { id: req.params.id },
     }).then(async (result) => {
-
       if (result) {
         // Remove previous record
         await PerbaikanSpareparts.destroy({
-          where: { perbaikan: req.params.id},
+          where: { perbaikan: req.params.id },
         });
         await PerbaikanMechanics.destroy({
-          where: { perbaikan: req.params.id},
+          where: { perbaikan: req.params.id },
         });
         await PerbaikanKerusakans.destroy({
-          where: { perbaikan: req.params.id},
+          where: { perbaikan: req.params.id },
         });
-  
+
         // re-create record
         await PerbaikanSpareparts.bulkCreate(
-          req.body.perbaikanSpareparts.map(item => ({
+          req.body.perbaikanSpareparts.map((item) => ({
             perbaikan: req.params.id,
-            ...item
+            ...item,
           }))
         );
         await PerbaikanMechanics.bulkCreate(
-          req.body.perbaikanMekaniks.map(item => ({
+          req.body.perbaikanMekaniks.map((item) => ({
             perbaikan: req.params.id,
-            ...item
+            ...item,
           }))
         );
         await PerbaikanKerusakans.bulkCreate(
-          req.body.perbaikanKerusakans.map(item => ({
+          req.body.perbaikanKerusakans.map((item) => ({
             perbaikan: req.params.id,
-            ...item
+            ...item,
           }))
         );
       }
-    })
+    });
     res.json({
       message: "Perbaikan Updated successfully",
       data: await getRow(req.params.id),
@@ -163,13 +188,13 @@ exports.delete = async (req, res) => {
       where: { id: req.params.id },
     });
     await PerbaikanSpareparts.destroy({
-      where: { perbaikan: req.params.id},
+      where: { perbaikan: req.params.id },
     });
     await PerbaikanMechanics.destroy({
-      where: { perbaikan: req.params.id},
+      where: { perbaikan: req.params.id },
     });
     await PerbaikanKerusakans.destroy({
-      where: { perbaikan: req.params.id},
+      where: { perbaikan: req.params.id },
     });
     res.json({ message: "Perbaikan Deleted successfully" });
   } catch (err) {

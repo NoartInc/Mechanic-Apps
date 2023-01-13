@@ -9,12 +9,8 @@ import TextInput from "../../../../components/widgets/TextInput";
 import { useFormik } from "formik";
 import { get, put } from "../../../../utils/api";
 import { Toast } from "../../../../utils/swal";
-import { randId } from "../../../../utils/helper";
 import SelectInput from "../../../../components/widgets/SelectInput";
-import InputForm from "../../../../components/widgets/InputForm";
-import { type, status } from ".";
-import SparepartOption from "../../../../components/widgets/SparepartOption";
-import { IconTrash } from "@tabler/icons";
+import { type, status, SparepartHubs } from ".";
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -26,17 +22,9 @@ const validationSchema = Yup.object().shape({
 
 const Edit = () => {
   const { id } = useRouter()?.query;
-  const context = "Mekanik";
+  const context = "Transaksi Sparepart";
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
-  const [sparepartHubs, setSparepartHubs] = React.useState([
-    {
-      id: randId(),
-      sparepart: 0,
-      jumlah: 0,
-      harga: 0,
-    },
-  ]);
 
   const form = useFormik({
     validationSchema: validationSchema,
@@ -50,10 +38,7 @@ const Edit = () => {
     },
     onSubmit: (values) => {
       setLoading(true);
-      put(`${apiUrl}/${id}`, {
-        ...values,
-        sparepartHubs: sparepartHubs,
-      })
+      put(`${apiUrl}/${id}`, values)
         .then((result) => {
           if (result?.data?.id) {
             Toast.fire({
@@ -79,38 +64,6 @@ const Edit = () => {
     },
   });
 
-  const onSparepartChange = (item, name, value) => {
-    const updatedSparepart = sparepartHubs.map((val) => {
-      if (val.id === item.id) {
-        return {
-          ...val,
-          [name]: value,
-        };
-      }
-      return val;
-    });
-    setSparepartHubs(updatedSparepart);
-  };
-
-  const addSparepart = () => {
-    setSparepartHubs((prevState) => [
-      ...prevState,
-      {
-        id: randId(),
-        sparepart: 0,
-        jumlah: 0,
-        harga: 0,
-      },
-    ]);
-  };
-
-  const removeSparepart = (id) => {
-    const updatedSparepart = sparepartHubs.filter(
-      (item) => String(item?.id) !== String(id)
-    );
-    setSparepartHubs(updatedSparepart);
-  };
-
   const getRow = () => {
     get(`${apiUrl}/${id}`)
       .then((result) => {
@@ -121,8 +74,14 @@ const Edit = () => {
             name: result?.name,
             type: result?.type,
             status: result?.status,
+            sparepartHubs: result?.sparepartDetail?.map(item => ({
+              id: item?.id,
+              sparepart: item?.id,
+              label: item?.sparepart,
+              jumlah: Number(item?.transaksispareparthubs?.jumlah),
+              harga: Number(item?.transaksispareparthubs?.harga),
+            }))
           });
-          setSparepartHubs(result?.sparepartHubs);
         }
       })
       .catch((error) => {
@@ -133,111 +92,66 @@ const Edit = () => {
       });
   };
 
+  const formSubmit = (event) => {
+    event.preventDefault();
+    if (!form.values?.sparepartHubs.length) {
+      Toast.fire({
+        icon: "error",
+        text: "Mohon tambahkan sparepart!"
+      });
+      return false;
+    } else if (form.values.type === "in") {
+      if (form.values?.sparepartHubs?.some(item => item?.jumlah === 0 || item?.harga === 0)) {
+        Toast.fire({
+          icon: "error",
+          text: "Harga atau jumlah tidak boleh kosong!"
+        });
+        return false;
+      }
+    } else {
+      form.handleSubmit(event);
+    }
+  }
+
   React.useEffect(() => {
     getRow();
   }, [id]);
 
   return (
     <Layout title={`Edit ${context}`}>
-      <div className="card-page">
-        <form onSubmit={form.handleSubmit}>
-          <div>
-            <TextInput form={form} label="No Referensi" name="noReferensi" />
-            {form.values.type === "in" && (
-              <TextInput form={form} label="Supplier" name="supplier" />
-            )}
-            <TextInput form={form} label="Name" name="name" />
-            <SelectInput form={form} label="Type" name="type" options={type} />
-            <SelectInput
-              form={form}
-              label="Status"
-              name="status"
-              options={status}
-            />
-            <hr />
-            <fieldset className="border border-gray-200 rounded">
-              <legend className="p-2 ml-3">
-                <button
-                  type="button"
-                  className="button button-primary"
-                  onClick={addSparepart}
-                >
-                  Tambah
-                </button>
-              </legend>
-              <div className="px-3">
-                <table className="table auto w-full">
-                  <tbody>
-                    {sparepartHubs?.map((detail, index) => (
-                      <tr key={detail?.id}>
-                        <td className="p-2">
-                          <SparepartOption
-                            label="Sparepart"
-                            name="sparepart"
-                            onChange={(value) =>
-                              onSparepartChange(detail, "sparepart", value)
-                            }
-                            value={detail?.sparepart}
-                          />
-                        </td>
-                        {form.values.type === "in" && (
-                          <td className="p-2" style={{ width: 200 }}>
-                            <InputForm
-                              label="Harga"
-                              name="harga"
-                              onChange={(event) =>
-                                onSparepartChange(
-                                  detail,
-                                  event.target.name,
-                                  event.target.value
-                                )
-                              }
-                              type="number"
-                              value={detail?.harga}
-                              placeholder="Harga Sparepart"
-                            />
-                          </td>
-                        )}
-                        <td className="p-2" style={{ width: 150 }}>
-                          <InputForm
-                            label="Kuantitas"
-                            name="jumlah"
-                            onChange={(event) =>
-                              onSparepartChange(
-                                detail,
-                                event.target.name,
-                                Number(event.target.value)
-                              )
-                            }
-                            type="number"
-                            value={detail?.jumlah}
-                            placeholder="Kuantitas"
-                          />
-                        </td>
-                        <td className="p-2" style={{ width: 80 }}>
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              className="mt-8 button button-danger"
-                              onClick={() => removeSparepart(detail?.id)}
-                            >
-                              <IconTrash />
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </fieldset>
+      <form onSubmit={formSubmit}>
+        <div className="card-page mb-8">
+          <div className="flex flex-col md:flex-row">
+            <div className="flex-shrink-0 w-full md:w-2/5">
+              <TextInput form={form} label="No Referensi" name="noReferensi" />
+              <SelectInput form={form} label="Type" name="type" options={type} />
+              <SelectInput
+                form={form}
+                label="Status"
+                name="status"
+                options={status}
+              />
+            </div>
+            <div className="flex-grow">{/* Separator Column Tengah */}</div>
+            <div className="flex-shrink-0 w-full md:w-2/5">
+              {form.values.type === "in" && (
+                <TextInput form={form} label="Supplier" name="supplier" />
+              )}
+              <TextInput form={form} label="Name" name="name" />
+            </div>
           </div>
-          <div className="card-page-footer">
+        </div>
+        <h4 className="text-xl font-bold mb-2">Detail Sparepart</h4>
+        <div className="card-page mb-4">
+          <SparepartHubs form={form} />
+        </div>
+        <div className="card-page">
+          <div className="flex justify-between items-center">
             <BackButton />
             <SubmitButton loading={loading} />
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </Layout>
   );
 };

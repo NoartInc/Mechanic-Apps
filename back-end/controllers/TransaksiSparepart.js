@@ -34,7 +34,7 @@ const searchable = [
   "name",
   "date",
   "type",
-  "adjust",
+  "status",
 ];
 
 const getRow = async (id) => {

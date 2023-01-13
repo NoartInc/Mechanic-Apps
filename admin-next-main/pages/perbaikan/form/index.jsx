@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import TextInput from '../../../components/widgets/TextInput';
 import BackButton from '../../../components/widgets/BackButton';
 import SubmitButton from '../../../components/widgets/SubmitButton';
-import { get, post } from '../../../utils/api';
+import { post } from '../../../utils/api';
 import { apiUrl } from '..';
 import { Toast } from '../../../utils/swal';
 import { useRouter } from 'next/router';
@@ -14,10 +14,11 @@ import MachineOption from '../../../components/widgets/MachineOption';
 import MechanicOption from '../../../components/widgets/MechanicOption';
 import TextareaInput from '../../../components/widgets/TextareaInput';
 import moment from 'moment';
-import { randId } from '../../../utils/helper';
+import { getTimeDiff, randId } from '../../../utils/helper';
 import GudangMekanikOption from '../../../components/widgets/GudangMekanikOption';
-import InputForm from '../../../components/widgets/InputForm';
-import { IconTrash } from '@tabler/icons';
+import { IconPlus, IconTrash } from '@tabler/icons';
+import KerusakanOption from '../../../components/widgets/KerusakanOption';
+import ReadOnlyInput from '../../../components/widgets/ReadOnlyInput';
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -41,19 +42,17 @@ const Add = () => {
   const context = "Perbaikan";
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
-  const [spareparts, setSpareparts] = React.useState([]);
-  const [kerusakans, setKerusakans] = React.useState([]);
 
   const form = useFormik({
     validationSchema: validationSchema,
     initialValues: {
-      mesin: undefined,
+      mesin: "",
       user: null,
       startDate: moment().format("YYYY-MM-DD HH:mm"),
-      endDate: null,
+      endDate: "",
       note: "",
-      jenisPerbaikan: undefined,
-      perbaikanMekaniks: undefined,
+      jenisPerbaikan: "",
+      perbaikanMekaniks: [],
       perbaikanSpareparts: [],
       perbaikanKerusakans: []
     },
@@ -61,8 +60,14 @@ const Add = () => {
       setLoading(true);
       post(apiUrl, {
         ...values,
-        perbaikanSpareparts: spareparts,
-        perbaikanKerusakans: kerusakans
+        endDate: values?.endDate === "" ? null : values?.endDate,
+        perbaikanSpareparts: values.perbaikanSpareparts.map(item => ({
+          gudangmekanik: item?.gudangmekanik,
+          jumlah: item?.jumlah
+        })),
+        perbaikanKerusakans: values.perbaikanKerusakans.map(item => ({
+          kerusakan: item?.kerusakan
+        }))
       })
         .then(result => {
           if (result?.data?.id) {
@@ -70,7 +75,7 @@ const Add = () => {
               icon: "success",
               text: result?.message
             }).then(() => {
-              router.back();
+              router.push("/perbaikan")
             })
           }
         })
@@ -88,23 +93,49 @@ const Add = () => {
         })
     }
   });
+
+  const formSubmit = (event) => {
+    event.preventDefault();
+    if (!form.values?.perbaikanMekaniks.length) {
+      Toast.fire({
+        icon: "error",
+        text: "Pilih Mekanik!"
+      });
+      return false;
+    } else if (!form.values?.perbaikanSpareparts.length) {
+      Toast.fire({
+        icon: "error",
+        text: "Mohon tambahkan sparepart!"
+      });
+      return false;
+    } else if (!form.values?.perbaikanKerusakans.length) {
+      Toast.fire({
+        icon: "error",
+        text: "Mohon tambahkan kerusakan!"
+      });
+      return false;
+    } else {
+      form.handleSubmit(event);
+    }
+  }
+
   return (
     <Layout title={`Tambah ${context}`}>
-      <div className="card-page">
-        <form onSubmit={form.handleSubmit}>
-          <div>
+      <form onSubmit={formSubmit}>
+        <div>
+          <div className="card-page mb-6">
 
             {/* Main Data */}
             <div className="flex justify-start md:justify-between flex-col md:flex-row">
-              <div className="flex-shrink-0 w-full md:w-2/4">
+              <div className="flex-shrink-0 w-full md:w-2/5">
                 <SelectInput
                   form={form}
                   name="jenisPerbaikan"
                   options={jenisPerbaikan}
-                  label="Jenis"
+                  label="Jenis Perbaikan"
                 />
                 <MachineOption
-                  label="Mesin"
+                  label="Nama Mesin"
                   name="mesin"
                   value={form.values.mesin}
                   onChange={(value) => form.setFieldValue("mesin", value)}
@@ -121,116 +152,167 @@ const Add = () => {
                 <TextareaInput form={form} label="Note" name="note" placeholder="Catatan singkat." />
               </div>
             </div>
-            <hr />
-
-            {/* Detail Sparepart */}
-            <h4 className="text-lg mt-3">Detail Sparepart</h4>
-            <DetailSparepart setSpareparts={setSpareparts} spareparts={spareparts} />
-
-            {/* Detail Kerusakan */}
-            <hr className="mt-8" />
-            <h4 className="text-lg mt-3">Detail Kerusakan</h4>
-            <DetailKerusakan setKerusakans={setKerusakans} kerusakans={kerusakans} />
-
           </div>
-          <div className="card-page-footer">
-            <BackButton />
-            <SubmitButton loading={loading} />
+
+          {/* Detail Sparepart */}
+          <h4 className="text-xl font-bold mb-2">Detail Sparepart</h4>
+          <div className="card-page mb-6">
+            <DetailSparepart form={form} />
           </div>
-        </form>
-      </div>
+          {/* End Detail Sparepart */}
+
+          {/* Detail Kerusakan */}
+          <h4 className="text-xl font-bold mb-2">Detail Kerusakan</h4>
+          <div className="card-page mb-6">
+            <div className="flex justify-start md:justify-between flex-col md:flex-row">
+              <div className="flex-shrink-0 w-full md:w-2/5">
+                <TextInput
+                  form={form}
+                  name="startDate"
+                  label="Mulai Perbaikan"
+                  type="datetime-local"
+                />
+                <TextInput
+                  form={form}
+                  name="endDate"
+                  label="Selesai Perbaikan"
+                  type="datetime-local"
+                  min={moment(form.values.startDate).add("2 minutes").format("YYYY-MM-DD HH:mm")}
+                />
+              </div>
+              <div className="flex-grow">{/* Separator Kolom Tengah */}</div>
+              <div className="flex-shrink-0 w-full md:w-1/3">
+                <ReadOnlyInput label="Downtime" value={getTimeDiff(form.values.startDate, form.values.endDate)} />
+                <ReadOnlyInput label="Estimasi" value="-" />
+              </div>
+            </div>
+            <DetailKerusakan form={form} />
+          </div>
+          {/* End Detail Kerusakan */}
+
+          <div className="card-page">
+            <div className="flex justify-between items-center">
+              <BackButton />
+              <SubmitButton loading={loading} />
+            </div>
+          </div>
+        </div>
+      </form>
     </Layout>
   )
 }
 
-const DetailSparepart = ({ spareparts, setSpareparts }) => {
-  const [list, setList] = React.useState([]);
+export const DetailSparepart = ({ form }) => {
+  const [selectedGudangMekanik, setSelectedGudangMekanik] = React.useState(null);
+
+  const onGudangMekanikChange = (data) => {
+    setSelectedGudangMekanik(data);
+  }
 
   const addSparepart = () => {
-    setList(prevState => [...prevState, {
-      id: randId(),
-      gudangmekanik: "",
-      jumlah: 0,
-      stok: 0
-    }]);
+    // Cek jika sparepart (sudah ada / belum)
+    if (!form.values.perbaikanSpareparts.some(item => item?.gudangmekanik === selectedGudangMekanik?.value)) {
+      const updatedList = [...form.values.perbaikanSpareparts, {
+        id: randId(),
+        sparepart: selectedGudangMekanik?.label,
+        gudangmekanik: selectedGudangMekanik?.value,
+        stok: selectedGudangMekanik?.stok,
+        jumlah: 0
+      }];
+      if (!selectedGudangMekanik) {
+        Toast.fire({
+          icon: "error",
+          text: "Mohon pilih sparepart!"
+        });
+      } else {
+        form.setFieldValue("perbaikanSpareparts", updatedList);
+        setSelectedGudangMekanik(null);
+      }
+    } else {
+      Toast.fire({
+        icon: "error",
+        text: `Sparepart ${selectedGudangMekanik?.label} sudah ada!`
+      });
+    }
+  }
+
+  const onJumlahChange = (event, index) => {
+    const { value } = event.target;
+    const stok = form.values.perbaikanSpareparts[index]['stok'];
+    if (value > stok) {
+      Toast.fire({
+        icon: "error",
+        text: `Stok yang tersedia adalah ${stok}!`
+      });
+    } else if (value < 1) {
+      Toast.fire({
+        icon: "error",
+        text: `Minimal jumlah adalah 1!`
+      });
+    } else {
+      form.setFieldValue(`perbaikanSpareparts[${index}]['jumlah']`, Number(value))
+    }
   }
 
   const removeSparepart = (id) => {
-    const updatedList = list.filter(item => item?.id !== id);
-    setList(updatedList);
+    const updatedList = form.values.perbaikanSpareparts.filter(item => item?.id !== id);
+    form.setFieldValue("perbaikanSpareparts", updatedList);
   }
-
-  const onSparepartChange = (id, name, value, inputItem = null) => {
-    const updatedList = list.map(item => {
-      if (item?.id === id) {
-        const stok = inputItem ? inputItem?.stok : item?.stok;
-        return {
-          ...item,
-          [name]: value,
-          stok: stok
-        }
-      }
-      return item;
-    });
-    setList(updatedList);
-  }
-
-  React.useEffect(() => {
-    setSpareparts(list);
-  }, [list]);
 
   return (
     <fieldset className="border border-gray-200 rounded">
       <legend className="p-2 ml-3">
-        <button type="button" className="button button-primary" onClick={addSparepart}>Tambah Sparepart</button>
+        <div className="flex gap-x-2 items-center">
+          <div style={{ width: 200 }}>
+            <GudangMekanikOption
+              noLabel
+              name="gudangmekanik"
+              onChange={onGudangMekanikChange}
+              value={selectedGudangMekanik}
+            />
+          </div>
+          <button type="button" className="button button-primary" onClick={addSparepart} style={{ width: 50 }}>
+            <IconPlus />
+          </button>
+        </div>
       </legend>
-      <div className="px-3">
-        {!spareparts?.length ? (
+      <div className="md:px-3 overflow-x-auto max-w-max md:max-w-full">
+        {!form.values.perbaikanSpareparts?.length ? (
           <div className="p-3 flex justify-center items-center mb-3">
             <h4 className="text-lg">Belum ada sparepart</h4>
           </div>
         ) : (
-          <div>
-            <table className="table auto w-full">
+          <div className="relative overflow-x-auto mb-3 overflow-y-auto flex-grow data-table-content rounded">
+            <table className="table-auto w-full">
+              <thead>
+                <tr>
+                  <th className="th-table text-left">Sparepart</th>
+                  <th className="th-table" style={{ width: 100 }}>Stok</th>
+                  <th className="th-table" style={{ width: 100 }}>Kuantitas</th>
+                  <th className="th-table" style={{ width: 50 }}>&times;</th>
+                </tr>
+              </thead>
               <tbody>
-                {spareparts?.map((detail, index) => (
-                  <tr key={detail?.id}>
-                    <td className="p-2">
-                      <GudangMekanikOption
-                        label="Sparepart"
-                        name="gudangmekanik"
-                        onChange={(value, item) => onSparepartChange(detail?.id, "gudangmekanik", value, item)}
-                        value={detail?.gudangmekanik}
-                      />
-                    </td>
-                    <td className="p-2" style={{ width: 150 }}>
-                      <InputForm
-                        label="Stok"
-                        name="stok"
-                        value={detail?.stok}
-                        disabled={true}
-                      />
-                    </td>
-                    <td className="p-2" style={{ width: 150 }}>
-                      <InputForm
-                        label="Kuantitas"
-                        name="jumlah"
-                        onChange={(event) =>
-                          onSparepartChange(
-                            detail?.id,
-                            event.target.name,
-                            Number(event.target.value)
-                          )
-                        }
-                        value={detail?.jumlah}
+                {form.values.perbaikanSpareparts?.map((detail, index) => (
+                  <tr className="tr-table" key={detail?.id}>
+                    <td className="td-table">{detail?.sparepart}</td>
+                    <td className="td-table text-center">{detail?.stok}</td>
+                    <td className="td-table">
+                      <input
                         type="number"
-                        placeholder="Kuantitas"
+                        className="text-input text-center"
+                        name={`jumlah_${detail?.id}`}
+                        id={`jumlah_${detail?.id}`}
+                        value={detail?.jumlah}
+                        min={1}
+                        max={detail?.stok}
+                        onChange={(event) => onJumlahChange(event, index)}
                       />
                     </td>
-                    <td className="p-2" style={{ width: 80 }}>
+                    <td className="td-table">
                       <button
                         type="button"
-                        className="mt-8 button button-danger"
+                        className="button button-danger button-small"
                         onClick={() => removeSparepart(detail?.id)}
                       >
                         <IconTrash />
@@ -247,19 +329,101 @@ const DetailSparepart = ({ spareparts, setSpareparts }) => {
   )
 }
 
-const DetailKerusakan = ({ kerusakans, setKerusakans }) => {
+export const DetailKerusakan = ({ form }) => {
+  const [selectedKerusakan, setselectedKerusakan] = React.useState(null);
+
+  const addKerusakan = () => {
+    // Cek jika kerusakan (sudah ada / belum)
+    if (!form.values.perbaikanKerusakans.some(item => item?.kerusakan === selectedKerusakan?.value)) {
+      const updatedList = [...form.values.perbaikanKerusakans, {
+        id: randId(),
+        kerusakan: selectedKerusakan?.value,
+        label: selectedKerusakan?.label,
+        durasi: selectedKerusakan?.durasi,
+        poin: selectedKerusakan?.poin
+      }]
+      if (!selectedKerusakan) {
+        Toast.fire({
+          icon: "error",
+          text: `Mohon pilih kerusakan!`
+        })
+      } else {
+        form.setFieldValue("perbaikanKerusakans", updatedList);
+        setselectedKerusakan(null);
+      }
+    } else {
+      Toast.fire({
+        icon: "error",
+        text: `Kerusakan ${selectedKerusakan?.label} sudah ada!`
+      });
+    }
+  }
+
+  const onKerusakanChange = (data) => {
+    setselectedKerusakan(data);
+  }
+
+  const removeKerusakan = (id) => {
+    const updatedList = form.values.perbaikanKerusakans.filter(item => item?.id !== id);
+    form.setFieldValue("perbaikanKerusakans", updatedList);
+  }
+
   return (
     <fieldset className="border border-gray-200 rounded mb-3">
       <legend className="p-2 ml-3">
-        <button type="button" className="button button-primary">Tambah Kerusakan</button>
+        <div className="flex gap-x-2 items-center">
+          <div style={{ width: 200 }}>
+            <KerusakanOption
+              noLabel
+              name="kerusakan"
+              onChange={onKerusakanChange}
+              value={selectedKerusakan}
+            />
+          </div>
+          <button
+            type="button"
+            className="button button-primary"
+            style={{ width: 50 }}
+            onClick={addKerusakan}
+          >
+            <IconPlus />
+          </button>
+        </div>
       </legend>
-      <div className="px-3">
-        {!kerusakans?.length ? (
+      <div className="md:px-3 overflow-x-auto max-w-max md:max-w-full">
+        {!form.values.perbaikanKerusakans?.length ? (
           <div className="p-3 flex justify-center items-center mb-3">
             <h4 className="text-lg">Belum ada kerusakan</h4>
           </div>
         ) : (
-          <div></div>
+          <div className="relative overflow-x-auto mb-3 overflow-y-auto flex-grow data-table-content rounded">
+            <table className="table-auto w-full">
+              <thead>
+                <tr>
+                  <th className="th-table text-left">Kerusakan</th>
+                  <th className="th-table" style={{ width: 100 }}>Durasi</th>
+                  <th className="th-table" style={{ width: 50 }}>&times;</th>
+                </tr>
+              </thead>
+              <tbody>
+                {form.values.perbaikanKerusakans?.map((detail, index) => (
+                  <tr className="tr-table" key={detail?.id}>
+                    <td className="td-table">{detail?.label}</td>
+                    <td className="td-table text-center">{detail?.durasi}</td>
+                    <td className="td-table">
+                      <button
+                        type="button"
+                        className="button button-danger button-small"
+                        onClick={() => removeKerusakan(detail?.id)}
+                      >
+                        <IconTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </fieldset>
