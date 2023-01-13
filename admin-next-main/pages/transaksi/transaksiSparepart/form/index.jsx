@@ -68,7 +68,7 @@ const Add = () => {
               icon: "success",
               text: result?.message,
             }).then(() => {
-              router.back();
+              router.push("/transaksi/transaksiSparepart")
             });
           }
         })
@@ -102,6 +102,8 @@ const Add = () => {
           text: "Harga atau jumlah tidak boleh kosong!"
         });
         return false;
+      } else {
+        form.handleSubmit(event);
       }
     } else {
       form.handleSubmit(event);
@@ -161,6 +163,7 @@ export const SparepartHubs = ({ form }) => {
         id: randId(),
         sparepart: selectedSparepart?.value,
         label: selectedSparepart?.label,
+        stok: selectedSparepart?.stok,
         jumlah: 0,
         harga: 0,
       }];
@@ -183,6 +186,15 @@ export const SparepartHubs = ({ form }) => {
 
   const onFieldChange = (event, index) => {
     const { name, value } = event.target;
+
+    if (name === "jumlah" && form.values.type === "out" && value > form.values.sparepartHubs[index]["stok"]) {
+      Toast.fire({
+        icon: "error",
+        text: `Stok yang tersedia adalah ${form.values.sparepartHubs[index]["stok"]} !`
+      });
+      return false;
+    }
+
     form.setFieldValue(`sparepartHubs[${index}]['${name}']`, Number(value))
   }
 

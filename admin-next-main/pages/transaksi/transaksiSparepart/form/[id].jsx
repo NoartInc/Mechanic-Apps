@@ -107,6 +107,8 @@ const Edit = () => {
           text: "Harga atau jumlah tidak boleh kosong!"
         });
         return false;
+      } else {
+        form.handleSubmit(event);
       }
     } else {
       form.handleSubmit(event);

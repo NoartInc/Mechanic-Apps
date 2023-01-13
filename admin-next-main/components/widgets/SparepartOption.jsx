@@ -20,7 +20,8 @@ const SparepartOption = ({
             .then(result => {
                 setData(result?.rows?.map(item => ({
                     value: item?.id,
-                    label: item?.sparepart
+                    label: item?.sparepart,
+                    stok: item?.stok
                 })));
             })
             .catch(error => {
@@ -37,7 +38,8 @@ const SparepartOption = ({
                 if (result?.id) {
                     setSelected({
                         value: result?.id,
-                        label: result?.sparepart
+                        label: result?.sparepart,
+                        stok: result?.stok
                     });
                 } else {
                     setSelected(null)
