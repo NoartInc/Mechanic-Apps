@@ -9,10 +9,8 @@ import TextInput from '../../../../components/widgets/TextInput';
 import { useFormik } from 'formik';
 import { get, put } from '../../../../utils/api';
 import { Toast } from '../../../../utils/swal';
-import { status } from '.';
-import SelectInput from '../../../../components/widgets/SelectInput';
+import CheckboxInput from '../../../../components/widgets/CheckboxInput';
 import menu from '../../../../data/menu';
-import Checkbox from '../../../../components/widgets/Checkbox';
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -24,7 +22,7 @@ const Edit = () => {
     const context = "Role";
     const router = useRouter();
     const [loading, setLoading] = React.useState(false);
-    const [roleAccess, setRoleAccess]  = React.useState([]);
+    const [toggleAccessCheck, setToggleAccessCheck] = React.useState(false);
     const form = useFormik({
         validationSchema: validationSchema,
         initialValues: {
@@ -33,10 +31,7 @@ const Edit = () => {
         },
         onSubmit: (values) => {
             setLoading(true);
-            put(`${apiUrl}/${id}`, {
-                ...values,
-                roleAccess: roleAccess
-            })
+            put(`${apiUrl}/${id}`, values)
                 .then(result => {
                     if (result?.data?.id) {
                         Toast.fire({
@@ -62,12 +57,54 @@ const Edit = () => {
         }
     });
 
+    const getRoleMenu = async () => {
+        let roleAccessMenu = menu.filter(item => item?.path !== "#" && !item?.children)?.map(item => ({
+            title: item?.title,
+            identifier: item?.title?.replace(" ", "_")?.toLowerCase(),
+            path: item?.path,
+            permissions: item?.permissions ?? null,
+            view: false,
+            create: false,
+            update: false,
+            delete: false,
+            export: false
+        }));
+        menu.filter(item => item?.path === "#" && item?.children)?.forEach(item => {
+            item?.children?.forEach(child => {
+                roleAccessMenu.push({
+                    title: child?.title,
+                    identifier: child?.title?.replace(" ", "_")?.toLowerCase(),
+                    path: child?.path,
+                    permissions: child?.permissions ?? null,
+                    view: false,
+                    create: false,
+                    update: false,
+                    delete: false,
+                    export: false
+                });
+            })
+        })
+        return Promise.resolve(roleAccessMenu);
+    }
+
     const getRow = () => {
         get(`${apiUrl}/${id}`)
-            .then(result => {
+            .then(async result => {
                 if (result?.id) {
-                    form.setValues(result);
-                    setRoleAccess(result?.roleAccess);
+                    form.setFieldValue("roleName", result?.roleName);
+                    getRoleMenu().then(roleMenus => {
+                        const roleAccessMenu = roleMenus.map(item => {
+                            return {
+                                ...item,
+                                view: result?.roleAccess?.find(permission => permission?.path === item?.path)?.view,
+                                create: result?.roleAccess?.find(permission => permission?.path === item?.path)?.create,
+                                update: result?.roleAccess?.find(permission => permission?.path === item?.path)?.update,
+                                delete: result?.roleAccess?.find(permission => permission?.path === item?.path)?.delete,
+                                export: result?.roleAccess?.find(permission => permission?.path === item?.path)?.export
+                            }
+                        });
+                        form.setFieldValue("roleAccess", roleAccessMenu);
+                    });
                 }
             })
             .catch(error => {
@@ -78,22 +115,33 @@ const Edit = () => {
             });
     }
 
-    const setAccess = (path, option) => {
-        const updatedAccess = roleAccess.map(item => {
-            if (item?.path === path) {
-                return {
-                    ...item,
-                    ...option
-                }
+    const toggleAccess = (event) => {
+        const { checked } = event.target;
+        const updatedRole = form.values.roleAccess?.map(item => {
+            return {
+                ...item,
+                view: checked,
+                create: checked,
+                update: checked,
+                delete: checked,
+                export: checked
             }
-            return item;
         });
-        setRoleAccess(updatedAccess);
+        form.setFieldValue("roleAccess", updatedRole);
+        setToggleAccessCheck(checked);
     }
 
-    const isChecked = (item) => {
-        const result = roleAccess?.find(row => row?.path === item?.path);
-        return result;
+    const toggleModuleAccess = (index) => {
+        form.setFieldValue(`roleAccess[${index}]["view"]`, !form.values.roleAccess[index]["view"]);
+        form.setFieldValue(`roleAccess[${index}]["create"]`, !form.values.roleAccess[index]["create"]);
+        form.setFieldValue(`roleAccess[${index}]["update"]`, !form.values.roleAccess[index]["update"]);
+        form.setFieldValue(`roleAccess[${index}]["delete"]`, !form.values.roleAccess[index]["delete"]);
+        form.setFieldValue(`roleAccess[${index}]["export"]`, !form.values.roleAccess[index]["export"]);
+    }
+
+    const checkAccess = (event, index) => {
+        const { name, checked } = event.target;
+        form.setFieldValue(`roleAccess[${index}][${name}]`, checked);
     }
 
     React.useEffect(() => {
@@ -104,174 +152,80 @@ const Edit = () => {
         <Layout title={`Edit ${context}`}>
             <div className="card-page">
                 <form onSubmit={form.handleSubmit}>
-                <div>
-                        <TextInput form={form} label="Role Name" name="roleName" />
+                    <div>
+                        <div className="w-full md:w-2/5">
+                            <TextInput form={form} label="Role Name" name="roleName" />
+                            <CheckboxInput
+                                label="All Permissions"
+                                name="toggle_access"
+                                id="toggle-access"
+                                value={toggleAccessCheck}
+                                onChange={toggleAccess}
+                            />
+                        </div>
                         <hr className="my-3" />
-                        <table className="table-auto w-full">
-                            <thead>
-                                <tr className="bg-slate-100">
-                                    <th className="text-left p-2">Menu</th>
-                                    <th className="text-left p-2">View</th>
-                                    <th className="text-left p-2">Create</th>
-                                    <th className="text-left p-2">Update</th>
-                                    <th className="text-left p-2">Delete</th>
-                                    <th className="text-left p-2">Export</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {menu.map((item, index) => {
-                                    const Icon = item?.icon;
-
-                                    if (item?.path === "#") {
-                                        return (
-                                            <React.Fragment key={index}>
-                                                <tr className="bg-slate-100">
-                                                    <td colSpan="100%" className="p-2">
-                                                        <div className="flex gap-x-1 items-center">
-                                                            <Icon size={18} />
-                                                            <span className="ml-1">{item?.title}</span>
+                        <div className="overflow-x-auto">
+                            <table className="table-auto w-full">
+                                <thead>
+                                    <tr className="bg-slate-100">
+                                        <th className="text-left p-2">Menu</th>
+                                        <th className="p-2">View</th>
+                                        <th className="p-2">Create</th>
+                                        <th className="p-2">Update</th>
+                                        <th className="p-2">Delete</th>
+                                        <th className="p-2">Export</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {form.values.roleAccess?.map((item, index) => (
+                                        <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                                            <td
+                                                className="min-w-max p-2 items-center align-middle cursor-pointer"
+                                                onClick={() => toggleModuleAccess(index)}
+                                            >
+                                                {item?.title}
+                                            </td>
+                                            {!item?.permissions ? (
+                                                <>
+                                                    <td className="p-2" style={{ width: 80 }}>
+                                                        <div className="flex justify-center">
+                                                            <CheckboxInput
+                                                                layout="column"
+                                                                noLabel
+                                                                name="view"
+                                                                id={`${item?.identifier}_view`}
+                                                                value={item?.view}
+                                                                onChange={(event) => checkAccess(event, index)}
+                                                            />
                                                         </div>
                                                     </td>
-                                                </tr>
-                                                {item?.children?.map((child, childIndex) => (
-                                                     <tr key={childIndex}>
-                                                        <td className="p-2">
-                                                            <span className="ml-6">{child?.title}</span>
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="View" 
-                                                                id={`view-${index}-${childIndex}`}
-                                                                 name="view[]" 
-                                                                onChange={setAccess} 
-                                                                access="view"
-                                                                data={child}
-                                                                checked={isChecked(child)?.view}
+                                                    <td className="p-2"></td>
+                                                    <td className="p-2"></td>
+                                                    <td className="p-2"></td>
+                                                    <td className="p-2"></td>
+                                                </>
+                                            ) : (
+                                                item?.permissions?.map((permission, permissionIndex) => (
+                                                    <td className="p-2" style={{ width: 80 }} key={permissionIndex}>
+                                                        <div className="flex justify-center">
+                                                            <CheckboxInput
+
+                                                                layout="column"
+                                                                noLabel
+                                                                name={permission}
+                                                                id={`${item?.identifier}_${permission}`}
+                                                                value={item[permission]}
+                                                                onChange={(event) => checkAccess(event, index)}
                                                             />
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Create" 
-                                                                id={`create-${index}-${childIndex}`} 
-                                                                name="create[]" 
-                                                                onChange={setAccess} 
-                                                                access="create"
-                                                                data={child}
-                                                                checked={isChecked(child)?.create}
-                                                                />
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Update" 
-                                                                id={`update-${index}-${childIndex}`} 
-                                                                name="update[]" 
-                                                                onChange={setAccess} 
-                                                                access="update"
-                                                                data={child}
-                                                                checked={isChecked(child)?.update}
-                                                                />
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Delete" 
-                                                                id={`delete-${index}-${childIndex}`} 
-                                                                name="delete[]" 
-                                                                onChange={setAccess} 
-                                                                access="delete"
-                                                                data={child}
-                                                                checked={isChecked(child)?.delete}
-                                                                />
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Export" 
-                                                                id={`export-${index}-${childIndex}`} 
-                                                                name="export[]" 
-                                                                onChange={setAccess}
-                                                                access="export"
-                                                                data={child}
-                                                                checked={isChecked(child)?.export}
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </React.Fragment>
-                                        )
-                                    } else {
-                                        return (
-                                            <tr key={index}>
-                                                <td className="p-2">
-                                                    <div className="flex items-center gap-x-1">
-                                                        <Icon size={18} />
-                                                        <span className="ml-1">{item?.title}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="p-2">
-                                                    <Checkbox 
-                                                        label="View" 
-                                                        id={`view-${index}`} 
-                                                        name="view[]" 
-                                                        onChange={setAccess} 
-                                                        access="view"
-                                                        data={item}
-                                                        checked={isChecked(item)?.view}
-                                                    />
-                                                </td>
-                                                {item?.path !== "/" && (
-                                                    <>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Create" 
-                                                                id={`create-${index}`} 
-                                                                name="create[]" 
-                                                                onChange={setAccess} 
-                                                                access="create"
-                                                                data={item}
-                                                                checked={isChecked(item)?.create}
-                                                            />
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Update" 
-                                                                id={`update-${index}`} 
-                                                                name="update[]" 
-                                                                onChange={setAccess} 
-                                                                access="update"
-                                                                data={item}
-                                                                checked={isChecked(item)?.update}
-                                                            />
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Delete" 
-                                                                id={`delete-${index}`} 
-                                                                name="delete[]" 
-                                                                onChange={setAccess} 
-                                                                access="delete"
-                                                                data={item}
-                                                                checked={isChecked(item)?.delete}
-                                                            />
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <Checkbox 
-                                                                label="Export" 
-                                                                id={`export-${index}`} 
-                                                                name="export[]" 
-                                                                onChange={setAccess} 
-                                                                access="export"
-                                                                data={item}
-                                                                checked={isChecked(item)?.export}
-                                                            />
-                                                        </td>
-                                                    </>
-                                                )}
-                                            </tr>
-                                        )
-                                    }
-                                    
-                                })}
-                            </tbody>
-                        </table>
+                                                        </div>
+                                                    </td>
+                                                ))
+                                            )}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div className="card-page-footer">
                         <BackButton />

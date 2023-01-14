@@ -215,7 +215,7 @@ export const SparepartHubs = ({ form }) => {
               value={selectedSparepart}
             />
           </div>
-          <button type="button" className="button button-primary" onClick={addSparepart} style={{ width: 50 }}>
+          <button type="button" className="button button-primary button-small" onClick={addSparepart} style={{ width: 50 }}>
             <IconPlus />
           </button>
         </div>
@@ -272,7 +272,7 @@ export const SparepartHubs = ({ form }) => {
                         className="button button-danger button-small"
                         onClick={() => removeSparepart(detail?.id)}
                       >
-                        <IconTrash />
+                        <IconTrash size={18} />
                       </button>
                     </td>
                   </tr>

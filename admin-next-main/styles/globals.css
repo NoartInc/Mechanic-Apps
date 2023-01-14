@@ -89,6 +89,40 @@
   @apply pl-5;
 }
 
+/* Login Page style */
+.login-wrapper {
+  @apply flex justify-center items-center min-h-screen;
+}
+
+.card-login {
+  @apply flex flex-col md:flex-row w-full md:w-2/3 mx-4 bg-white;
+  @apply rounded-lg shadow-xl shadow-gray-300 overflow-hidden;
+}
+/* End Login Page Style */
+
+/* Dropdown Option */
+.dropdown-option-button {
+  @apply inline-flex w-full justify-center rounded-md px-3 py-1;
+  @apply font-medium z-0;
+  font-size: 13px !important;
+}
+
+.dropdown-option-container {
+  @apply absolute right-0 z-10 mt-2 min-w-max origin-top-right rounded-md bg-white;
+  @apply shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
+  display: none;
+}
+
+.dropdown-option-container.show {
+  display: block !important;
+}
+
+.dropdown-option-item {
+  @apply text-gray-700 block px-4 py-2 text-sm w-full text-left;
+  @apply hover:bg-gray-50;
+}
+/* End Dropdown option */
+
 .dropdown-content {
   min-width: 240px;
   @apply absolute left-0 top-11 shadow p-2;
@@ -117,7 +151,7 @@
 }
 
 .button {
-  @apply p-2 px-3 rounded block w-full transition-all duration-200 ease-in-out gap-x-2;
+  @apply p-2.5 px-3 rounded-md block w-full transition-all duration-200 ease-in-out gap-x-2;
   @apply border border-gray-100 hover:bg-gray-50 flex items-center justify-center;
 }
 
@@ -126,7 +160,18 @@
 }
 
 .button-small {
-  @apply p-1 px-2 !important;
+  @apply p-1.5 !important;
+}
+
+.input-check {
+  @apply border rounded border-gray-300 appearance-none w-5 h-5;
+  @apply checked:bg-blue-500 checked:border-blue-500 cursor-pointer;
+  @apply relative overflow-hidden flex justify-center items-center;
+}
+
+.input-check:checked::after {
+  content: "✓";
+  @apply text-white font-bold;
 }
 
 .input {
@@ -143,7 +188,7 @@
 }
 
 .button-primary {
-  @apply bg-blue-500 text-white hover:bg-blue-500 hover:bg-opacity-75;
+  @apply bg-blue-500 text-white hover:bg-blue-600;
 }
 
 .button-primary:disabled {
@@ -179,17 +224,25 @@
   max-height: 65vh;
 }
 
+.data-table-body {
+  @apply relative mb-3 flex-grow data-table-content rounded;
+}
+
 .th-table {
   @apply bg-slate-100 p-2 border border-slate-200 relative;
+  font-size: 15px;
 }
 
 .td-table {
-  @apply border border-slate-200 p-2;
+  @apply border border-slate-200 p-2 text-sm;
+}
+
+.td-table span {
+  font-size: 13px !important;
 }
 
 .td-table-action {
-  @apply flex justify-center items-center gap-x-2;
-  @apply border-l-0 last:border-t-0;
+  @apply border-l-0 last:border-t-0 text-sm;
 }
 
 .tr-table {
@@ -203,7 +256,12 @@
 
 .input-label {
   @apply block text-gray-700 text-sm font-bold mb-2 pt-1;
-  @apply col-span-3;
+  @apply col-span-4 cursor-pointer;
+}
+
+.input-check-label {
+  @apply block text-gray-700 text-sm font-bold cursor-pointer;
+  @apply col-span-4;
 }
 
 .text-input {
@@ -213,7 +271,7 @@
 }
 
 .input-column {
-  @apply col-span-9;
+  @apply col-span-8;
 }
 
 /* Large Desktop */

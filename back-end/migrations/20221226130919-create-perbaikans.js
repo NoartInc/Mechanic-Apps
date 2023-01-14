@@ -8,6 +8,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      status: {
+        type: Sequelize.ENUM("open", "revisi", "reject", "accept"),
+      },
       jenisPerbaikan: {
         type: Sequelize.ENUM("repairment", "maintenance"),
       },

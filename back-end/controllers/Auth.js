@@ -3,6 +3,7 @@ const { JWT_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
 const { Users } = require("../models");
 const logging = require("../utils/logging");
+const { getRow } = require("../controllers/User");
 
 exports.login = async (req, res, next) => {
   try {
@@ -14,30 +15,24 @@ exports.login = async (req, res, next) => {
       });
 
       if (!existCheck) {
-        return res.json(
-          {
-            status: false,
-            error: `user ${username} tidak terdaftar`,
-          },
-          400
-        );
+        return res.status(400).json({
+          status: false,
+          error: `user ${username} tidak terdaftar`,
+        });
       }
 
       const pwdCheck = password === existCheck.password;
 
       if (!pwdCheck) {
-        return res.json(
-          {
-            status: false,
-            error: "Error!, password salah",
-          },
-          400
-        );
+        return res.status(400).json({
+          status: false,
+          error: "Error!, password salah",
+        });
       }
 
       const accessToken = jwt.sign(
         {
-          user: existCheck,
+          id: existCheck?.id,
         },
         JWT_SECRET,
         {
@@ -51,10 +46,12 @@ exports.login = async (req, res, next) => {
        */
       logging(username, "Login", "Melakukan login ke sistem");
 
+      const userData = await getRow(existCheck?.id);
+
       return res.status(201).json({
         status: true,
         data: {
-          user: existCheck,
+          user: userData,
           token: accessToken,
         },
       });

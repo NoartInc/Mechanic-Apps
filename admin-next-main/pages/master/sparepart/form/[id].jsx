@@ -83,7 +83,7 @@ const Edit = () => {
         <Layout title={`Edit ${context}`}>
             <div className="card-page">
                 <form onSubmit={form.handleSubmit}>
-                    <div>
+                    <div className="w-full md:w-1/2">
                         <TextInput form={form} label="Nama Barang" name="namaBarang" />
                         <TextInput form={form} label="Merk" name="merk" />
                         <TextInput form={form} label="Spesifikasi" name="spesifikasi" />

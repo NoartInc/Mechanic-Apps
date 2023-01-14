@@ -70,9 +70,22 @@ exports.create = async (req, res) => {
   try {
     // Create role dengan role access'nya
     // lihat request body pada postman
-    const data = await Roles.create(req.body, {
-      include: [{ association: "roleAccess" }],
-    });
+    const data = await Roles.create(
+      {
+        roleName: req.body.roleName,
+        roleAccess: req.body.roleAccess.map((item) => ({
+          path: item?.path,
+          view: item?.view,
+          create: item?.create,
+          update: item?.update,
+          delete: item?.delete,
+          export: item?.export,
+        })),
+      },
+      {
+        include: [{ association: "roleAccess" }],
+      }
+    );
     res.json({
       message: "Role Created successfully",
       data: await getRow(data?.id),
@@ -89,9 +102,14 @@ exports.update = async (req, res) => {
       where: { role: req.params.id },
     });
     // Update data role'nya
-    await Roles.update(req.body, {
-      where: { id: req.params.id },
-    }).then(() => {
+    await Roles.update(
+      {
+        roleName: req.body.roleName,
+      },
+      {
+        where: { id: req.params.id },
+      }
+    ).then(() => {
       // Buat ulang role access'nya
       RoleAccess.bulkCreate(
         req.body.roleAccess.map((item) => ({

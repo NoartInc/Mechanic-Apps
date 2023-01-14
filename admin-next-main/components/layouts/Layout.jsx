@@ -4,9 +4,14 @@ import Topnav from './Topnav'
 import Head from 'next/head'
 import Breadcrumb from '../widgets/Breadcrumb'
 import { useRouter } from 'next/router'
+import { useSelector } from 'react-redux'
+import { IconCircleDashed } from '@tabler/icons'
+import { useAccess } from '../../utils/hooks/useAccess'
+import ForbiddenAccess from '../widgets/ForbiddenAccess';
 
 const Layout = ({ children, title = "App Title" }) => {
     const { pathname } = useRouter();
+    const { canAccess } = useAccess(pathname);
     const [breadCrumb, setBreadcrumb] = React.useState([
         {
             path: "/",
@@ -21,6 +26,7 @@ const Layout = ({ children, title = "App Title" }) => {
             sidebarEl.classList.add("show");
         }
     }
+
     React.useEffect(() => {
         setBreadcrumb(prevState => [
             ...prevState,
@@ -31,27 +37,59 @@ const Layout = ({ children, title = "App Title" }) => {
         ])
         // eslint-disable-next-line
     }, [pathname]);
-    return (
-        <div id="wrapper">
-            <Head>
-                <title>{title}</title>
-            </Head>
-            <Sidebar sidebarToggle={sidebarToggle} />
-            <div id="content-wrapper" className="bg-gray-50 min-h-screen">
-                <Topnav sidebarToggle={sidebarToggle} />
-                <main className="p-4 mb-3">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="flex-shrink-0">
-                            <Breadcrumb breadcrumb={breadCrumb} />
+
+    if (canAccess("view")) {
+        return (
+            <div id="wrapper">
+                <Head>
+                    <title>{title}</title>
+                </Head>
+                <Sidebar sidebarToggle={sidebarToggle} />
+                <div id="content-wrapper" className="bg-gray-200 min-h-screen">
+                    <Topnav sidebarToggle={sidebarToggle} />
+                    <main className="p-4 mb-3">
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="flex-shrink-0">
+                                <Breadcrumb breadcrumb={breadCrumb} />
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        {children}
-                    </div>
-                </main>
+                        <div>
+                            {children}
+                        </div>
+                    </main>
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
+
+    return <ForbiddenAccess />
 }
 
-export default Layout;
+export const Authorizing = ({ text = "Authorizing" }) => (
+    <div className="bg-gray-200 min-h-screen">
+        <div className="flex justify-center items-center min-h-screen">
+            <div className="bg-white rounded-md shadow-xl p-6">
+                <div className="flex items-center gap-x-2">
+                    <IconCircleDashed className="animate-spin" />
+                    <h4 className="text-lg text-center">{text}...</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+)
+
+const PrivatePage = (props) => {
+    const { user, token } = useSelector(state => state.auth);
+    const router = useRouter();
+
+    if (!user && !token) {
+        router.push("/auth/login");
+        return (
+            <Authorizing />
+        )
+    }
+
+    return <Layout {...props} />
+}
+
+export default PrivatePage;
