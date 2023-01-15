@@ -151,7 +151,7 @@
 }
 
 .button {
-  @apply p-2.5 px-3 rounded-md block w-full transition-all duration-200 ease-in-out gap-x-2;
+  @apply py-2 px-3 rounded-md block w-full transition-all duration-200 ease-in-out gap-x-2;
   @apply border border-gray-100 hover:bg-gray-50 flex items-center justify-center;
 }
 
@@ -161,6 +161,10 @@
 
 .button-small {
   @apply p-1.5 !important;
+}
+
+.button-xsmall {
+  @apply px-3 py-1 !important;
 }
 
 .input-check {
@@ -180,7 +184,11 @@
 }
 
 .button-danger {
-  @apply bg-red-500 text-white hover:bg-red-500 hover:bg-opacity-75;
+  @apply bg-red-500 text-white hover:bg-red-600;
+}
+
+.button-dark {
+  @apply bg-gray-700 text-white hover:bg-gray-800;
 }
 
 .button-outline-danger {
@@ -273,6 +281,38 @@
 .input-column {
   @apply col-span-8;
 }
+
+.default-button {
+  @apply mt-3 inline-flex w-full justify-center rounded-md border border-gray-300;
+  @apply bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none;
+  @apply focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm;
+}
+
+/* Modal Style */
+.modal-backdrop {
+  @apply fixed inset-0 bg-gray-700 bg-opacity-75 transition-opacity;
+}
+
+.modal-dialog {
+  @apply fixed inset-0 z-10 overflow-y-auto;
+}
+
+.modal-content {
+  @apply flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0;
+}
+
+.modal-inner {
+  @apply relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg;
+}
+
+.modal-body {
+  @apply bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4;
+}
+
+.modal-footer {
+  @apply bg-gray-50 px-4 py-3 sm:flex sm:flex-row sm:px-6;
+}
+/* End Modal Style */
 
 /* Large Desktop */
 @media (min-width: 1920px) {

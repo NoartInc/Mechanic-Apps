@@ -6,6 +6,9 @@ import { useData } from "../../utils/hooks/useData";
 import DropdownOption from "../../components/widgets/DropdownOption";
 import { patch } from "../../utils/api";
 import { Toast } from "../../utils/swal";
+import { useAccess } from "../../utils/hooks/useAccess";
+import { IconPhoto, IconTrash, IconUpload } from "@tabler/icons";
+import Modal from "../../components/widgets/Modal";
 
 const title = "Perbaikan";
 const pageUrl = "/perbaikan";
@@ -32,6 +35,7 @@ export const statusList = [
 
 const Perbaikan = () => {
   const data = useData(apiUrl);
+  const { canAccess } = useAccess("/perbaikan");
   const columns = [
     {
       name: "noLaporan",
@@ -69,23 +73,61 @@ const Perbaikan = () => {
       style: {
         width: 140
       },
-      render: ({ value, item: data }) => (
-        <DropdownOption text={value} className={`uppercase ${getStatusColor(value)}`}>
-          <>
-            {statusList.map((item, index) => (
-              <button
-                key={index}
-                type="button"
-                className="dropdown-option-item uppercase"
-                onClick={() => updateStatus(data, item?.status)}
-              >
-                {item?.status}
-              </button>
-            ))}
-          </>
-        </DropdownOption>
-      )
+      render: ({ value, item: data }) => {
+        if (!canAccess("update")) {
+          return (
+            <span className={`p-1 px-2 rounded-md ${getStatusColor(value)} uppercase`}>
+              {value}
+            </span>
+          )
+        }
+        return (
+          <DropdownOption text={value} className={`uppercase ${getStatusColor(value)}`}>
+            <>
+              {statusList.map((item, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className="dropdown-option-item uppercase"
+                  onClick={() => updateStatus(data, item?.status)}
+                >
+                  {item?.status}
+                </button>
+              ))}
+            </>
+          </DropdownOption>
+        )
+      }
     },
+    {
+      name: "uploadPhotos",
+      title: "Photo",
+      className: "text-center",
+      style: {
+        width: 80
+      },
+      render: ({ value }) => {
+        if (!value) {
+          return (
+            <button type="button" className="button button-dark button-xsmall">
+              <IconUpload size={16} />
+              <span>Upload</span>
+            </button>
+          )
+        }
+        return (
+          <div className="flex items-center">
+            <button type="button" className="button button-primary button-xsmall">
+              <IconPhoto size={16} />
+              <span>Lihat</span>
+            </button>
+            <button type="button" className="button button-danger button-xsmall">
+              <IconTrash size={20} />
+            </button>
+          </div>
+        )
+      }
+    }
   ];
 
   const getStatusColor = (status) => {
@@ -119,6 +161,7 @@ const Perbaikan = () => {
         columns={columns}
         pageUrl={pageUrl}
       />
+      {/* <Modal /> */}
     </Layout>
   );
 };

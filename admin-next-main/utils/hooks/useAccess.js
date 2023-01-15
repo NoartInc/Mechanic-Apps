@@ -1,14 +1,10 @@
 import { useSelector } from "react-redux";
 
 const useAccess = (currentPath) => {
-  const {
-    user: {
-      userRole: { roleAccess },
-    },
-  } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const canAccess = (permission) => {
-    return roleAccess?.some((item) => {
+    return user?.userRole?.roleAccess?.some((item) => {
       if (currentPath === "/perbaikan/form") {
         return item?.path === currentPath && item[permission];
       } else {
@@ -20,11 +16,11 @@ const useAccess = (currentPath) => {
   const showMenu = (path, children = null, permission) => {
     if (path === "#" && children) {
       const childPaths = children.map((child) => child?.path);
-      return roleAccess?.some((item) => {
+      return user?.userRole?.roleAccess?.some((item) => {
         return childPaths.includes(item?.path) && item[permission];
       });
     } else {
-      return roleAccess?.some(
+      return user?.userRole?.roleAccess?.some(
         (item) => item?.path === path && item[permission]
       );
     }
