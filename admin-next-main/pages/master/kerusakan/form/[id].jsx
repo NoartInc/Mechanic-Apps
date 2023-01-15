@@ -74,6 +74,7 @@ const Edit = () => {
 
     React.useEffect(() => {
         getRow();
+        // eslint-disable-next-line
     }, [id]);
 
     return (

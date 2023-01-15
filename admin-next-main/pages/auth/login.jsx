@@ -76,6 +76,7 @@ const Login = () => {
         return () => {
             mounted.current = false;
         }
+        // eslint-disable-next-line
     }, []);
 
     React.useEffect(() => {
@@ -87,6 +88,7 @@ const Login = () => {
         } else {
             dispatch(rememberLogin(null));
         }
+        // eslint-disable-next-line
     }, [rememberMe]);
 
     if (user && token) {

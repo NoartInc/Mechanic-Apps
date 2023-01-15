@@ -46,6 +46,7 @@ const KerusakanOption = ({
             });
     }
 
+    // eslint-disable-next-line
     const onInputChange = React.useCallback(
         debounce((value) => {
             setSearch(value);
@@ -60,12 +61,14 @@ const KerusakanOption = ({
 
     React.useEffect(() => {
         getList();
+        // eslint-disable-next-line
     }, [search]);
 
     React.useEffect(() => {
         setTimeout(() => {
             getValue(value?.value);
         }, 100);
+        // eslint-disable-next-line
     }, [value]);
 
     const labelClass = `input-label`;

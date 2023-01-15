@@ -17,7 +17,20 @@ const useAccess = (currentPath) => {
     });
   };
 
-  return { canAccess };
+  const showMenu = (path, children = null, permission) => {
+    if (path === "#" && children) {
+      const childPaths = children.map((child) => child?.path);
+      return roleAccess?.some((item) => {
+        return childPaths.includes(item?.path) && item[permission];
+      });
+    } else {
+      return roleAccess?.some(
+        (item) => item?.path === path && item[permission]
+      );
+    }
+  };
+
+  return { canAccess, showMenu };
 };
 
 export { useAccess };

@@ -44,6 +44,7 @@ const MachineOption = ({
         }
     }
 
+    // eslint-disable-next-line
     const onInputChange = React.useCallback(
         debounce((value) => {
             setSearch(value);
@@ -57,12 +58,14 @@ const MachineOption = ({
 
     React.useEffect(() => {
         getList();
+        // eslint-disable-next-line
     }, [search]);
 
     React.useEffect(() => {
         setTimeout(() => {
             getValue(value);
         }, 500);
+        // eslint-disable-next-line
     }, [value]);
 
     const labelClass = `input-label`;

@@ -118,6 +118,7 @@ const Add = () => {
 
     React.useEffect(() => {
         roleAccessInit();
+        // eslint-disable-next-line
     }, []);
 
     return (
