@@ -13,6 +13,7 @@ export const useData = (url = "/") => {
   const [orderDir, setOrderDir] = useState("desc");
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const onPageChange = (pageNum) => {
     setPage(pageNum);
@@ -59,6 +60,11 @@ export const useData = (url = "/") => {
           icon: "error",
           timer: 5000,
         });
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       });
   };
 
@@ -112,5 +118,7 @@ export const useData = (url = "/") => {
     onSearchChange,
     onSortChange,
     deleteItem,
+    getList,
+    loading,
   };
 };

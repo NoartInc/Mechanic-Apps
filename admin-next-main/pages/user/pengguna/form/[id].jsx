@@ -11,12 +11,13 @@ import { get, put } from '../../../../utils/api';
 import { Toast } from '../../../../utils/swal';
 import { status } from '.';
 import SelectInput from '../../../../components/widgets/SelectInput';
+import RoleOption from '../../../../components/widgets/RoleOption';
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
     fullName: Yup.string().required("Wajib diisi!"),
     userName: Yup.string().required("Wajib diisi!"),
-    password: Yup.string().required("Wajib diisi!"),
+    // password: Yup.string().required("Wajib diisi!"),
     role: Yup.string().required("Wajib diisi!"),
     jabatan: Yup.string().required("Wajib diisi!"),
     email: Yup.string().required("Wajib diisi!"),
@@ -86,6 +87,7 @@ const Edit = () => {
 
     React.useEffect(() => {
         getRow();
+        // eslint-disable-next-line
     }, [id]);
 
     return (
@@ -93,14 +95,25 @@ const Edit = () => {
             <div className="card-page">
                 <form onSubmit={form.handleSubmit}>
                     <div>
-                        <TextInput form={form} label="Fullname" name="fullName" />
-                        <TextInput form={form} label="Username" name="userName" />
-                        <TextInput form={form} label="Password" name="password" />
-                        <TextInput form={form} label="Role" name="role" />
-                        <TextInput form={form} label="jabatan" name="jabatan" />
-                        <TextInput form={form} label="Email" name="email" />
-                        <TextInput form={form} label="Contact" name="contact" />
-                        <SelectInput form={form} label="Status" name="status" options={status} />
+                        <div className="flex flex-col md:flex-row justify-start md:justify-between">
+                            <div className="w-full md:w-2/5">
+                                <TextInput form={form} label="Fullname" name="fullName" />
+                                <TextInput form={form} label="Username" name="userName" />
+                                {/* <TextInput form={form} label="Password" name="password" /> */}
+                                <RoleOption
+                                    label="Role"
+                                    name="role"
+                                    value={form.values.role}
+                                    onChange={(value) => form.setFieldValue("role", value)}
+                                />
+                            </div>
+                            <div className="w-full md:w-2/5">
+                                <TextInput form={form} label="Jabatan" name="jabatan" />
+                                <TextInput form={form} label="Email" name="email" />
+                                <TextInput form={form} label="Contact" name="contact" />
+                                <SelectInput form={form} label="Status" name="status" options={status} />
+                            </div>
+                        </div>
                     </div>
                     <div className="card-page-footer">
                         <BackButton />

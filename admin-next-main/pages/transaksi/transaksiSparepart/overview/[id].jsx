@@ -4,7 +4,7 @@ import { apiUrl, title } from "..";
 import Layout from "../../../../components/layouts/Layout";
 import { get } from "../../../../utils/api";
 
-const transaksiSparepart = () => {
+const TransaksiSparepart = () => {
   const { id } = useRouter()?.query;
   const [row, setRow] = React.useState(null);
   const getRow = () => {
@@ -24,6 +24,7 @@ const transaksiSparepart = () => {
 
   React.useEffect(() => {
     getRow();
+    // eslint-disable-next-line
   }, [id]);
   return (
     <Layout title={title}>
@@ -32,4 +33,4 @@ const transaksiSparepart = () => {
   );
 };
 
-export default transaksiSparepart;
+export default TransaksiSparepart;

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Dropdown = ({ text = "Button", icon = null, children, align = "left" }) => {
+const Dropdown = ({ text = "Button", icon = null, children, align = "left", iconSize = 22 }) => {
     const Icon = icon ? icon : null;
     const dropdownToggle = (event) => {
         if (event.currentTarget.nextElementSibling.classList.contains("show")) {
@@ -25,11 +25,11 @@ const Dropdown = ({ text = "Button", icon = null, children, align = "left" }) =>
     }, []);
     return (
         <div className="relative">
-            <button type="button" className="dropdown-button" onClick={dropdownToggle}>
-                {Icon && <Icon size={24} className="pointer-events-none" />}
+            <button type="button" className={`dropdown-button`} onClick={dropdownToggle}>
+                {Icon && <Icon size={iconSize} className="pointer-events-none" />}
                 <span className="hidden md:block pointer-events-none">{text}</span>
             </button>
-            <div className={`dropdown-container z-10 ${align === "left" ? "dropdown-content" : "dropdown-content-right"}`.trim(' ')}>
+            <div className={`dropdown-container z-20 ${align === "left" ? "dropdown-content" : "dropdown-content-right"}`.trim(' ')}>
                 {children}
             </div>
         </div>

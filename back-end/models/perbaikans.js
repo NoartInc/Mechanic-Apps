@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "perbaikanKerusakans",
         sourceKey: "id",
         foreignKey: "perbaikan",
-      })
+      });
     }
   }
   Perbaikans.init(
@@ -68,6 +68,7 @@ module.exports = (sequelize, DataTypes) => {
       uploadPhotos: DataTypes.STRING,
       noLaporan: DataTypes.STRING,
       jenisPerbaikan: DataTypes.ENUM("repairment", "maintenance"),
+      status: DataTypes.ENUM("open", "revisi", "reject", "accept"),
     },
     {
       sequelize,

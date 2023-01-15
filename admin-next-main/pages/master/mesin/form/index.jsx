@@ -40,9 +40,9 @@ const Add = () => {
         initialValues: {
             mesin: "",
             kategori: "",
-		    lokasi: "",
-	        merk: "",
-	        status: "active"
+            lokasi: "",
+            merk: "",
+            status: "active"
         },
         onSubmit: (values) => {
             setLoading(true);
@@ -75,7 +75,7 @@ const Add = () => {
         <Layout title={`Tambah ${context}`}>
             <div className="card-page">
                 <form onSubmit={form.handleSubmit}>
-                    <div>
+                    <div className="w-full md:w-1/2">
                         <TextInput form={form} label="Mesin" name="mesin" />
                         <TextInput form={form} label="Kategori" name="kategori" />
                         <TextInput form={form} label="Lokasi" name="lokasi" />

@@ -17,10 +17,11 @@ const Role = () => {
     {
       name: "userRoles",
       title: "Pengguna",
+      style: { width: 160 },
       render: ({ value }) => (
         <span className="p-1 px-2 text-sm rounded bg-green-600 text-white">{value?.length} Pengguna</span>
       )
-    }   
+    }
   ];
 
   return (

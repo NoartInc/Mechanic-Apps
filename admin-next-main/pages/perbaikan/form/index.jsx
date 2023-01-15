@@ -271,7 +271,7 @@ export const DetailSparepart = ({ form }) => {
               value={selectedGudangMekanik}
             />
           </div>
-          <button type="button" className="button button-primary" onClick={addSparepart} style={{ width: 50 }}>
+          <button type="button" className="button button-primary button-small" onClick={addSparepart} style={{ width: 50 }}>
             <IconPlus />
           </button>
         </div>
@@ -315,7 +315,7 @@ export const DetailSparepart = ({ form }) => {
                         className="button button-danger button-small"
                         onClick={() => removeSparepart(detail?.id)}
                       >
-                        <IconTrash />
+                        <IconTrash size={18} />
                       </button>
                     </td>
                   </tr>
@@ -382,7 +382,7 @@ export const DetailKerusakan = ({ form }) => {
           </div>
           <button
             type="button"
-            className="button button-primary"
+            className="button button-primary button-small"
             style={{ width: 50 }}
             onClick={addKerusakan}
           >
@@ -416,7 +416,7 @@ export const DetailKerusakan = ({ form }) => {
                         className="button button-danger button-small"
                         onClick={() => removeKerusakan(detail?.id)}
                       >
-                        <IconTrash />
+                        <IconTrash size={18} />
                       </button>
                     </td>
                   </tr>

@@ -3,6 +3,7 @@ const {
   PerbaikanSpareparts,
   PerbaikanMechanics,
   PerbaikanKerusakans,
+  GudangMechanics,
 } = require("../models");
 const {
   getRequestData,
@@ -10,6 +11,7 @@ const {
   paginatedData,
   generateReportNumber,
 } = require("../utils/helper");
+const logging = require("../utils/logging");
 
 const dataRelations = [
   {
@@ -64,12 +66,12 @@ const dataRelations = [
 
 const searchable = ["noLaporan"];
 
-const getRow = async (id) => {
+const getRow = async (id, include = true) => {
   return await Perbaikans.findByPk(id, {
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
-    include: dataRelations,
+    include: include ? dataRelations : null,
   });
 };
 
@@ -107,6 +109,7 @@ exports.findOne = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
+    const user = req.user;
     const getLast = await Perbaikans.findAll({
       limit: 1,
       order: [["id", "desc"]],
@@ -116,6 +119,8 @@ exports.create = async (req, res) => {
     const data = await Perbaikans.create(
       {
         ...req.body,
+        user: user?.id,
+        status: "open",
         noLaporan,
       },
       {
@@ -126,6 +131,24 @@ exports.create = async (req, res) => {
         ],
       }
     );
+
+    // Kurangi Stok di gudang mekanik
+    // sesuai jumlah yang di input pada perbaikanSpareparts
+    for await (const item of req.body.perbaikanSpareparts) {
+      GudangMechanics.findByPk(item?.gudangmekanik, { raw: true }).then(
+        (gudangMekanik) => {
+          GudangMechanics.update(
+            {
+              stok: gudangMekanik.stok - item?.jumlah,
+            },
+            {
+              where: { id: gudangMekanik.id },
+            }
+          );
+        }
+      );
+    }
+
     res.json({
       message: "Perbaikan Created successfully",
       data: await getRow(data?.id),
@@ -135,12 +158,59 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.updateStatus = async (req, res) => {
+  try {
+    await Perbaikans.update(
+      {
+        status: req.body.status,
+      },
+      {
+        where: { id: req.params.id },
+      }
+    );
+    res.json({
+      status: true,
+    });
+  } catch (error) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 exports.update = async (req, res) => {
   try {
-    await Perbaikans.update(req.body, {
-      where: { id: req.params.id },
-    }).then(async (result) => {
+    const user = req.user;
+    await Perbaikans.update(
+      {
+        ...req.body,
+        user: user?.id,
+      },
+      {
+        where: { id: req.params.id },
+      }
+    ).then(async (result) => {
       if (result) {
+        // Kembalikan stok ke gudang mekanik
+        // sesuai jumlah yang ada di perbaikanSpareparts lama
+        await PerbaikanSpareparts.findAll({
+          where: { perbaikan: req.params.id },
+          raw: true,
+        }).then(async (result) => {
+          for await (const item of result) {
+            GudangMechanics.findByPk(item?.gudangmekanik, { raw: true }).then(
+              (gudangMekanik) => {
+                GudangMechanics.update(
+                  {
+                    stok: gudangMekanik.stok + item?.jumlah,
+                  },
+                  {
+                    where: { id: gudangMekanik.id },
+                  }
+                );
+              }
+            );
+          }
+        });
+
         // Remove previous record
         await PerbaikanSpareparts.destroy({
           where: { perbaikan: req.params.id },
@@ -158,7 +228,24 @@ exports.update = async (req, res) => {
             perbaikan: req.params.id,
             ...item,
           }))
-        );
+        ).then(async () => {
+          // Kurangi Stok di gudang mekanik
+          // sesuai jumlah yang di input pada perbaikanSpareparts
+          for await (const item of req.body.perbaikanSpareparts) {
+            GudangMechanics.findByPk(item?.gudangmekanik, { raw: true }).then(
+              (gudangMekanik) => {
+                GudangMechanics.update(
+                  {
+                    stok: gudangMekanik.stok - item?.jumlah,
+                  },
+                  {
+                    where: { id: gudangMekanik.id },
+                  }
+                );
+              }
+            );
+          }
+        });
         await PerbaikanMechanics.bulkCreate(
           req.body.perbaikanMekaniks.map((item) => ({
             perbaikan: req.params.id,
@@ -184,9 +271,39 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
+    const perbaikan = await getRow(req.params.id, false);
     await Perbaikans.destroy({
       where: { id: req.params.id },
     });
+
+    logging(
+      req.user?.fullName,
+      "Delete",
+      `Menghapus data perbaikan ${perbaikan?.noLaporan}`
+    );
+
+    // Kembalikan stok ke gudang mekanik
+    // sesuai jumlah yang ada di perbaikanSpareparts lama
+    await PerbaikanSpareparts.findAll({
+      where: { perbaikan: req.params.id },
+      raw: true,
+    }).then(async (result) => {
+      for await (const item of result) {
+        GudangMechanics.findByPk(item?.gudangmekanik, { raw: true }).then(
+          (gudangMekanik) => {
+            GudangMechanics.update(
+              {
+                stok: gudangMekanik.stok + item?.jumlah,
+              },
+              {
+                where: { id: gudangMekanik.id },
+              }
+            );
+          }
+        );
+      }
+    });
+
     await PerbaikanSpareparts.destroy({
       where: { perbaikan: req.params.id },
     });
@@ -196,6 +313,7 @@ exports.delete = async (req, res) => {
     await PerbaikanKerusakans.destroy({
       where: { perbaikan: req.params.id },
     });
+
     res.json({ message: "Perbaikan Deleted successfully" });
   } catch (err) {
     res.json({ message: err.message });

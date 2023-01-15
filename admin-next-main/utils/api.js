@@ -1,6 +1,9 @@
 import axios from "axios";
+import store from "../store/store";
+import { logout } from "../store/modules/auth";
+import { Toast } from "./swal";
 
-const baseUrl =
+export const baseUrl =
   process.env.NODE_ENV !== "production"
     ? "http://localhost:6001" // local laptop server
     : "http://localhost:6001";
@@ -39,6 +42,15 @@ export const put = async (url, data = {}) => {
   }
 };
 
+export const patch = async (url, data = {}) => {
+  try {
+    const result = await api.patch(url, data);
+    return Promise.resolve(result.data);
+  } catch (error) {
+    return Promise.reject(error.response.data);
+  }
+};
+
 export const destroy = async (url) => {
   try {
     const result = await api.delete(url);
@@ -47,3 +59,33 @@ export const destroy = async (url) => {
     return Promise.reject(error.response.data);
   }
 };
+
+api.interceptors.request.use(
+  (req) => {
+    const token = store.getState().auth.token;
+    if (token) {
+      req.headers.authorization = `Bearer ${token}`;
+    }
+    return req;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (res) => {
+    return res;
+  },
+  (error) => {
+    if (error.response.status === 401 || error.response.status === 403) {
+      Toast.fire({
+        icon: "error",
+        text: error.response.data?.error,
+      }).then(() => {
+        store.dispatch(logout());
+      });
+    }
+    return Promise.reject(error);
+  }
+);

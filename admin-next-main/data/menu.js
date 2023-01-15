@@ -6,6 +6,8 @@ import {
   IconBrandAirtable,
 } from "@tabler/icons";
 
+const fullPermissions = ["view", "create", "update", "delete", "export"];
+
 const menu = [
   {
     path: "/",
@@ -24,6 +26,7 @@ const menu = [
       {
         path: "/perbaikan",
         title: "List Perbaikan",
+        permissions: fullPermissions,
       },
     ],
   },
@@ -35,18 +38,22 @@ const menu = [
       {
         path: "/master/mekanik",
         title: "Mekanik",
+        permissions: fullPermissions,
       },
       {
         path: "/master/mesin",
         title: "Mesin",
+        permissions: fullPermissions,
       },
       {
         path: "/master/sparepart",
         title: "Sparepart",
+        permissions: fullPermissions,
       },
       {
         path: "/master/kerusakan",
         title: "Kerusakan",
+        permissions: fullPermissions,
       },
     ],
   },
@@ -58,10 +65,12 @@ const menu = [
       {
         path: "/transaksi/transaksiSparepart",
         title: "Transaksi Sparepart",
+        permissions: fullPermissions,
       },
       {
         path: "/transaksi/gudangMekanik",
         title: "Gudang Mekanik",
+        permissions: fullPermissions,
       },
     ],
   },
@@ -73,10 +82,12 @@ const menu = [
       {
         path: "/user/pengguna",
         title: "Pengguna",
+        permissions: fullPermissions,
       },
       {
         path: "/user/role",
         title: "Role",
+        permissions: fullPermissions,
       },
     ],
   },

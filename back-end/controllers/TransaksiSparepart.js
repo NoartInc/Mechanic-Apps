@@ -177,136 +177,98 @@ exports.update = async (req, res) => {
     // Ambil data jumlah sebelumnya
     const oldHubs = await TransaksiSparepartHubs.findAll({
       where: { transaksiSparepart: req.params.id },
-      raw: true
+      raw: true,
     });
 
-    // Skenario type IN
-    if (req.body.type === "in") {
-
-      // Kembalikan stok sparepart
-      // dikurangi dengan jumlah yang ada di hub
-      oldHubs.forEach(async hub => {
-        const oldSparepart = await Spareparts.findByPk(hub?.sparepart, { raw: true });
-        await Spareparts.update({
-          stok: oldSparepart?.stok - hub?.jumlah
-        }, {
-          where: { id: hub?.sparepart }
-        });
-      });
-
-      // Hapus data hubs lama
-      await TransaksiSparepartHubs.destroy({
-        where: { transaksiSparepart: req.params.id }
-      });
-
-      // Input hub baru 
-      // dan input stok baru ke sparepart
-      req.body.sparepartHubs.forEach(async newHub => {
-        // Tambah hub baru
-        await TransaksiSparepartHubs.create({
-          transaksiSparepart: req.params.id,
-          sparepart: newHub?.sparepart,
-          jumlah: newHub?.jumlah,
-          harga: newHub?.harga
-        });
-
-        // Tambah stok ke sparepart (diperbaharui)
-        const sparepart = await Spareparts.findByPk(newHub.sparepart, { raw: true });
-        if (sparepart) {
-          await Spareparts.update(
+    for await (const item of oldHubs) {
+      Spareparts.findByPk(item?.sparepart, { raw: true }).then(
+        (oldSparepart) => {
+          Spareparts.update(
             {
-              stok: sparepart.stok + newHub.jumlah
+              stok:
+                req.body.type === "in"
+                  ? oldSparepart.stok - item?.jumlah
+                  : oldSparepart.stok + item?.jumlah,
+            },
+            {
+              where: { id: item?.sparepart },
+            }
+          );
+          if (req.body.type === "out") {
+            GudangMechanics.findAll({
+              where: { sparepart: oldSparepart?.sparepart },
+              raw: true,
+            }).then((gudang) => {
+              const oldGudang = gudang[0];
+              GudangMechanics.update(
+                {
+                  stok: oldGudang.stok - item?.jumlah,
+                },
+                {
+                  where: { sparepart: oldSparepart.sparepart },
+                }
+              );
+            });
+          }
+        }
+      );
+    }
+
+    await TransaksiSparepartHubs.destroy({
+      where: { transaksiSparepart: req.params.id },
+    });
+
+    for await (const item of req.body.sparepartHubs) {
+      TransaksiSparepartHubs.create({
+        transaksiSparepart: req.params.id,
+        sparepart: item?.sparepart,
+        jumlah: item?.jumlah,
+        harga: item?.harga,
+      }).then((newHub) => {
+        Spareparts.findByPk(newHub.sparepart, {
+          raw: true,
+        }).then((sparepart) => {
+          Spareparts.update(
+            {
+              stok:
+                req.body.type === "in"
+                  ? sparepart.stok + newHub.jumlah
+                  : sparepart.stok - newHub.jumlah,
             },
             {
               where: { id: newHub.sparepart },
             }
           );
-        }
-      });
-    }
-    // End Skenario IN
-
-    // Skenario OUT
-    if (req.body.type === "out") {
-
-      await oldHubs.forEach(async hub => {
-        // Kembalikan data gudang mekanik 
-        // ke stok sebelumnya
-        const oldSparepart = await Spareparts.findByPk(hub?.sparepart, { raw: true });
-        const oldGudangMekanik = await GudangMechanics.findAll({
-          where: { sparepart: oldSparepart?.sparepart },
-          raw: true
-        });
-        await GudangMechanics.update({
-          stok: oldGudangMekanik[0]?.stok - hub?.jumlah
-        }, {
-          where: { sparepart: oldSparepart?.sparepart }
-        });
-
-        // Tambah stok di sparepart
-        // berdasarkan jumlah dari hub
-        await Spareparts.update({
-          stok: oldSparepart?.stok + hub?.jumlah
-        }, {
-          where: { id: hub?.sparepart }
-        });
-      });
-      
-      // Hapus data hubs lama
-      await TransaksiSparepartHubs.destroy({
-        where: { transaksiSparepart: req.params.id }
-      });
-
-      // Input hub baru 
-      // - kurangi stok di sparepart
-      // - tambah stok di gudangmekanik
-      req.body.sparepartHubs.forEach(async newHub => {
-        // Tambah hub baru
-        await TransaksiSparepartHubs.create({
-          transaksiSparepart: req.params.id,
-          sparepart: newHub?.sparepart,
-          jumlah: newHub?.jumlah,
-          harga: newHub?.harga
-        });
-
-        const sparepart = await Spareparts.findByPk(newHub.sparepart, { raw: true });
-        if (sparepart) {
-          // Kurangi stok sparepart (diperbaharui)
-          await Spareparts.update(
-            {
-              stok: sparepart?.stok - newHub?.jumlah
-            },
-            {
-              where: { id: newHub?.sparepart },
-            }
-          );
-
-          // Tambahkan stok ke gudang mekanik (diperbaharui)
-          const oldGudangMekanik = await GudangMechanics.findAll({
-            where: { sparepart: sparepart?.sparepart },
-            raw: true
-          });
-          
-          if (oldGudangMekanik?.length) {
-            await GudangMechanics.update({
-              stok: oldGudangMekanik[0]?.stok + newHub?.jumlah
-            }, {
-              where: { sparepart: sparepart?.sparepart }
-            });
-          } else {
-            await GudangMechanics.create({
-              sparepart: sparepart.sparepart, // string
-              merk: sparepart.merk, //
-              stok: Number(newHub.jumlah),
-              namaBarang: sparepart.namaBarang,
-              spesifikasi: sparepart.spesifikasi,
-              kategori: sparepart.kategori,
+          if (req.body.type === "out") {
+            GudangMechanics.findAll({
+              where: { sparepart: sparepart.sparepart },
+              raw: true,
+            }).then((gudang) => {
+              const gudangMekanik = gudang[0];
+              if (gudangMekanik) {
+                GudangMechanics.update(
+                  {
+                    stok: gudangMekanik.stok + newHub.jumlah,
+                  },
+                  {
+                    where: { sparepart: sparepart.sparepart },
+                  }
+                );
+              } else {
+                GudangMechanics.create({
+                  sparepart: sparepart.sparepart,
+                  merk: sparepart.merk,
+                  stok: Number(newHub.jumlah),
+                  namaBarang: sparepart.namaBarang,
+                  spesifikasi: sparepart.spesifikasi,
+                  kategori: sparepart.kategori,
+                });
+              }
             });
           }
-        }
+        });
       });
     }
-    // End Skenario OUT
 
     res.json({
       message: "Transaksi Updated successfully",

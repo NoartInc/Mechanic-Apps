@@ -43,6 +43,7 @@ const MechanicOption = ({
             });
     }
 
+    // eslint-disable-next-line
     const onInputChange = React.useCallback(
         debounce((value) => {
             setSearch(value);
@@ -60,6 +61,7 @@ const MechanicOption = ({
 
     React.useEffect(() => {
         getList();
+        // eslint-disable-next-line
     }, [search]);
 
     React.useEffect(() => {
@@ -70,6 +72,7 @@ const MechanicOption = ({
                 })
             }, 500);
         }
+        // eslint-disable-next-line
     }, [value]);
 
     const labelClass = `input-label`;

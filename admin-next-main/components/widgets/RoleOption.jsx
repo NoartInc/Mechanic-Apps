@@ -4,24 +4,24 @@ import { Toast } from '../../utils/swal';
 import Select from "react-select";
 import { debounce } from 'lodash';
 
-const SparepartOption = ({
+const RoleOption = ({
     onChange,
-    label = "Pilih Sparepart",
+    label = "Pilih Role",
     name = "",
     noLabel = false,
-    value
+    value,
+    layout = "row"
 }) => {
     const [data, setData] = React.useState([]);
     const [search, setSearch] = React.useState("");
-    const [selected, setSelected] = React.useState(null);
+    const [selected, setSelected] = React.useState(undefined);
 
     const getList = () => {
-        get(`/sparepart`, { search })
+        get(`/roles`, { search })
             .then(result => {
                 setData(result?.rows?.map(item => ({
                     value: item?.id,
-                    label: item?.sparepart,
-                    stok: item?.stok
+                    label: item?.roleName
                 })));
             })
             .catch(error => {
@@ -33,18 +33,15 @@ const SparepartOption = ({
     }
 
     const getValue = (id) => {
-        get(`/sparepart/${id}`)
-            .then(result => {
-                if (result?.id) {
+        if (id) {
+            get(`/roles/${id}`)
+                .then(result => {
                     setSelected({
                         value: result?.id,
-                        label: result?.sparepart,
-                        stok: result?.stok
+                        label: result?.roleName
                     });
-                } else {
-                    setSelected(null)
-                }
-            });
+                });
+        }
     }
 
     // eslint-disable-next-line
@@ -56,8 +53,7 @@ const SparepartOption = ({
     )
 
     const onChangeHandler = (value) => {
-        const getItem = data.find(item => item?.value === value?.value);
-        onChange(getItem);
+        onChange(value?.value);
     }
 
     React.useEffect(() => {
@@ -67,23 +63,21 @@ const SparepartOption = ({
 
     React.useEffect(() => {
         setTimeout(() => {
-            getValue(value?.value);
-        }, 100);
+            getValue(value);
+        }, 500);
         // eslint-disable-next-line
     }, [value]);
 
     const labelClass = `input-label`;
 
     return (
-        <div className="relative flex flex-col">
+        <div className={`relative ${layout === "row" ? "field-input" : "flex flex-col"}`}>
             {!noLabel && (
                 <label htmlFor={name} className={labelClass}>{label}</label>
             )}
             <div className="input-column">
                 <Select
-                    placeholder="Pilih Sparepart"
                     instanceId={useId()}
-                    id={useId()}
                     value={selected}
                     options={data}
                     onInputChange={onInputChange}
@@ -94,4 +88,4 @@ const SparepartOption = ({
     )
 }
 
-export default SparepartOption
+export default RoleOption

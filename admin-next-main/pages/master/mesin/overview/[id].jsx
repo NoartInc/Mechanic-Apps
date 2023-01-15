@@ -24,6 +24,7 @@ const Mesin = () => {
 
   React.useEffect(() => {
     getRow();
+    // eslint-disable-next-line
   }, [id]);
   return (
     <Layout title={title}>

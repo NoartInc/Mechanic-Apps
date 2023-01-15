@@ -72,13 +72,14 @@ const Edit = () => {
 
     React.useEffect(() => {
         getRow();
+        // eslint-disable-next-line
     }, [id]);
 
     return (
         <Layout title={`Edit ${context}`}>
             <div className="card-page">
                 <form onSubmit={form.handleSubmit}>
-                    <div>
+                    <div className="w-full md:w-1/2">
                         <TextInput form={form} label="Mekanik" name="mekanik" />
                         <TextInput form={form} label="Kontak" name="kontak" />
                     </div>

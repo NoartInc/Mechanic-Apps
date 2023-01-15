@@ -7,13 +7,16 @@ const InputForm = ({
     type = "text",
     placeholder,
     label,
-    disabled = false
+    disabled = false,
+    className = "",
+    errors = null,
+    touched = null
 }) => {
-    const inputClass = `text-input`.trim(' ');
+    const inputClass = `text-input ${errors[name] && touched[name] ? 'border border-red-600' : ''}`.trim(' ');
     const labelClass = `input-label`;
 
     return (
-        <div className="relative flex flex-col">
+        <div className={`relative flex flex-col ${className}`.trim(' ')}>
             <label
                 htmlFor={name}
                 className={labelClass}
@@ -29,6 +32,11 @@ const InputForm = ({
                     value={value}
                     disabled={disabled}
                 />
+                {errors[name] && touched[name] ? (
+                    <small className="text-red-600" style={{ fontSize: 12 }}>
+                        {errors[name]}
+                    </small>
+                ) : null}
             </div>
         </div>
     )

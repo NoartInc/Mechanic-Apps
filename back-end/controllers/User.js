@@ -24,10 +24,10 @@ const dataRelations = [
 
 const searchable = ["fullName", "userName", "jabatan", "email", "contact"];
 
-const getRow = async (id) => {
+exports.getRow = async (id) => {
   return await Users.findByPk(id, {
     attributes: {
-      exclude: ["createdAt", "updatedAt"],
+      exclude: ["password", "createdAt", "updatedAt"],
     },
     include: dataRelations,
   });
@@ -61,7 +61,7 @@ exports.findAll = async (req, res) => {
 // Get single data
 exports.findOne = async (req, res) => {
   try {
-    const data = await getRow(req.params.id);
+    const data = await this.getRow(req.params.id);
     res.json(data);
   } catch (err) {
     res.json({ message: err.message });
@@ -73,7 +73,7 @@ exports.create = async (req, res) => {
     const data = await Users.create(req.body);
     res.json({
       message: "User Created successfully",
-      data: await getRow(data?.id),
+      data: await this.getRow(data?.id),
     });
   } catch (err) {
     res.json({ message: err.message });
@@ -87,7 +87,7 @@ exports.update = async (req, res) => {
     });
     res.json({
       message: "User Updated successfully",
-      data: await getRow(req.params.id),
+      data: await this.getRow(req.params.id),
     });
   } catch (err) {
     res.json({ message: err.message });
