@@ -1,7 +1,6 @@
-import React, { Children } from 'react'
+import React from 'react'
 
-const Modal = ({ show, onSubmit = null, children }) => {
-
+const Modal = ({ show, action = null, children, onClose }) => {
     if (show) {
         return (
             <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -13,8 +12,8 @@ const Modal = ({ show, onSubmit = null, children }) => {
                                 {children}
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="default-button">Cancel</button>
-                                <button type="button" className="default-button">Cancel</button>
+                                <button type="button" className="default-button" onClick={onClose}>Cancel</button>
+                                {action}
                             </div>
                         </div>
                     </div>
@@ -22,7 +21,6 @@ const Modal = ({ show, onSubmit = null, children }) => {
             </div>
         )
     }
-
     return null;
 }
 

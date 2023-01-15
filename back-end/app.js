@@ -4,7 +4,6 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
-var multer = require("multer");
 var bodyParser = require("body-parser");
 
 var app = express();
@@ -33,7 +32,6 @@ var gudangMekanikRouter = require("./routes/gudangMekanik");
 var perbaikanRouter = require("./routes/perbaikan");
 var authRouter = require("./routes/auth");
 
-
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/roles", rolesRouter);
@@ -45,25 +43,6 @@ app.use("/transaksiSparepart", transaksiSparepartRouter);
 app.use("/gudangMekanik", gudangMekanikRouter);
 app.use("/perbaikan", perbaikanRouter);
 app.use("/auth", authRouter);
-
-// determining upload location
-const storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, "./public/images");
-  },
-  filename: async function (req, file, callback) {
-    callback(null, file.originalname + "-" + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage });
-
-app.post("/upload", upload.single("photo"), async (req, res) => {
-  // membuat url gambar dan save ke db
-  let finalImageURL =
-    "https://transmetalroof.com:5000/images/" + req.file?.filename;
-  res.json({ status: "uploaded successfully", image: finalImageURL });
-});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -65,12 +65,12 @@ const getSearchConditions = (req, searchFields) => {
 
 const generateReportNumber = (id, leading = "LP") => {
   return `${leading}${moment().format("YYYYMMDD")}-${id}`;
-}
+};
 
 module.exports = {
   getImage,
   getRequestData,
   getSearchConditions,
   paginatedData,
-  generateReportNumber
+  generateReportNumber,
 };

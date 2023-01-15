@@ -288,6 +288,18 @@
   @apply focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm;
 }
 
+/* File uploader */
+.drop-file-content {
+  @apply flex justify-center w-full h-32 px-4 transition bg-white border-2;
+  @apply border-gray-300 border-dashed rounded-md appearance-none cursor-pointer;
+  @apply hover:border-gray-400 focus:outline-none;
+}
+
+.dragged-content {
+  @apply border-blue-600 !important;
+}
+/* End fileuploader */
+
 /* Modal Style */
 .modal-backdrop {
   @apply fixed inset-0 bg-gray-700 bg-opacity-75 transition-opacity;
@@ -310,7 +322,7 @@
 }
 
 .modal-footer {
-  @apply bg-gray-50 px-4 py-3 sm:flex sm:flex-row sm:px-6;
+  @apply bg-gray-50 px-4 py-3 justify-end gap-x-2 sm:flex sm:flex-row sm:px-6;
 }
 /* End Modal Style */
 

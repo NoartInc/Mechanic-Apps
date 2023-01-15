@@ -4,11 +4,13 @@ import Layout from "../../components/layouts/Layout";
 import DataTable from "../../components/widgets/DataTable";
 import { useData } from "../../utils/hooks/useData";
 import DropdownOption from "../../components/widgets/DropdownOption";
-import { patch } from "../../utils/api";
+import { baseUrl, patch } from "../../utils/api";
 import { Toast } from "../../utils/swal";
 import { useAccess } from "../../utils/hooks/useAccess";
 import { IconPhoto, IconTrash, IconUpload } from "@tabler/icons";
-import Modal from "../../components/widgets/Modal";
+import ModalUpload from "../../components/widgets/ModalUpload";
+import Swal from "sweetalert2";
+import ImagePreview from "../../components/widgets/ImagePreview";
 
 const title = "Perbaikan";
 const pageUrl = "/perbaikan";
@@ -36,6 +38,9 @@ export const statusList = [
 const Perbaikan = () => {
   const data = useData(apiUrl);
   const { canAccess } = useAccess("/perbaikan");
+  const uploadRef = React.useRef(null);
+  const previewRef = React.useRef(null);
+  const [selectedItem, setSelectedItem] = React.useState(null);
   const columns = [
     {
       name: "noLaporan",
@@ -106,29 +111,67 @@ const Perbaikan = () => {
       style: {
         width: 80
       },
-      render: ({ value }) => {
-        if (!value) {
+      render: ({ value, item }) => {
+        if (value) {
           return (
-            <button type="button" className="button button-dark button-xsmall">
-              <IconUpload size={16} />
-              <span>Upload</span>
-            </button>
+            <ViewFile
+              withRemove={canAccess("update")}
+              onRemove={() => removeFile(item)}
+              onPreview={() => previewImage(item)}
+            />
+          )
+        } else {
+          return (
+            <UploadButton
+              onClick={() => uploadFile(item)}
+              canUpload={canAccess("update")}
+            />
           )
         }
-        return (
-          <div className="flex items-center">
-            <button type="button" className="button button-primary button-xsmall">
-              <IconPhoto size={16} />
-              <span>Lihat</span>
-            </button>
-            <button type="button" className="button button-danger button-xsmall">
-              <IconTrash size={20} />
-            </button>
-          </div>
-        )
       }
     }
   ];
+
+  const removeFile = (item) => {
+    Swal.fire({
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Ya, Hapus!",
+      cancelButtonText: "Tidak Jadi",
+      title: `Konfirmasi`,
+      text: `Hapus file ${item?.uploadPhotos} ?`
+    }).then(result => {
+      if (result.isConfirmed) {
+        patch(`${apiUrl}/remove/photo/${item?.id}`)
+          .then(res => {
+            if (res?.status) {
+              Toast.fire({
+                icon: "info",
+                text: `File ${item?.uploadPhotos} dihapus!`,
+                timer: 1000
+              }).then(() => {
+                data.getList();
+              });
+            }
+          });
+      }
+    })
+  }
+
+  const uploadFile = (item) => {
+    setSelectedItem(item);
+    uploadRef.current.openUpload();
+  }
+
+  const previewImage = (item) => {
+    setSelectedItem(item);
+    previewRef.current.openModal();
+  }
+
+  const onUploadSuccess = () => {
+    setSelectedItem(null);
+    data.getList();
+  }
 
   const getStatusColor = (status) => {
     return statusList.find(item => item?.status === status)?.className;
@@ -161,9 +204,58 @@ const Perbaikan = () => {
         columns={columns}
         pageUrl={pageUrl}
       />
-      {/* <Modal /> */}
+      <ModalUpload
+        ref={uploadRef}
+        method="patch"
+        uploadUrl={`${apiUrl}/upload/photo/${selectedItem?.id}`}
+        name="uploadPhotos"
+        onSuccess={onUploadSuccess}
+      />
+      <ImagePreview ref={previewRef} source={`${baseUrl}/images/${selectedItem?.uploadPhotos}`} />
     </Layout>
   );
 };
+
+const UploadButton = ({ onClick, canUpload }) => {
+  const onUploadClick = () => {
+    if (canUpload) {
+      onClick();
+    } else {
+      Swal.fire({
+        showConfirmButton: false,
+        timer: 3000,
+        text: "Anda tidak punya akses untuk upload",
+        title: "Info",
+        icon: "info"
+      });
+    }
+  }
+  return (
+    <button
+      type="button"
+      className="button button-dark button-xsmall"
+      onClick={onUploadClick}
+    >
+      <IconUpload size={16} />
+      <span>Upload</span>
+    </button>
+  )
+}
+
+const ViewFile = ({ withRemove = true, onRemove, onPreview }) => {
+  return (
+    <div className="flex items-center">
+      <button type="button" className="button button-primary button-xsmall" onClick={onPreview}>
+        <IconPhoto size={16} />
+        <span>Lihat</span>
+      </button>
+      {withRemove && (
+        <button type="button" className="button button-danger button-xsmall" onClick={onRemove}>
+          <IconTrash size={20} />
+        </button>
+      )}
+    </div>
+  )
+}
 
 export default Perbaikan;
