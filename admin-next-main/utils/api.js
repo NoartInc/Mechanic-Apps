@@ -60,6 +60,19 @@ export const destroy = async (url) => {
   }
 };
 
+export const fileUpload = async (url, data, config) => {
+  try {
+    const result = await api({
+      url: url,
+      data: data,
+      ...config,
+    });
+    return Promise.resolve(result.data);
+  } catch (error) {
+    return Promise.reject(error.response.data);
+  }
+};
+
 api.interceptors.request.use(
   (req) => {
     const token = store.getState().auth.token;

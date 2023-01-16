@@ -65,7 +65,7 @@ const Layout = ({ children, title = "App Title" }) => {
     return <ForbiddenAccess />
 }
 
-export const Authorizing = ({ text = "Authorizing" }) => (
+export const Authorizing = ({ text = "Loading" }) => (
     <div className="bg-gray-200 min-h-screen">
         <div className="flex justify-center items-center min-h-screen">
             <div className="bg-white rounded-md shadow-xl p-6">
@@ -82,10 +82,21 @@ const PrivatePage = (props) => {
     const { user, token } = useSelector(state => state.auth);
     const router = useRouter();
 
+    const authCheck = () => {
+        if (!user && !token) {
+            router.push("/auth/login");
+        }
+    }
+
+    React.useEffect(() => {
+        authCheck();
+        // eslint-disable-next-line
+    }, [router.pathname]);
+
     if (!user && !token) {
         router.push("/auth/login");
         return (
-            <Authorizing />
+            <Authorizing text="Checking Session" />
         )
     }
 
