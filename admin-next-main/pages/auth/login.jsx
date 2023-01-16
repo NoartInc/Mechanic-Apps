@@ -152,6 +152,12 @@ const Login = () => {
                                         value={rememberMe}
                                     />
                                     <label htmlFor="remember-me" className="cursor-pointer">Remember Me</label>
+                                    <a
+                                        href="https://wa.me/6282273017654"
+                                        className="ml-1 text-red-500 hover:text-red-700 focus:text-red-700 transition duration-200 ease-in-out"
+                                        >
+                                        Hubungi Administrator
+                                    </a>
                                 </div>
                                 <SubmitButton loading={loading} text="Login" />
                             </form>
