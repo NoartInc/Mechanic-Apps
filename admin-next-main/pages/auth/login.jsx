@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import { Toast } from '../../utils/swal';
 import axios from 'axios';
 import { baseUrl } from '../../utils/api';
+import { Authorizing } from '../../components/layouts/Layout';
 
 const validationSchema = Yup.object().shape({
     username: Yup.string().required("Wajib diisi!"),
@@ -40,7 +41,6 @@ const Login = () => {
                 .then(result => {
                     if (result?.data?.status) {
                         dispatch(login(result?.data?.data));
-                        router.push("/");
                     }
                 })
                 .catch(error => {
@@ -92,8 +92,12 @@ const Login = () => {
     }, [rememberMe]);
 
     if (user && token) {
-        router.push("/");
-        return null;
+        if (mounted.current) {
+            router.replace("/");
+        }
+        return (
+            <div></div>
+        )
     }
 
     return (

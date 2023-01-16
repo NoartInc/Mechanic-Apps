@@ -11,6 +11,8 @@ const {
   paginatedData,
   generateReportNumber,
 } = require("../utils/helper");
+const fs = require("fs");
+const path = require("path");
 const logging = require("../utils/logging");
 
 const dataRelations = [
@@ -171,7 +173,55 @@ exports.updateStatus = async (req, res) => {
     res.json({
       status: true,
     });
-  } catch (error) {
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.uploadPhoto = async (req, res) => {
+  try {
+    await Perbaikans.update(
+      {
+        uploadPhotos: req.file?.filename,
+      },
+      {
+        where: { id: req.params.id },
+      }
+    );
+    res.status(200).json({
+      status: true,
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.removePhoto = async (req, res) => {
+  try {
+    const oldPhoto = await Perbaikans.findByPk(req.params.id, { raw: true });
+    const filePath = path.resolve(
+      path.join(__dirname, "../public/images/" + oldPhoto?.uploadPhotos)
+    );
+    fs.unlink(`${filePath}`, (err) => {
+      if (err) throw err;
+      logging(
+        req.user?.fullName,
+        "DELETE",
+        `Delete File ${oldPhoto?.uploadPhotos}`
+      );
+    });
+    await Perbaikans.update(
+      {
+        uploadPhotos: null,
+      },
+      {
+        where: { id: req.params.id },
+      }
+    );
+    res.status(200).json({
+      status: true,
+    });
+  } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
