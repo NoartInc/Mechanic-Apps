@@ -73,7 +73,8 @@ const Add = () => {
           if (result?.data?.id) {
             Toast.fire({
               icon: "success",
-              text: result?.message
+              text: result?.message,
+              timer: 500
             }).then(() => {
               router.push("/perbaikan")
             })

@@ -127,7 +127,7 @@ const Edit = () => {
           <div className="flex flex-col md:flex-row">
             <div className="flex-shrink-0 w-full md:w-2/5">
               <TextInput form={form} label="No Referensi" name="noReferensi" />
-              <SelectInput form={form} label="Type" name="type" options={type} />
+              <SelectInput form={form} label="Type" name="type" options={type} disabled={true} />
               <SelectInput
                 form={form}
                 label="Status"

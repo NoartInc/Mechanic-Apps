@@ -5,12 +5,14 @@ import AddButton from './AddButton';
 import { idrNumber } from '../../utils/helper';
 import { useRouter } from 'next/router';
 import { useAccess } from '../../utils/hooks/useAccess';
+import { useSelector } from 'react-redux';
 
 const DataTable = (props) => {
   const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem, loading } = props;
   const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true } = props;
   const limits = [10, 15, 25, 50, 100];
   const router = useRouter();
+  const { user } = useSelector(state => state.auth)
   const { canAccess } = useAccess(router.pathname);
 
   const paginate = (option) => {
@@ -120,7 +122,7 @@ const DataTable = (props) => {
                               <IconTrash size={18} />
                             </button>
                           )}
-                          {canAccess("update") && (
+                          {canAccess("update") && user?.userRole?.roleName !== "LO" && (
                             <button
                               type="button"
                               className="button button-outline-primary"

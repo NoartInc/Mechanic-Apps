@@ -11,6 +11,7 @@ import { IconPhoto, IconTrash, IconUpload } from "@tabler/icons";
 import ModalUpload from "../../components/widgets/ModalUpload";
 import Swal from "sweetalert2";
 import ImagePreview from "../../components/widgets/ImagePreview";
+import { useSelector } from "react-redux";
 
 const title = "Perbaikan";
 const pageUrl = "/perbaikan";
@@ -23,15 +24,18 @@ export const statusList = [
   },
   {
     status: "revisi",
-    className: "bg-yellow-500 text-white"
+    className: "bg-yellow-500 text-white",
+    visibility: "Mekanik"
   },
   {
     status: "reject",
-    className: "bg-red-500 text-white"
+    className: "bg-red-500 text-white",
+    visibility: "LO"
   },
   {
     status: "accept",
-    className: "bg-blue-500 text-white"
+    className: "bg-gray-500 text-white",
+    visibility: "LO"
   }
 ]
 
@@ -40,6 +44,7 @@ const Perbaikan = () => {
   const { canAccess } = useAccess("/perbaikan");
   const uploadRef = React.useRef(null);
   const previewRef = React.useRef(null);
+  const { user } = useSelector(state => state.auth)
   const [selectedItem, setSelectedItem] = React.useState(null);
   const columns = [
     {
@@ -79,7 +84,7 @@ const Perbaikan = () => {
         width: 140
       },
       render: ({ value, item: data }) => {
-        if (!canAccess("update")) {
+        if (!canAccess("update") || (value === "accept" && user?.userRole?.roleName !== "Administrator")) {
           return (
             <span className={`p-1 px-2 rounded-md ${getStatusColor(value)} uppercase`}>
               {value}
@@ -89,7 +94,7 @@ const Perbaikan = () => {
         return (
           <DropdownOption text={value} className={`uppercase ${getStatusColor(value)}`}>
             <>
-              {statusList.map((item, index) => (
+              {getStatusList().map((item, index) => (
                 <button
                   key={index}
                   type="button"
@@ -131,6 +136,14 @@ const Perbaikan = () => {
       }
     }
   ];
+
+  const getStatusList = () => {
+    if (statusList?.some(item => item?.visibility === user?.userRole?.roleName)) {
+      return statusList?.filter(item => item?.visibility === user?.userRole?.roleName);
+    } else {
+      return statusList;
+    }
+  }
 
   const removeFile = (item) => {
     Swal.fire({

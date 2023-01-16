@@ -4,7 +4,8 @@ const SelectInput = ({
     label = "Input Label",
     name = "text_input",
     form,
-    options = []
+    options = [],
+    disabled = false
 }) => {
     const inputClass = `text-input ${form.errors[name] && form.touched[name] ? 'border border-red-600' : ''}`.trim(' ');
     const labelClass = `input-label`;
@@ -21,6 +22,7 @@ const SelectInput = ({
                     className={inputClass}
                     onChange={form.handleChange}
                     value={form.values[name]}
+                    disabled={disabled}
                 >
                     <option value="">- Select Option -</option>
                     {options?.length && options?.map((option, index) => (
