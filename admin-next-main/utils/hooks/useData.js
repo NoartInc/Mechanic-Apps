@@ -33,10 +33,15 @@ export const useData = (url = "/") => {
     setLimit(limitNum);
   };
 
-  const addFilter = (filter) => {
+  const applyFilter = () => {
+    setPage(1);
+    getList();
+  };
+
+  const setFilter = (filter) => {
     setFilters((prevState) => ({
       ...prevState,
-      filter,
+      ...filter,
     }));
   };
 
@@ -101,7 +106,8 @@ export const useData = (url = "/") => {
 
   useEffect(() => {
     getList();
-  }, [page, limit, search, orderBy, orderDir, filters, page]);
+    // eslint-disable-next-line
+  }, [page, limit, search, orderBy, orderDir, page]);
 
   return {
     list,
@@ -112,7 +118,7 @@ export const useData = (url = "/") => {
     orderDir,
     search,
     lastPage,
-    addFilter,
+    setFilter,
     onLimitChange,
     onPageChange,
     onSearchChange,
@@ -120,5 +126,7 @@ export const useData = (url = "/") => {
     deleteItem,
     getList,
     loading,
+    filters,
+    applyFilter,
   };
 };

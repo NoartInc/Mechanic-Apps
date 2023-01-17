@@ -14,7 +14,6 @@ const getRow = async (id) => {
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
-    // include: dataRelations,
   });
 };
 

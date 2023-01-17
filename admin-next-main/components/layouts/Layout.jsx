@@ -9,7 +9,7 @@ import { IconCircleDashed } from '@tabler/icons'
 import { useAccess } from '../../utils/hooks/useAccess'
 import ForbiddenAccess from '../widgets/ForbiddenAccess';
 
-const Layout = ({ children, title = "App Title" }) => {
+const Layout = ({ children, title = "App Title", standalone = false }) => {
     const { pathname } = useRouter();
     const { canAccess } = useAccess(pathname);
     const [breadCrumb, setBreadcrumb] = React.useState([
@@ -39,27 +39,36 @@ const Layout = ({ children, title = "App Title" }) => {
     }, [pathname]);
 
     if (canAccess("view")) {
-        return (
-            <div id="wrapper">
-                <Head>
-                    <title>{title}</title>
-                </Head>
-                <Sidebar sidebarToggle={sidebarToggle} />
-                <div id="content-wrapper" className="bg-gray-200 min-h-screen">
-                    <Topnav sidebarToggle={sidebarToggle} />
-                    <main className="p-4 mb-3">
-                        <div className="flex justify-between items-center mb-4">
-                            <div className="flex-shrink-0">
-                                <Breadcrumb breadcrumb={breadCrumb} />
-                            </div>
-                        </div>
-                        <div>
-                            {children}
-                        </div>
-                    </main>
+        if (standalone) {
+            return (
+                <div>
+                    {children}
                 </div>
-            </div>
-        )
+            )
+        } else {
+            return (
+                <div id="wrapper">
+                    <Head>
+                        <title>{title}</title>
+                    </Head>
+                    <Sidebar sidebarToggle={sidebarToggle} />
+                    <div id="content-wrapper" className="bg-gray-200 min-h-screen">
+                        <Topnav sidebarToggle={sidebarToggle} />
+                        <main className="p-4 mb-3">
+                            <div className="flex justify-between items-center mb-4">
+                                <div className="flex-shrink-0">
+                                    <Breadcrumb breadcrumb={breadCrumb} />
+                                </div>
+                            </div>
+                            <div>
+                                {children}
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            )
+
+        }
     }
 
     return <ForbiddenAccess />

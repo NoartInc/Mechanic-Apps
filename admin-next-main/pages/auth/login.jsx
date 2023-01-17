@@ -143,22 +143,25 @@ const Login = () => {
                                     errors={form.errors}
                                     touched={form.touched}
                                 />
-                                <div className="flex items-center gap-x-2 mb-5">
-                                    <CheckboxInput
-                                        noLabel
-                                        onChange={(event) => setRememberMe(event.target.checked)}
-                                        id="remember-me"
-                                        name="remember_me"
-                                        value={rememberMe}
-                                    />
-                                    <label htmlFor="remember-me" className="cursor-pointer">Remember Me</label>
+                                <div className="flex justify-between items-center mb-5">
+                                    <div className="flex items-center gap-x-1.5">
+                                        <CheckboxInput
+                                            noLabel
+                                            onChange={(event) => setRememberMe(event.target.checked)}
+                                            id="remember-me"
+                                            name="remember_me"
+                                            value={rememberMe}
+                                        />
+                                        <label htmlFor="remember-me" className="cursor-pointer text-sm">Remember Me</label>
+                                    </div>
                                     <a
                                         href="https://wa.me/6282273017654"
-                                        className="ml-1 text-red-500 hover:text-red-700 focus:text-red-700 transition duration-200 ease-in-out"
-                                        >
+                                        className="ml-1 text-red-500 hover:text-red-700 focus:text-red-700 transition duration-200 ease-in-out text-sm"
+                                    >
                                         Hubungi Administrator
                                     </a>
                                 </div>
+
                                 <SubmitButton loading={loading} text="Login" />
                             </form>
                         </div>

@@ -9,6 +9,7 @@ import { post } from '../../../../utils/api';
 import { apiUrl } from '..';
 import { Toast } from '../../../../utils/swal';
 import { useRouter } from 'next/router';
+import DurationInput from '../../../../components/widgets/DurationInput';
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -26,7 +27,8 @@ const Add = () => {
         initialValues: {
             kerusakan: "",
             poin: 0,
-            durasi: ""
+            durasi: "",
+            durasi_in_seconds: 0
         },
         onSubmit: (values) => {
             setLoading(true);
@@ -55,6 +57,12 @@ const Add = () => {
                 })
         }
     });
+
+    const onDurationChange = (text, seconds) => {
+        form.setFieldValue("durasi", text);
+        form.setFieldValue("durasi_in_seconds", seconds);
+    }
+
     return (
         <Layout title={`Tambah ${context}`}>
             <div className="card-page">
@@ -62,7 +70,15 @@ const Add = () => {
                     <div className="w-full md:w-1/2">
                         <TextInput form={form} label="Kerusakan" name="kerusakan" />
                         <TextInput form={form} label="Poin" name="poin" type="number" />
-                        <TextInput form={form} label="Durasi" name="durasi" />
+                        {/* <TextInput form={form} label="Durasi" name="durasi" /> */}
+                        <DurationInput
+                            label="Durasi"
+                            name="durasi"
+                            value={form.values.durasi}
+                            onChange={onDurationChange}
+                            errors={form.errors}
+                            touched={form.touched}
+                        />
                     </div>
                     <div className="card-page-footer">
                         <BackButton />

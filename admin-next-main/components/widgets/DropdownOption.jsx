@@ -4,10 +4,10 @@ const DropdownOption = ({ text, className, children }) => {
     const dropdownToggle = (event) => {
         if (event.currentTarget.nextElementSibling.classList.contains("show")) {
             event.currentTarget.nextElementSibling.classList.remove("show");
-            document.getElementsByClassName("data-table-body")[0].classList.add("overflow-x-auto", "overflow-y-auto");
+            document.getElementsByClassName("data-table-body")[0].classList.add("overflow-y-auto", "data-table-content");
         } else {
             event.currentTarget.nextElementSibling.classList.add("show");
-            document.getElementsByClassName("data-table-body")[0].classList.remove("overflow-x-auto", "overflow-y-auto");
+            document.getElementsByClassName("data-table-body")[0].classList.remove("overflow-y-auto", "data-table-content");
         }
     }
     React.useEffect(() => {

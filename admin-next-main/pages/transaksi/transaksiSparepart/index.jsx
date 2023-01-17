@@ -3,6 +3,8 @@ import React from "react";
 import Layout from "../../../components/layouts/Layout";
 import DataTable from "../../../components/widgets/DataTable";
 import { useData } from "../../../utils/hooks/useData";
+import DataFilter from "../../../components/widgets/DataFilter";
+import DateRangeFilter from "../../../components/widgets/DateRangeFilter";
 
 const title = "Transaksi Sparepart";
 const pageUrl = "/transaksi/transaksiSparepart";
@@ -57,6 +59,11 @@ const TransaksiSparepart = () => {
         title={title}
         columns={columns}
         pageUrl={pageUrl}
+        filterData={(
+          <DataFilter onApply={() => data.applyFilter()}>
+            <DateRangeFilter onChange={(filter) => data.setFilter(filter)} value={data.filters?.dateRange} />
+          </DataFilter>
+        )}
       />
     </Layout>
   );

@@ -14,6 +14,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const logging = require("../utils/logging");
+const { Op } = require("sequelize");
 
 const dataRelations = [
   {
@@ -85,6 +86,27 @@ exports.findAll = async (req, res) => {
       orderBy: "id",
       orderDir: "ASC",
     });
+
+    // Date Range Filter
+    if (request?.filters?.dateRange) {
+      const { startDate, endDate } = request?.filters?.dateRange;
+      conditions = {
+        ...conditions,
+        createdAt: {
+          [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
+        },
+      };
+    }
+
+    // Mesin Filter
+    if (request?.filters?.mesin) {
+      const { mesin } = request?.filters?.mesin;
+      conditions = {
+        ...conditions,
+        mesin: mesin,
+      };
+    }
+
     const data = await Perbaikans.findAndCountAll({
       distinct: true,
       where: conditions,
@@ -112,10 +134,10 @@ exports.findOne = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const user = req.user;
-    const getLast = await Perbaikans.findAll({
-      limit: 1,
+    const getLast = await Perbaikans.findOne({
       order: [["id", "desc"]],
-    })[0];
+      raw: true,
+    });
     const lastId = getLast?.id ? getLast?.id : 1;
     const noLaporan = generateReportNumber(lastId);
     const data = await Perbaikans.create(

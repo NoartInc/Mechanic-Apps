@@ -9,6 +9,7 @@ const {
   getSearchConditions,
   paginatedData,
 } = require("../utils/helper");
+const { Op } = require("sequelize");
 
 const dataRelations = [
   {
@@ -54,6 +55,18 @@ exports.findAll = async (req, res) => {
       orderBy: "id",
       orderDir: "ASC",
     });
+
+    // Date Range Filter
+    if (request?.filters?.dateRange) {
+      const { startDate, endDate } = request?.filters?.dateRange;
+      conditions = {
+        ...conditions,
+        createdAt: {
+          [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
+        },
+      };
+    }
+
     const data = await TransaksiSpareparts.findAndCountAll({
       attributes: {
         exclude: ["updatedAt", "date"],

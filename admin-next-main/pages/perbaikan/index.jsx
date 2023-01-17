@@ -12,6 +12,8 @@ import ModalUpload from "../../components/widgets/ModalUpload";
 import Swal from "sweetalert2";
 import ImagePreview from "../../components/widgets/ImagePreview";
 import { useSelector } from "react-redux";
+import DataFilter from "../../components/widgets/DataFilter";
+import DateRangeFilter from "../../components/widgets/DateRangeFilter";
 
 const title = "Perbaikan";
 const pageUrl = "/perbaikan";
@@ -39,7 +41,7 @@ export const statusList = [
   }
 ]
 
-const Perbaikan = () => {
+const Perbaikan = ({ standalone = false, customHeader = null }) => {
   const data = useData(apiUrl);
   const { canAccess } = useAccess("/perbaikan");
   const uploadRef = React.useRef(null);
@@ -210,12 +212,19 @@ const Perbaikan = () => {
   }
 
   return (
-    <Layout title={title}>
+    <Layout title={title} standalone={standalone}>
       <DataTable
         {...data}
+        customHeader={customHeader}
+        standalone={standalone}
         title={title}
         columns={columns}
         pageUrl={pageUrl}
+        filterData={(
+          <DataFilter onApply={() => data.applyFilter()}>
+            <DateRangeFilter onChange={(filter) => data.setFilter(filter)} value={data.filters?.dateRange} />
+          </DataFilter>
+        )}
       />
       <ModalUpload
         ref={uploadRef}

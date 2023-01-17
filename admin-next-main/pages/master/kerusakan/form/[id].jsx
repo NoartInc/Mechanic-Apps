@@ -9,6 +9,7 @@ import TextInput from '../../../../components/widgets/TextInput';
 import { useFormik } from 'formik';
 import { get, put } from '../../../../utils/api';
 import { Toast } from '../../../../utils/swal';
+import DurationInput from '../../../../components/widgets/DurationInput';
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -27,7 +28,8 @@ const Edit = () => {
         initialValues: {
             kerusakan: "",
             poin: 0,
-            durasi: ""
+            durasi: "",
+            durasi_in_seconds: 0
         },
         onSubmit: (values) => {
             setLoading(true);
@@ -72,6 +74,11 @@ const Edit = () => {
             });
     }
 
+    const onDurationChange = (text, seconds) => {
+        form.setFieldValue("durasi", text);
+        form.setFieldValue("durasi_in_seconds", seconds);
+    }
+
     React.useEffect(() => {
         getRow();
         // eslint-disable-next-line
@@ -84,7 +91,15 @@ const Edit = () => {
                     <div className="w-full md:w-1/2">
                         <TextInput form={form} label="Kerusakan" name="kerusakan" />
                         <TextInput form={form} label="Poin" name="poin" type="number" />
-                        <TextInput form={form} label="Durasi" name="durasi" />
+                        {/* <TextInput form={form} label="Durasi" name="durasi" /> */}
+                        <DurationInput
+                            label="Durasi"
+                            name="durasi"
+                            value={form.values.durasi}
+                            onChange={onDurationChange}
+                            errors={form.errors}
+                            touched={form.touched}
+                        />
                     </div>
                     <div className="card-page-footer">
                         <BackButton />
