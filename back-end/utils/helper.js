@@ -23,7 +23,7 @@ const getRequestData = (
     orderby = orderBy,
     orderdir = orderDir,
     search = "",
-    filters = {},
+    filters = req?.filters ? req?.filters : null,
   } = req.query;
   const offset = (page - 1) * limit;
   return {
@@ -64,7 +64,7 @@ const getSearchConditions = (req, searchFields) => {
 };
 
 const generateReportNumber = (id, leading = "LP") => {
-  return `${leading}${moment().format("YYYYMMDD")}-${id}`;
+  return `${leading}${moment().format("YYYYMMDD")}-${id + 1}`;
 };
 
 module.exports = {

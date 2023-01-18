@@ -21,7 +21,8 @@ const KerusakanOption = ({
                 setData(result?.rows?.map(item => ({
                     value: item?.id,
                     label: item?.kerusakan,
-                    durasi: item?.durasi
+                    durasi: item?.durasi,
+                    durasi_in_seconds: item?.durasi_in_seconds
                 })));
             })
             .catch(error => {

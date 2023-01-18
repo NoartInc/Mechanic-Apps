@@ -10,9 +10,12 @@ const InputForm = ({
     disabled = false,
     className = "",
     errors = null,
-    touched = null
+    touched = null,
+    validation = true,
+    min,
+    max
 }) => {
-    const inputClass = `text-input ${errors[name] && touched[name] ? 'border border-red-600' : ''}`.trim(' ');
+    const inputClass = `text-input ${validation && errors[name] && touched[name] ? 'border border-red-600' : ''}`.trim(' ');
     const labelClass = `input-label`;
 
     return (
@@ -31,8 +34,10 @@ const InputForm = ({
                     onChange={(event) => onChange(event)}
                     value={value}
                     disabled={disabled}
+                    min={min}
+                    max={max}
                 />
-                {errors[name] && touched[name] ? (
+                {validation && errors[name] && touched[name] ? (
                     <small className="text-red-600" style={{ fontSize: 12 }}>
                         {errors[name]}
                     </small>

@@ -8,8 +8,8 @@ import { useAccess } from '../../utils/hooks/useAccess';
 import { useSelector } from 'react-redux';
 
 const DataTable = (props) => {
-  const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem, loading } = props;
-  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true } = props;
+  const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem, loading, filterData = null } = props;
+  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true, dataHeader = null } = props;
   const limits = [10, 15, 25, 50, 100];
   const router = useRouter();
   const { user } = useSelector(state => state.auth)
@@ -51,26 +51,32 @@ const DataTable = (props) => {
       {!loading ? (
         <>
           {/* Data Table Header */}
-          <div className="flex flex-row justify-between items-center mb-3">
-            <div className="flex-shrink-0">
-              <h5 className="text-xl font-semibold">{title}</h5>
-            </div>
-            <div className="flex-grow"></div>
-            <div className="flex-shrink-0">
-              <div className="flex flex-row items-center gap-x-2">
-                <SearchBox onChange={onSearchChange} />
-                {action && canAccess("create") && (
-                  <AddButton onClick={() => router.push(`${pageUrl}/form`)} />
-                )}
+          {dataHeader ? (
+            <div>{dataHeader}</div>
+          ) : (
+            <div className="flex flex-row justify-between items-center mb-3">
+              <div className="flex-shrink-0">
+                <h5 className="text-xl font-semibold">{title}</h5>
+              </div>
+              <div className="flex-grow"></div>
+              <div className="flex-shrink-0">
+                <div className="flex flex-row items-center gap-x-2">
+                  <SearchBox onChange={onSearchChange} />
+                  {filterData}
+                  {action && canAccess("create") && (
+                    <AddButton onClick={() => router.push(`${pageUrl}/form`)} />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
           {/* Data Body Table */}
-          <div className="data-table-body overflow-x-auto overflow-y-auto">
+          <div className="data-table-body data-table-content overflow-x-auto overflow-y-auto">
             <table className="table-auto w-full">
               {/* Table Head Data */}
               <thead>
-                <tr className="sticky top-0 z-10">
+                <tr className="sticky top-0" style={{ zIndex: 2 }}>
                   {columns?.map((col, colIndex) => (
                     <th
                       key={colIndex}

@@ -8,8 +8,7 @@ export const randId = () => {
   return Math.random().toString(32).substring(2, 9);
 };
 
-export const getTimeDiff = (start, end) => {
-  let timeSeconds = moment(end).diff(moment(start), "seconds");
+const countDiff = (timeSeconds) => {
   let duration = moment.duration(timeSeconds, "seconds");
   let weeks = duration.get("weeks");
   let days = duration.get("days");
@@ -34,4 +33,13 @@ export const getTimeDiff = (start, end) => {
   }
 
   return result ? result : "-";
+};
+
+export const getTimeDiff = (start, end) => {
+  let timeSeconds = moment(end).diff(moment(start), "seconds");
+  return countDiff(timeSeconds);
+};
+
+export const getTimeDuration = (seconds) => {
+  return countDiff(seconds);
 };

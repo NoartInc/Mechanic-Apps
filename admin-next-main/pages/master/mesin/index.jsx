@@ -2,6 +2,7 @@ import React from "react";
 import Layout from "../../../components/layouts/Layout";
 import DataTable from "../../../components/widgets/DataTable";
 import { useData } from "../../../utils/hooks/useData";
+import Link from "next/link";
 
 export const title = "Mesin";
 const pageUrl = "/master/mesin";
@@ -12,7 +13,10 @@ const Mesin = () => {
   const columns = [
     {
       name: "mesin",
-      title: "Mesin"
+      title: "Mesin",
+      render: ({ item, value }) => (
+        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-blue-600 hover:text-blue-700">{value}</Link>
+      )
     },
     {
       name: "kategori",
@@ -32,7 +36,7 @@ const Mesin = () => {
       render: ({ value }) => (
         <span className={`p-1 px-2 text-sm rounded-lg ${value === "active" ? "bg-green-600" : "bg-gray-600"} text-white uppercase`}>
           {value}
-        </span> 
+        </span>
       )
     },
   ];

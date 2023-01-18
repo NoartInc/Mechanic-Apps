@@ -14,11 +14,12 @@ import MachineOption from '../../../components/widgets/MachineOption';
 import MechanicOption from '../../../components/widgets/MechanicOption';
 import TextareaInput from '../../../components/widgets/TextareaInput';
 import moment from 'moment';
-import { getTimeDiff, randId } from '../../../utils/helper';
+import { getTimeDiff, getTimeDuration, randId } from '../../../utils/helper';
 import GudangMekanikOption from '../../../components/widgets/GudangMekanikOption';
 import { IconPlus, IconTrash } from '@tabler/icons';
 import KerusakanOption from '../../../components/widgets/KerusakanOption';
 import ReadOnlyInput from '../../../components/widgets/ReadOnlyInput';
+import { durationTemplate } from '../../../components/widgets/DurationInput';
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -26,6 +27,12 @@ const validationSchema = Yup.object().shape({
   startDate: Yup.string().required("Wajib diisi!"),
   jenisPerbaikan: Yup.string().required("Mohon pilih jenis perbaikan").oneOf(["repairment", "maintenance"])
 });
+
+export const getKerusakanDuration = (listKerusakan) => {
+  return listKerusakan.reduce((acc, cur) => {
+    return acc += cur?.durasi_in_seconds;
+  }, 0);
+}
 
 export const jenisPerbaikan = [
   {
@@ -184,7 +191,7 @@ const Add = () => {
               <div className="flex-grow">{/* Separator Kolom Tengah */}</div>
               <div className="flex-shrink-0 w-full md:w-1/3">
                 <ReadOnlyInput label="Downtime" value={getTimeDiff(form.values.startDate, form.values.endDate)} />
-                <ReadOnlyInput label="Estimasi" value="-" />
+                <ReadOnlyInput label="Estimasi" value={getTimeDuration(getKerusakanDuration(form.values.perbaikanKerusakans))} />
               </div>
             </div>
             <DetailKerusakan form={form} />
@@ -341,6 +348,7 @@ export const DetailKerusakan = ({ form }) => {
         kerusakan: selectedKerusakan?.value,
         label: selectedKerusakan?.label,
         durasi: selectedKerusakan?.durasi,
+        durasi_in_seconds: selectedKerusakan?.durasi_in_seconds,
         poin: selectedKerusakan?.poin
       }]
       if (!selectedKerusakan) {
@@ -367,6 +375,11 @@ export const DetailKerusakan = ({ form }) => {
   const removeKerusakan = (id) => {
     const updatedList = form.values.perbaikanKerusakans.filter(item => item?.id !== id);
     form.setFieldValue("perbaikanKerusakans", updatedList);
+  }
+
+  const formatDurasi = (durasi) => {
+    let durationValue = durasi?.split(" ");
+    return `${durationValue[0]} ${durationTemplate.find(item => item?.value === durationValue[1])?.label}`;
   }
 
   return (
@@ -410,7 +423,7 @@ export const DetailKerusakan = ({ form }) => {
                 {form.values.perbaikanKerusakans?.map((detail, index) => (
                   <tr className="tr-table" key={detail?.id}>
                     <td className="td-table">{detail?.label}</td>
-                    <td className="td-table text-center">{detail?.durasi}</td>
+                    <td className="td-table text-center">{formatDurasi(detail?.durasi)}</td>
                     <td className="td-table">
                       <button
                         type="button"

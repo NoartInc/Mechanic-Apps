@@ -14,9 +14,9 @@ import MachineOption from '../../../components/widgets/MachineOption';
 import MechanicOption from '../../../components/widgets/MechanicOption';
 import TextareaInput from '../../../components/widgets/TextareaInput';
 import moment from 'moment';
-import { getTimeDiff } from '../../../utils/helper';
+import { getTimeDiff, getTimeDuration } from '../../../utils/helper';
 import ReadOnlyInput from '../../../components/widgets/ReadOnlyInput';
-import { DetailKerusakan, DetailSparepart, jenisPerbaikan } from '.';
+import { DetailKerusakan, DetailSparepart, getKerusakanDuration, jenisPerbaikan } from '.';
 
 // Setup validasi form
 const validationSchema = Yup.object().shape({
@@ -138,6 +138,7 @@ const Edit = () => {
                             kerusakan: item?.id,
                             label: item?.kerusakan,
                             durasi: item?.durasi,
+                            durasi_in_seconds: item?.durasi_in_seconds,
                             poin: item?.poin
                         }))
                     });
@@ -228,7 +229,7 @@ const Edit = () => {
                                     <div className="flex-grow">{/* Separator Kolom Tengah */}</div>
                                     <div className="flex-shrink-0 w-full md:w-1/3">
                                         <ReadOnlyInput label="Downtime" value={getTimeDiff(form.values.startDate, form.values.endDate)} />
-                                        <ReadOnlyInput label="Estimasi" value="-" />
+                                        <ReadOnlyInput label="Estimasi" value={getTimeDuration(getKerusakanDuration(form.values.perbaikanKerusakans))} />
                                     </div>
                                 </div>
                                 <DetailKerusakan form={form} />

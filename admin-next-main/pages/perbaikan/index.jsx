@@ -12,6 +12,8 @@ import ModalUpload from "../../components/widgets/ModalUpload";
 import Swal from "sweetalert2";
 import ImagePreview from "../../components/widgets/ImagePreview";
 import { useSelector } from "react-redux";
+import DataFilter from "../../components/widgets/DataFilter";
+import DateRangeFilter from "../../components/widgets/DateRangeFilter";
 
 const title = "Perbaikan";
 const pageUrl = "/perbaikan";
@@ -216,6 +218,11 @@ const Perbaikan = () => {
         title={title}
         columns={columns}
         pageUrl={pageUrl}
+        filterData={(
+          <DataFilter onApply={() => data.applyFilter()}>
+            <DateRangeFilter onChange={(filter) => data.setFilter(filter)} value={data.filters?.dateRange} />
+          </DataFilter>
+        )}
       />
       <ModalUpload
         ref={uploadRef}
