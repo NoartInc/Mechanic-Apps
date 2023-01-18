@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import InputForm from '../../components/widgets/InputForm';
 import CheckboxInput from '../../components/widgets/CheckboxInput';
 import SubmitButton from '../../components/widgets/SubmitButton';
-import loginImage from "../../data/images/login.svg";
+import loginImage from "../../data/images/maintenance-animate (1).svg";
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, rememberLogin } from '../../store/modules/auth';
