@@ -119,6 +119,7 @@ export const useData = (url = "/") => {
     search,
     lastPage,
     setFilter,
+    setList,
     onLimitChange,
     onPageChange,
     onSearchChange,

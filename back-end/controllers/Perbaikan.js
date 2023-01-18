@@ -100,10 +100,9 @@ exports.findAll = async (req, res) => {
 
     // Mesin Filter
     if (request?.filters?.mesin) {
-      const { mesin } = request?.filters?.mesin;
       conditions = {
         ...conditions,
-        mesin: mesin,
+        mesin: request?.filters?.mesin,
       };
     }
 

@@ -9,10 +9,12 @@ import OverviewWidget from "../../../../components/widgets/OverviewWidget";
 import LokasiIcon from "../../../../components/icons/LokasiIcon";
 import AlertIcon from "../../../../components/icons/AlertIcon";
 import MerkIcon from "../../../../components/icons/MerkIcon";
+import PerbaikanList from "../../../../components/widgets/overviews/PerbaikanList";
 
 const Mesin = () => {
   const { id } = useRouter()?.query;
   const [row, setRow] = React.useState(null);
+  const [renderList, setRenderList] = React.useState(false);
   const getRow = () => {
     get(`${apiUrl}/${id}`)
       .then((result) => {
@@ -25,7 +27,7 @@ const Mesin = () => {
           icon: "error",
           text: "Data tidak ditemukan!",
         });
-      });
+      })
   };
 
   React.useEffect(() => {
@@ -35,6 +37,7 @@ const Mesin = () => {
   return (
     <Layout title={title}>
       <div className="card-page mb-4">
+        <h4 className="text-lg">{row?.mesin}</h4>
         <div className="grid grid-cols-2 md:grid-cols-5">
           <OverviewWidget label="Perbaikan" value={1} icon={PerbaikanIcon} />
           <OverviewWidget label="Kategori" value={row?.kategori} icon={KategoriIcon} />
@@ -43,6 +46,11 @@ const Mesin = () => {
           <OverviewWidget label="Merk" value={row?.merk} icon={MerkIcon} />
         </div>
       </div>
+      {row?.id && (
+        <PerbaikanList 
+          filters={{ mesin: row?.id }}
+        />
+      )}
     </Layout>
   );
 };
