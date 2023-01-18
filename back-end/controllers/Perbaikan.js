@@ -15,6 +15,7 @@ const fs = require("fs");
 const path = require("path");
 const logging = require("../utils/logging");
 const { Op } = require("sequelize");
+const moment = require("moment");
 
 const dataRelations = [
   {
@@ -28,6 +29,7 @@ const dataRelations = [
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
+    required: true,
   },
   {
     association: "mekaniks",
@@ -67,7 +69,7 @@ const dataRelations = [
   },
 ];
 
-const searchable = ["noLaporan"];
+const searchable = ["noLaporan", "$machine.mesin$", "jenisPerbaikan", "status"];
 
 const getRow = async (id, include = true) => {
   return await Perbaikans.findByPk(id, {
@@ -81,6 +83,7 @@ const getRow = async (id, include = true) => {
 // Get all data
 exports.findAll = async (req, res) => {
   try {
+    let withLimit = true;
     let conditions = getSearchConditions(req, searchable);
     const request = getRequestData(req, {
       orderBy: "id",
@@ -96,6 +99,16 @@ exports.findAll = async (req, res) => {
           [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
         },
       };
+    } else {
+      conditions = {
+        ...conditions,
+        createdAt: {
+          [Op.between]: [
+            `${moment().subtract(1, "months").format("YYYY-MM-DD")} 00:00:00`,
+            `${moment().format("YYYY-MM-DD")} 23:59:59`,
+          ],
+        },
+      };
     }
 
     // Mesin Filter
@@ -106,14 +119,36 @@ exports.findAll = async (req, res) => {
       };
     }
 
-    const data = await Perbaikans.findAndCountAll({
+    // Mekanik Filter
+    if (request?.filters?.mekanik) {
+      withLimit = false;
+      conditions = {
+        ...conditions,
+        [Op.and]: [
+          {
+            "$mekaniks.id$": request?.filters?.mekanik,
+          },
+          {
+            "$perbaikanMekaniks.mekanik$": request?.filters?.mekanik,
+          },
+        ],
+      };
+    }
+
+    const findOptions = {
+      duplication: true,
       distinct: true,
       where: conditions,
       include: dataRelations,
       order: [[request.orderby, request.orderdir]],
-      limit: Number(request.limit),
       offset: Number(request.offset),
-    });
+    };
+
+    if (withLimit) {
+      findOptions.limit = Number(request.limit);
+    }
+
+    const data = await Perbaikans.findAndCountAll(findOptions);
     res.json(paginatedData(data, request.limit));
   } catch (err) {
     res.json({ message: err.message });

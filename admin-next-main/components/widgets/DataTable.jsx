@@ -9,8 +9,8 @@ import { useSelector } from 'react-redux';
 
 const DataTable = (props) => {
   const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem, loading, filterData = null } = props;
-  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true, dataHeader = null } = props;
-  const limits = [10, 15, 25, 50, 100];
+  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true, dataHeader = null, footer = true } = props;
+  const limits = [5, 10, 15, 25, 50, 100];
   const router = useRouter();
   const { user } = useSelector(state => state.auth)
   const { canAccess } = useAccess(router.pathname);
@@ -152,55 +152,61 @@ const DataTable = (props) => {
             </table>
           </div>
           {/* Data Footer Table */}
-          <div className="flex flex-row items-center justify-center gap-x-3">
-            <div className="flex-row gap-x-2 items-center hidden md:flex">
-              <span>Rows</span>
-              <select className="input" value={limit} onChange={(event) => onLimitChange(Number(event.target.value))}>
-                {limits.map((item, index) => (
-                  <option key={index} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+          {footer && (
+            <div className="flex flex-row items-center justify-center gap-x-3">
+              {list?.length ? (
+                <>
+                  <div className="flex-row gap-x-2 items-center hidden md:flex">
+                    <span>Rows</span>
+                    <select className="input" value={limit} onChange={(event) => onLimitChange(Number(event.target.value))}>
+                      {limits.map((item, index) => (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex-shrink hidden md:block">
+                    {getFirstOffset()} - {getLimitOffset()} dari {idrNumber(total)}
+                  </div>
+                </>
+              ) : null}
+              <div className="flex-shrink flex flex-row gap-x-1 items-center justify-end">
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => paginate("first")}
+                  disabled={page === 1}
+                >
+                  <IconChevronsLeft />
+                </button>
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => paginate("prev")}
+                  disabled={page === 1}
+                >
+                  <IconChevronLeft />
+                </button>
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => paginate("next")}
+                  disabled={Number(page) === Number(lastPage) || !lastPage}
+                >
+                  <IconChevronRight />
+                </button>
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => paginate("last")}
+                  disabled={Number(page) === Number(lastPage) || !lastPage}
+                >
+                  <IconChevronsRight />
+                </button>
+              </div>
             </div>
-            <div className="flex-shrink hidden md:block">
-              {getFirstOffset()} - {getLimitOffset()} dari {idrNumber(total)}
-            </div>
-            <div className="flex-shrink flex flex-row gap-x-1 items-center justify-end">
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => paginate("first")}
-                disabled={page === 1}
-              >
-                <IconChevronsLeft />
-              </button>
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => paginate("prev")}
-                disabled={page === 1}
-              >
-                <IconChevronLeft />
-              </button>
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => paginate("next")}
-                disabled={page === lastPage}
-              >
-                <IconChevronRight />
-              </button>
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => paginate("last")}
-                disabled={page === lastPage}
-              >
-                <IconChevronsRight />
-              </button>
-            </div>
-          </div>
+          )}
         </>
       ) : (
         <div className="flex justify-center items-center gap-x-2 my-2 rounded-md py-8 border border-gray-200">
