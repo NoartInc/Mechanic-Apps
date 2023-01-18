@@ -57,10 +57,10 @@ const Perbaikan = () => {
       }
     },
     {
-      name: "machine",
+      name: "mesin",
       title: "Mesin",
-      render: ({ value }) => (
-        <span>{value?.mesin ?? "-"}</span>
+      render: ({ item }) => (
+        <span>{item?.machine?.mesin ?? "-"}</span>
       )
     },
     {

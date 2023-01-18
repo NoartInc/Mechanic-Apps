@@ -3,7 +3,7 @@ import { destroy, get } from "../api";
 import { Toast } from "../swal";
 import Swal from "sweetalert2";
 
-export const useData = (url = "/") => {
+export const useData = (url = "/", initFilter = {}) => {
   const [list, setList] = useState([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
@@ -12,7 +12,7 @@ export const useData = (url = "/") => {
   const [orderBy, setOrderBy] = useState("id");
   const [orderDir, setOrderDir] = useState("desc");
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState(initFilter);
   const [loading, setLoading] = useState(true);
 
   const onPageChange = (pageNum) => {
