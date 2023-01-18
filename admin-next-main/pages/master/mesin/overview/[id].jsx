@@ -9,7 +9,6 @@ import OverviewWidget from "../../../../components/widgets/OverviewWidget";
 import LokasiIcon from "../../../../components/icons/LokasiIcon";
 import AlertIcon from "../../../../components/icons/AlertIcon";
 import MerkIcon from "../../../../components/icons/MerkIcon";
-import Perbaikan from "../../../perbaikan";
 
 const Mesin = () => {
   const { id } = useRouter()?.query;
@@ -29,26 +28,6 @@ const Mesin = () => {
       });
   };
 
-  const HeaderList = (
-    <div className="flex flex-col gap-y-2">
-      <div>
-        <h4>Daftar Perbaikan</h4>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="flex-shrink-0">
-          <button className="button button-outline-primary" type="button">
-            Pilih Tanggal
-          </button>
-        </div>
-        <div className="flex-shrink-0">
-          <button className="button button-primary">
-            Export Data
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-
   React.useEffect(() => {
     getRow();
     // eslint-disable-next-line
@@ -64,7 +43,6 @@ const Mesin = () => {
           <OverviewWidget label="Merk" value={row?.merk} icon={MerkIcon} />
         </div>
       </div>
-      <Perbaikan standalone customHeader={HeaderList} />
     </Layout>
   );
 };

@@ -9,8 +9,7 @@ import { useSelector } from 'react-redux';
 
 const DataTable = (props) => {
   const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem, loading, filterData = null } = props;
-  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true, standalone = false } = props;
-  const { customHeader } = props;
+  const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true, dataHeader = null } = props;
   const limits = [10, 15, 25, 50, 100];
   const router = useRouter();
   const { user } = useSelector(state => state.auth)
@@ -52,7 +51,9 @@ const DataTable = (props) => {
       {!loading ? (
         <>
           {/* Data Table Header */}
-          {!standalone && (
+          {dataHeader ? (
+            <div>{dataHeader}</div>
+          ) : (
             <div className="flex flex-row justify-between items-center mb-3">
               <div className="flex-shrink-0">
                 <h5 className="text-xl font-semibold">{title}</h5>
@@ -67,12 +68,6 @@ const DataTable = (props) => {
                   )}
                 </div>
               </div>
-            </div>
-          )}
-
-          {customHeader && (
-            <div className="mb-3">
-              {customHeader}
             </div>
           )}
 

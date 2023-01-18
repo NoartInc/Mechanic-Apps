@@ -41,7 +41,7 @@ export const statusList = [
   }
 ]
 
-const Perbaikan = ({ standalone = false, customHeader = null }) => {
+const Perbaikan = () => {
   const data = useData(apiUrl);
   const { canAccess } = useAccess("/perbaikan");
   const uploadRef = React.useRef(null);
@@ -212,11 +212,9 @@ const Perbaikan = ({ standalone = false, customHeader = null }) => {
   }
 
   return (
-    <Layout title={title} standalone={standalone}>
+    <Layout title={title}>
       <DataTable
         {...data}
-        customHeader={customHeader}
-        standalone={standalone}
         title={title}
         columns={columns}
         pageUrl={pageUrl}
