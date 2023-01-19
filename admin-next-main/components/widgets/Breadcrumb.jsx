@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 const Breadcrumb = ({ breadcrumb }) => {
-    const breadCrumbData = uniqBy(breadcrumb, "path");
+    const breadCrumbData = uniqBy(breadcrumb?.filter(item => !item?.path?.match(/\[/gi)), "path");
     return (
         <ul className="breadcrumb">
             {breadCrumbData?.map((item, index) => (

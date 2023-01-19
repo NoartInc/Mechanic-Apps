@@ -4,18 +4,27 @@ import Layout from "../../../components/layouts/Layout";
 import DataTable from "../../../components/widgets/DataTable";
 import { useData } from "../../../utils/hooks/useData";
 import DataFilter from "../../../components/widgets/DataFilter";
+import DataExport from "../../../components/widgets/DataExport";
 import DateRangeFilter from "../../../components/widgets/DateRangeFilter";
+import Link from "next/link";
+import useExport from "../../../utils/hooks/useExport";
 
 const title = "Transaksi Sparepart";
-const pageUrl = "/transaksi/transaksiSparepart";
+export const pageUrl = "/transaksi/transaksiSparepart";
 export const apiUrl = "/transaksiSparepart";
 
 const TransaksiSparepart = () => {
   const data = useData(apiUrl);
+  const exportData = useExport(`/export${apiUrl}`);
   const columns = [
     {
       name: "noReferensi",
-      title: "No Ref"
+      title: "No Ref",
+      render: ({ item, value }) => (
+        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-blue-600 hover:text-blue-700">
+          {value}
+        </Link>
+      )
     },
     {
       name: "supplier",
@@ -63,6 +72,11 @@ const TransaksiSparepart = () => {
           <DataFilter onApply={() => data.applyFilter()}>
             <DateRangeFilter onChange={(filter) => data.setFilter(filter)} value={data.filters?.dateRange} />
           </DataFilter>
+        )}
+        actionButton={(
+          <DataExport onApply={() => exportData.downloadData()}>
+            <DateRangeFilter onChange={(filter) => exportData.onFilterChange(filter)} value={exportData.filters?.dateRange} />
+          </DataExport>
         )}
       />
     </Layout>

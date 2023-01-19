@@ -1,5 +1,6 @@
 const moment = require("moment/moment");
 const { Op } = require("sequelize");
+const excelJS = require("exceljs");
 
 const getImage = (file) => {
   if (file) {
@@ -67,10 +68,28 @@ const generateReportNumber = (id, leading = "LP") => {
   return `${leading}${moment().format("YYYYMMDD")}-${id + 1}`;
 };
 
+const exportData = async (title, columns, rows) => {
+  const fileName = `${title}-${moment().format("YYYYMMDDHHmmss")}`;
+  const workbook = new excelJS.Workbook(); // Create a new workbook
+  const worksheet = workbook.addWorksheet(fileName); // New Worksheet
+  const path = "./public/files";
+
+  worksheet.columns = columns;
+  worksheet.addRows(rows);
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true };
+  });
+
+  const exportFileName = `${path}/${fileName}.xlsx`;
+  await workbook.xlsx.writeFile(exportFileName);
+  return exportFileName;
+};
+
 module.exports = {
   getImage,
   getRequestData,
   getSearchConditions,
   paginatedData,
   generateReportNumber,
+  exportData,
 };

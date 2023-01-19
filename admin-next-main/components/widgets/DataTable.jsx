@@ -8,7 +8,7 @@ import { useAccess } from '../../utils/hooks/useAccess';
 import { useSelector } from 'react-redux';
 
 const DataTable = (props) => {
-  const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem, loading, filterData = null } = props;
+  const { title, list, columns, limit, page, lastPage, total, onSortChange, deleteItem, loading, filterData = null, actionButton = null } = props;
   const { orderBy, orderDir, onLimitChange, onSearchChange, onPageChange, pageUrl, action = true, dataHeader = null, footer = true } = props;
   const limits = [5, 10, 15, 25, 50, 100];
   const router = useRouter();
@@ -54,18 +54,21 @@ const DataTable = (props) => {
           {dataHeader ? (
             <div>{dataHeader}</div>
           ) : (
-            <div className="flex flex-row justify-between items-center mb-3">
-              <div className="flex-shrink-0">
+            <div className="flex flex-row justify-center md:justify-between items-center mb-3">
+              <div className="flex-shrink-0 hidden md:block">
                 <h5 className="text-xl font-semibold">{title}</h5>
               </div>
-              <div className="flex-grow"></div>
-              <div className="flex-shrink-0">
-                <div className="flex flex-row items-center gap-x-2">
+              <div className="hidden md:block flex-grow"></div>
+              <div className="flex-grow md:flex-shrink-0">
+                <div className="flex flex-row justify-center md:justify-end items-center gap-x-2">
                   <SearchBox onChange={onSearchChange} />
+                  {actionButton}
                   {filterData}
-                  {action && canAccess("create") && (
-                    <AddButton onClick={() => router.push(`${pageUrl}/form`)} />
-                  )}
+                  <div className="flex-shrink-0">
+                    {action && canAccess("create") && (
+                      <AddButton onClick={() => router.push(`${pageUrl}/form`)} />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

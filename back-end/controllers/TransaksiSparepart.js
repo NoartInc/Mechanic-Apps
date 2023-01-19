@@ -27,6 +27,12 @@ const dataRelations = [
       exclude: ["createdAt", "updatedAt"],
     },
   },
+  {
+    association: "pengguna",
+    attributes: {
+      exclude: ["createdAt", "updatedAt", "password"],
+    },
+  },
 ];
 
 const searchable = [
@@ -97,9 +103,11 @@ exports.findOne = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const { sparepartHubs } = req.body;
+    const user = req.user;
     const data = await TransaksiSpareparts.create(
       {
         ...req.body,
+        user: user?.id,
         sparepartHubs: req.body.sparepartHubs.map((item) => ({
           sparepart: item?.sparepart,
           jumlah: item?.jumlah,
@@ -174,6 +182,7 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
+    const user = req.user;
     await TransaksiSpareparts.update(
       {
         noReferensi: req.body.noReferensi,
@@ -181,6 +190,7 @@ exports.update = async (req, res) => {
         name: req.body.name,
         type: req.body.type,
         status: req.body.status,
+        user: user?.id,
       },
       {
         where: { id: req.params.id },

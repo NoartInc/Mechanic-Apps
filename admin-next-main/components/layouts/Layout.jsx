@@ -10,7 +10,7 @@ import { useAccess } from '../../utils/hooks/useAccess'
 import ForbiddenAccess from '../widgets/ForbiddenAccess';
 
 const Layout = ({ children, title = "App Title" }) => {
-    const { pathname } = useRouter();
+    const { pathname, asPath } = useRouter();
     const { canAccess } = useAccess(pathname);
     const [breadCrumb, setBreadcrumb] = React.useState([
         {
@@ -31,12 +31,12 @@ const Layout = ({ children, title = "App Title" }) => {
         setBreadcrumb(prevState => [
             ...prevState,
             {
-                path: pathname,
+                path: asPath?.replace("#", ""),
                 title: title
             }
         ])
         // eslint-disable-next-line
-    }, [pathname]);
+    }, [asPath, title]);
 
     if (canAccess("view")) {
         return (

@@ -26,6 +26,9 @@ module.exports = {
       status: {
         type: Sequelize.ENUM("update", "adjust"),
       },
+      user: {
+        type: Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

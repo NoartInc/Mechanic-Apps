@@ -90,11 +90,11 @@ api.interceptors.response.use(
   (res) => {
     return res;
   },
-  (error) => {
+  async (error) => {
     if (error.response.status === 401 || error.response.status === 403) {
       Toast.fire({
         icon: "error",
-        text: error.response.data?.error,
+        text: "Mohon re-login kembali",
       }).then(() => {
         store.dispatch(logout());
       });

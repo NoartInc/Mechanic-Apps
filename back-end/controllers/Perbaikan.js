@@ -425,3 +425,25 @@ exports.delete = async (req, res) => {
     res.json({ message: err.message });
   }
 };
+
+exports.exportData = async (req, res) => {
+  try {
+    const conditions = {};
+    const request = getRequestData(req, {
+      orderBy: "id",
+      orderDir: "ASC",
+    });
+    const { startDate, endDate } = request.filters?.dateRange;
+
+    conditions.createdAt = {
+      [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
+    };
+
+    // const results = await Perbaikans
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      error: error,
+    });
+  }
+};
