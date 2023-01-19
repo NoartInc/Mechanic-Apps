@@ -8,6 +8,7 @@ const {
   getRequestData,
   getSearchConditions,
   paginatedData,
+  exportData,
 } = require("../utils/helper");
 const { Op } = require("sequelize");
 
@@ -377,5 +378,133 @@ exports.delete = async (req, res) => {
     res.json({ message: "Transaksi Deleted successfully" });
   } catch (err) {
     res.json({ message: err.message });
+  }
+};
+
+exports.exportData = async (req, res) => {
+  try {
+    const conditions = {};
+    const request = getRequestData(req, {
+      orderBy: "transaksiSparepart",
+      orderDir: "desc",
+    });
+    const { startDate, endDate } = request.filters?.dateRange;
+
+    conditions.createdAt = {
+      [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
+    };
+
+    const data = await TransaksiSparepartHubs.findAll({
+      where: conditions,
+      attributes: ["jumlah", "harga"],
+      include: [
+        {
+          association: "transaksiData",
+          attributes: [
+            "noReferensi",
+            "supplier",
+            "name",
+            "type",
+            "status",
+            "createdAt",
+          ],
+        },
+        {
+          association: "sparepartData",
+          attributes: ["sparepart", "merk", "spesifikasi", "kategori"],
+        },
+      ],
+      order: [[request.orderby, request.orderdir]],
+    });
+
+    const columns = [
+      {
+        header: "No. Referensi",
+        key: "noReferensi",
+        width: "15",
+      },
+      {
+        header: "Tanggal",
+        key: "createdAt",
+        width: "15",
+      },
+      {
+        header: "Nama",
+        key: "name",
+        width: "20",
+      },
+      {
+        header: "Supplier",
+        key: "supplier",
+        width: "20",
+      },
+      {
+        header: "Tipe",
+        key: "type",
+        width: "10",
+      },
+      {
+        header: "Status",
+        key: "status",
+        width: "10",
+      },
+      {
+        header: "Sparepart",
+        key: "sparepart",
+        width: "20",
+      },
+      {
+        header: "Merk",
+        key: "merk",
+        width: "15",
+      },
+      {
+        header: "Spesifikasi",
+        key: "spesifikasi",
+        width: "15",
+      },
+      {
+        header: "Kategori",
+        key: "kategori",
+        width: "15",
+      },
+      {
+        header: "Jumlah",
+        key: "jumlah",
+        width: "10",
+      },
+      {
+        header: "Harga",
+        key: "harga",
+        width: "15",
+      },
+    ];
+
+    const rows = await data.map((item) => ({
+      noReferensi: item?.transaksiData?.noReferensi,
+      createdAt: item?.transaksiData?.createdAt,
+      name: item?.transaksiData?.name,
+      supplier: item?.transaksiData?.supplier,
+      type: item?.transaksiData?.type,
+      status: item?.transaksiData?.status,
+      sparepart: item?.sparepartData?.sparepart,
+      merk: item?.sparepartData?.merk,
+      spesifikasi: item?.sparepartData?.spesifikasi,
+      kategori: item?.sparepartData?.kategori,
+      jumlah: item?.jumlah,
+      harga: item?.harga,
+    }));
+
+    const result = await exportData("Transaksi Sparepart", columns, rows);
+
+    return res.json({
+      status: true,
+      path: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      error: error,
+    });
   }
 };

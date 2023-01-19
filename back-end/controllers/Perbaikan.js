@@ -10,6 +10,7 @@ const {
   getSearchConditions,
   paginatedData,
   generateReportNumber,
+  exportData,
 } = require("../utils/helper");
 const fs = require("fs");
 const path = require("path");
@@ -431,7 +432,7 @@ exports.exportData = async (req, res) => {
     const conditions = {};
     const request = getRequestData(req, {
       orderBy: "id",
-      orderDir: "ASC",
+      orderDir: "desc",
     });
     const { startDate, endDate } = request.filters?.dateRange;
 
@@ -439,7 +440,127 @@ exports.exportData = async (req, res) => {
       [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
     };
 
-    // const results = await Perbaikans
+    const data = await Perbaikans.findAndCountAll({
+      where: conditions,
+      attributes: [
+        "status",
+        "jenisPerbaikan",
+        "note",
+        "startDate",
+        "endDate",
+        "noLaporan",
+        "createdAt",
+      ],
+      include: [
+        {
+          association: "pengguna",
+          attributes: ["fullName"],
+        },
+        {
+          association: "machine",
+          attributes: ["mesin"],
+        },
+        {
+          association: "mekaniks",
+          attributes: ["mekanik"],
+        },
+        {
+          association: "spareparts",
+          attributes: ["sparepart"],
+        },
+        {
+          association: "kerusakans",
+          attributes: ["kerusakan", "poin", "durasi"],
+        },
+        {
+          association: "perbaikanSpareparts",
+          attributes: ["jumlah"],
+        },
+      ],
+      order: [[request.orderby, request.orderdir]],
+    });
+
+    const columns = [
+      {
+        header: "No. Laporan",
+        key: "noLaporan",
+        width: "15",
+      },
+      {
+        header: "Tanggal",
+        key: "createdAt",
+        width: "15",
+      },
+      {
+        header: "Jenis Perbaikan",
+        key: "jenisPerbaikan",
+        width: "20",
+      },
+      {
+        header: "Status",
+        key: "status",
+        width: "10",
+      },
+      {
+        header: "Start",
+        key: "startDate",
+        width: "10",
+      },
+      {
+        header: "End",
+        key: "endDate",
+        width: "10",
+      },
+      {
+        header: "Note",
+        key: "note",
+        width: "20",
+      },
+      {
+        header: "Merk",
+        key: "merk",
+        width: "15",
+      },
+      {
+        header: "Spesifikasi",
+        key: "spesifikasi",
+        width: "15",
+      },
+      {
+        header: "Kategori",
+        key: "kategori",
+        width: "15",
+      },
+      {
+        header: "Jumlah",
+        key: "jumlah",
+        width: "10",
+      },
+      {
+        header: "Harga",
+        key: "harga",
+        width: "15",
+      },
+    ];
+
+    // const rows = await data.map((item) => ({
+    //   noLaporan: item?.noLaporan,
+    //   createdAt: item?.createdAt,
+    //   jenisPerbaikan: item?.jenisPerbaikan,
+    //   status: item?.status,
+    //   startDate: item?.startDate,
+    //   endDate: item?.endDate,
+
+    //   note: note,
+    // }));
+
+    // const result = await exportData("Transaksi Sparepart", columns, rows);
+
+    // return res.json({
+    //   status: true,
+    //   path: result,
+    // });
+    return res.json(data);
   } catch (error) {
     return res.status(500).json({
       status: false,

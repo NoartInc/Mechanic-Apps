@@ -68,8 +68,7 @@ const generateReportNumber = (id, leading = "LP") => {
   return `${leading}${moment().format("YYYYMMDD")}-${id + 1}`;
 };
 
-const exportData = async (title, columns, rows) => {
-  const fileName = `${title}-${moment().format("YYYYMMDDHHmmss")}`;
+const exportData = async (fileName = "Exported Data", columns, rows) => {
   const workbook = new excelJS.Workbook(); // Create a new workbook
   const worksheet = workbook.addWorksheet(fileName); // New Worksheet
   const path = "./public/files";
