@@ -2,10 +2,8 @@ import { useState } from "react";
 import { baseUrl, get } from "../api";
 import { Toast } from "../swal";
 
-const useExport = (exportUrl) => {
-  const [filters, setFilters] = useState({
-    filters: {},
-  });
+const useExport = (exportUrl, initFilter={}) => {
+  const [filters, setFilters] = useState(initFilter);
 
   const onFilterChange = (filter) => {
     setFilters((prevState) => ({

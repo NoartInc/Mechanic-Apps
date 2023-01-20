@@ -2,6 +2,11 @@ const moment = require("moment/moment");
 const { Op } = require("sequelize");
 const excelJS = require("exceljs");
 
+const baseUrl =
+  process.env.ENV !== "production"
+    ? "http://localhost:3000" // local laptop server
+    : "http://localhost:3000"; // production server / VPS /Hosting
+
 const getImage = (file) => {
   if (file) {
     const { originalname } = file;
@@ -84,6 +89,42 @@ const exportData = async (fileName = "Exported Data", columns, rows) => {
   return exportFileName;
 };
 
+const countDiff = (timeSeconds) => {
+  let duration = moment.duration(timeSeconds, "seconds");
+  let weeks = duration.get("weeks");
+  let days = duration.get("days");
+  let hours = duration.get("hours");
+  let minutes = duration.get("minutes");
+  let result = "";
+
+  if (!isNaN(weeks) && weeks > 0) {
+    result += `${weeks} Minggu `;
+  }
+
+  if (!isNaN(days) && days > 0) {
+    result += `${days} Hari `;
+  }
+
+  if (!isNaN(hours) && hours > 0) {
+    result += `${hours} Jam `;
+  }
+
+  if (!isNaN(minutes) && minutes > 0) {
+    result += `${minutes} Menit`;
+  }
+
+  return result ? result : "-";
+};
+
+const getTimeDiff = (start, end) => {
+  let timeSeconds = moment(end).diff(moment(start), "seconds");
+  return countDiff(timeSeconds);
+};
+
+const getTimeDuration = (seconds) => {
+  return countDiff(seconds);
+};
+
 module.exports = {
   getImage,
   getRequestData,
@@ -91,4 +132,9 @@ module.exports = {
   paginatedData,
   generateReportNumber,
   exportData,
+  getTimeDiff,
+  getTimeDuration,
+  baseUrl
 };
+
+

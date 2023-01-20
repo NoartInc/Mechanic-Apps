@@ -15,6 +15,8 @@ import { useSelector } from "react-redux";
 import DataFilter from "../../components/widgets/DataFilter";
 import DateRangeFilter from "../../components/widgets/DateRangeFilter";
 import Link from "next/link";
+import DataExport from "../../components/widgets/DataExport";
+import useExport from "../../utils/hooks/useExport";
 
 const title = "Perbaikan";
 const pageUrl = "/perbaikan";
@@ -44,6 +46,7 @@ export const statusList = [
 
 const Perbaikan = () => {
   const data = useData(apiUrl);
+  const exportData = useExport(`/export${apiUrl}`);
   const { canAccess } = useAccess("/perbaikan");
   const uploadRef = React.useRef(null);
   const previewRef = React.useRef(null);
@@ -57,7 +60,7 @@ const Perbaikan = () => {
         minWidth: 140
       },
       render: ({ value, item }) => (
-        <Link href={`${pageUrl}/${item?.id}`} className="text-blue-600 hover:text-blue-700">
+        <Link href={`${pageUrl}/${item?.id}`} className="text-base font-medium text-gray-600 hover:text-blue-700">
           {value}
         </Link>
       )
@@ -229,7 +232,13 @@ const Perbaikan = () => {
             <DateRangeFilter onChange={(filter) => data.setFilter(filter)} value={data.filters?.dateRange} />
           </DataFilter>
         )}
+        actionButton={(
+          <DataExport onApply={() => exportData.downloadData()}>
+            <DateRangeFilter onChange={(filter) => exportData.onFilterChange(filter)} value={exportData.filters?.dateRange} />
+          </DataExport>
+        )}
       />
+      
       <ModalUpload
         ref={uploadRef}
         method="patch"

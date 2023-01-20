@@ -46,7 +46,7 @@ const Mekanik = () => {
   return (
     <Layout title={title}>
       <div className="card-page mb-4">
-        <h4 className="text-lg">Mekanik Overview</h4>
+        <h4 className="text-lg mx-3 font-medium">Mekanik Overview</h4>
         <div className="grid grid-cols-2 md:grid-cols-5">
           <OverviewWidget label="Mekanik" value={row?.mekanik} icon={UserIcon} />
           <OverviewWidget label="Contact" value={row?.kontak} icon={ContactIcon} />

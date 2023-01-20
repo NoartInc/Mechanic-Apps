@@ -19,7 +19,9 @@ module.exports = async (req, res, next) => {
 
     const verifyToken = jwt.verify(token, JWT_SECRET);
 
-    const user = await Users.findByPk(verifyToken?.id);
+    const user = await Users.findByPk(verifyToken?.id, {
+      include: ["userRole"]
+    });
 
     if (!user) {
       throw new Error("Unauthenticated ");

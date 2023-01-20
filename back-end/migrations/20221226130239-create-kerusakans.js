@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       poin: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
       },
       durasi: {
         type: Sequelize.STRING,

@@ -4,12 +4,15 @@ import React from "react";
 import { statusList } from "../../../pages/perbaikan";
 import { baseUrl } from "../../../utils/api";
 import { useData } from "../../../utils/hooks/useData";
+import useExport from "../../../utils/hooks/useExport";
+import DataExport from "../DataExport";
 import DataFilter from "../DataFilter";
 import DataTable from "../DataTable";
 import DateRangeFilter from "../DateRangeFilter";
 
 const PerbaikanList = ({ filters = null, totalPerbaikan = () => null, dataList = () => null }) => {
     const data = useData("/perbaikan", filters);
+    const exportData = useExport(`/export/perbaikan`, filters);
     const columns = [
         {
             name: "noLaporan",
@@ -99,7 +102,9 @@ const PerbaikanList = ({ filters = null, totalPerbaikan = () => null, dataList =
                 </DataFilter>
             </div>
             <div className="flex-shrink-0">
-                <button className="button button-primary">Export</button>
+            <DataExport text='export' onApply={() => exportData.downloadData()}>
+                <DateRangeFilter onChange={(filter) => exportData.onFilterChange(filter)} value={exportData.filters?.dateRange} />
+            </DataExport>
             </div>
         </div>
     );
@@ -110,7 +115,7 @@ const PerbaikanList = ({ filters = null, totalPerbaikan = () => null, dataList =
                 {...data}
                 title="Daftar Perbaikan"
                 pageUrl="/perbaikan"
-                dataHeader={data?.list?.length ? DataHeader : <></>}
+                dataHeader={DataHeader}
                 action={false}
                 columns={columns}
                 footer={false}

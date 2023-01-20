@@ -4,6 +4,7 @@ const {
   PerbaikanMechanics,
   PerbaikanKerusakans,
   GudangMechanics,
+  LoCounter
 } = require("../models");
 const {
   getRequestData,
@@ -11,6 +12,9 @@ const {
   paginatedData,
   generateReportNumber,
   exportData,
+  getTimeDiff,
+  getTimeDuration,
+  baseUrl
 } = require("../utils/helper");
 const fs = require("fs");
 const path = require("path");
@@ -219,6 +223,14 @@ exports.create = async (req, res) => {
 
 exports.updateStatus = async (req, res) => {
   try {
+    const user = req.user;
+    if (user?.userRole?.roleName === "LO" && req.body.status === "reject") {
+      await LoCounter.create({
+        user: user?.id,
+        perbaikan: req.params.id,
+        status: req.body.status,
+      })
+    }
     await Perbaikans.update(
       {
         status: req.body.status,
@@ -294,8 +306,8 @@ exports.update = async (req, res) => {
       {
         where: { id: req.params.id },
       }
-    ).then(async (result) => {
-      if (result) {
+    ).then(async (hasil) => {
+      if (hasil) {
         // Kembalikan stok ke gudang mekanik
         // sesuai jumlah yang ada di perbaikanSpareparts lama
         await PerbaikanSpareparts.findAll({
@@ -307,10 +319,10 @@ exports.update = async (req, res) => {
               (gudangMekanik) => {
                 GudangMechanics.update(
                   {
-                    stok: gudangMekanik.stok + item?.jumlah,
+                    stok: gudangMekanik?.stok + item?.jumlah,
                   },
                   {
-                    where: { id: gudangMekanik.id },
+                    where: { id: gudangMekanik?.id },
                   }
                 );
               }
@@ -429,7 +441,7 @@ exports.delete = async (req, res) => {
 
 exports.exportData = async (req, res) => {
   try {
-    const conditions = {};
+    let conditions = {};
     const request = getRequestData(req, {
       orderBy: "id",
       orderDir: "desc",
@@ -440,9 +452,31 @@ exports.exportData = async (req, res) => {
       [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
     };
 
-    const data = await Perbaikans.findAndCountAll({
+    // Mekanik Filter
+    if (request?.filters?.mekanik) {
+      conditions = {
+        ...conditions,
+        [Op.and]: [
+          {
+            "$mekaniks.id$": request?.filters?.mekanik,
+          }
+        ],
+      };
+    }
+
+    // Mesin Filter
+    if (request?.filters?.mesin) {
+      conditions = {
+        ...conditions,
+        mesin: request?.filters?.mesin,
+      };
+    }
+
+    const data = await Perbaikans.findAll({
+      distinct: true,
       where: conditions,
       attributes: [
+        "id",
         "status",
         "jenisPerbaikan",
         "note",
@@ -465,30 +499,32 @@ exports.exportData = async (req, res) => {
           attributes: ["mekanik"],
         },
         {
-          association: "spareparts",
-          attributes: ["sparepart"],
-        },
-        {
           association: "kerusakans",
-          attributes: ["kerusakan", "poin", "durasi"],
-        },
-        {
-          association: "perbaikanSpareparts",
-          attributes: ["jumlah"],
+          attributes: ["kerusakan", "durasi_in_seconds"],
         },
       ],
-      order: [[request.orderby, request.orderdir]],
+      order: [[request.orderby, request.orderdir]]
     });
 
     const columns = [
+      {
+        header: "Tanggal",
+        key: "createdAt",
+        width: "15",
+      },
       {
         header: "No. Laporan",
         key: "noLaporan",
         width: "15",
       },
       {
-        header: "Tanggal",
-        key: "createdAt",
+        header: "User",
+        key: "user",
+        width: "15",
+      },
+      {
+        header: "Mesin",
+        key: "mesin",
         width: "15",
       },
       {
@@ -502,6 +538,11 @@ exports.exportData = async (req, res) => {
         width: "10",
       },
       {
+        header: "Mekanik",
+        key: "mekanik",
+        width: "15",
+      },
+      {
         header: "Start",
         key: "startDate",
         width: "10",
@@ -512,55 +553,49 @@ exports.exportData = async (req, res) => {
         width: "10",
       },
       {
-        header: "Note",
-        key: "note",
-        width: "20",
-      },
-      {
-        header: "Merk",
-        key: "merk",
+        header: "Down Time",
+        key: "downtime",
         width: "15",
       },
       {
-        header: "Spesifikasi",
-        key: "spesifikasi",
+        header: "Estimasi",
+        key: "estimasi",
         width: "15",
       },
       {
-        header: "Kategori",
-        key: "kategori",
-        width: "15",
-      },
-      {
-        header: "Jumlah",
-        key: "jumlah",
-        width: "10",
-      },
-      {
-        header: "Harga",
-        key: "harga",
+        header: "Detail",
+        key: "detail",
         width: "15",
       },
     ];
+    
+    const rows = await data.map((item) => ({
+      noLaporan: item?.noLaporan,
+      createdAt: item?.createdAt,
+      jenisPerbaikan: item?.jenisPerbaikan,
+      status: item?.status,
+      startDate: item?.startDate,
+      endDate: item?.endDate,
+      user: item?.pengguna?.fullName,
+      mesin: item?.machine?.mesin,
+      mekanik: item?.mekaniks?.map(mekanik => mekanik.mekanik)?.join('-'), 
+      downtime: getTimeDiff(item?.startDate, item?.endDate),
+      estimasi: getTimeDuration(item?.kerusakans?.reduce((acc, cur) => {
+        return acc += cur?.durasi_in_seconds
+      },0)),
+      detail: {
+        hyperlink: `${baseUrl}/perbaikan/${item?.id}`,
+        text: `${baseUrl}/perbaikan/${item?.id}`
+      }
+    }));
 
-    // const rows = await data.map((item) => ({
-    //   noLaporan: item?.noLaporan,
-    //   createdAt: item?.createdAt,
-    //   jenisPerbaikan: item?.jenisPerbaikan,
-    //   status: item?.status,
-    //   startDate: item?.startDate,
-    //   endDate: item?.endDate,
+    const result = await exportData("List Perbaikan", columns, rows);
 
-    //   note: note,
-    // }));
-
-    // const result = await exportData("Transaksi Sparepart", columns, rows);
-
-    // return res.json({
-    //   status: true,
-    //   path: result,
-    // });
-    return res.json(data);
+    return res.json({
+      status: true,
+      path: result,
+    });
+    
   } catch (error) {
     return res.status(500).json({
       status: false,

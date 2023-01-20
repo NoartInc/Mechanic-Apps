@@ -15,7 +15,7 @@ const Mekanik = () => {
       name: "mekanik",
       title: "Mekanik",
       render: ({ value, item }) => (
-        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-blue-600 hover:text-blue-700">
+        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-base font-medium text-gray-700 hover:text-blue-700">
           {value}
         </Link>
       )

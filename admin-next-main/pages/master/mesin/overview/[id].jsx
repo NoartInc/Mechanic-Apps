@@ -38,7 +38,7 @@ const Mesin = () => {
   return (
     <Layout title={title}>
       <div className="card-page mb-4">
-        <h4 className="text-lg">{row?.mesin}</h4>
+        <h4 className="text-lg mx-3 font-medium">{row?.mesin}</h4>
         <div className="grid grid-cols-2 md:grid-cols-5">
           <OverviewWidget label="Perbaikan" value={row?.total} icon={PerbaikanIcon} />
           <OverviewWidget label="Kategori" value={row?.kategori} icon={KategoriIcon} />

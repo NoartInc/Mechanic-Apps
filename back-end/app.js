@@ -32,6 +32,7 @@ var gudangMekanikRouter = require("./routes/gudangMekanik");
 var perbaikanRouter = require("./routes/perbaikan");
 var authRouter = require("./routes/auth");
 var exportRouter = require("./routes/exportData");
+var loRouter = require("./routes/lo")
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
@@ -44,6 +45,7 @@ app.use("/transaksiSparepart", transaksiSparepartRouter);
 app.use("/gudangMekanik", gudangMekanikRouter);
 app.use("/perbaikan", perbaikanRouter);
 app.use("/export", exportRouter);
+app.use("/lo", loRouter);
 app.use("/auth", authRouter);
 
 // catch 404 and forward to error handler

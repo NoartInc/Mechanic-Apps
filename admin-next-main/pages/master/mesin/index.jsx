@@ -15,7 +15,7 @@ const Mesin = () => {
       name: "mesin",
       title: "Mesin",
       render: ({ item, value }) => (
-        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-blue-600 hover:text-blue-700">{value}</Link>
+        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-base font-medium text-gray-700 hover:text-blue-700">{value}</Link>
       )
     },
     {

@@ -21,7 +21,8 @@ const TransaksiSparepart = () => {
       name: "noReferensi",
       title: "No Ref",
       render: ({ item, value }) => (
-        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-blue-600 hover:text-blue-700">
+        <Link href={`${pageUrl}/overview/${item?.id}`} className="text-base font-medium
+        text-gray-600 hover:text-blue-700">
           {value}
         </Link>
       )
