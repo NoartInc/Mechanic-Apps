@@ -29,7 +29,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export const getKerusakanDuration = (listKerusakan) => {
-  return listKerusakan.reduce((acc, cur) => {
+  return listKerusakan?.reduce((acc, cur) => {
     return acc += cur?.durasi_in_seconds;
   }, 0);
 }
@@ -313,7 +313,7 @@ export const DetailSparepart = ({ form }) => {
                         id={`jumlah_${detail?.id}`}
                         value={detail?.jumlah}
                         min={1}
-                        max={detail?.stok}
+                        max={detail?.stok > 0 ? detail?.stok : 1}
                         onChange={(event) => onJumlahChange(event, index)}
                       />
                     </td>

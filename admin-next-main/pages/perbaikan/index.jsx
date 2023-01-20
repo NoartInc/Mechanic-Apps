@@ -14,6 +14,7 @@ import ImagePreview from "../../components/widgets/ImagePreview";
 import { useSelector } from "react-redux";
 import DataFilter from "../../components/widgets/DataFilter";
 import DateRangeFilter from "../../components/widgets/DateRangeFilter";
+import Link from "next/link";
 
 const title = "Perbaikan";
 const pageUrl = "/perbaikan";
@@ -54,7 +55,12 @@ const Perbaikan = () => {
       title: "No. ",
       style: {
         minWidth: 140
-      }
+      },
+      render: ({ value, item }) => (
+        <Link href={`${pageUrl}/${item?.id}`} className="text-blue-600 hover:text-blue-700">
+          {value}
+        </Link>
+      )
     },
     {
       name: "mesin",
@@ -262,7 +268,7 @@ const UploadButton = ({ onClick, canUpload }) => {
   )
 }
 
-const ViewFile = ({ withRemove = true, onRemove, onPreview }) => {
+export const ViewFile = ({ withRemove = true, onRemove, onPreview }) => {
   return (
     <div className="flex items-center">
       <button type="button" className="button button-primary button-xsmall" onClick={onPreview}>

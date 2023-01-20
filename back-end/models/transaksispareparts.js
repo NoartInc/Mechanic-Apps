@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: "sparepart", // key di tabel transaksi transaksi
       });
 
+      models.TransaksiSpareparts.belongsTo(models.Users, {
+        as: "pengguna",
+        foreignKey: "user",
+        sourceKey: "id",
+      });
+
       // model untuk create
       models.TransaksiSpareparts.hasMany(models.TransaksiSparepartHubs, {
         as: "sparepartHubs",
@@ -33,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       date: DataTypes.DATE,
       type: DataTypes.ENUM("in", "out"),
       status: DataTypes.ENUM("update", "adjust"),
+      user: DataTypes.INTEGER,
     },
     {
       sequelize,
