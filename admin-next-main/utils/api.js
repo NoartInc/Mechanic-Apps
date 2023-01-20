@@ -92,13 +92,14 @@ api.interceptors.response.use(
   },
   async (error) => {
     if (error.response.status === 401 || error.response.status === 403) {
-      Toast.fire({
+      return Toast.fire({
         icon: "error",
-        text: "Mohon re-login kembali",
+        text: "Session expired, Mohon login kembali",
       }).then(() => {
         store.dispatch(logout());
       });
+    } else {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
   }
 );
