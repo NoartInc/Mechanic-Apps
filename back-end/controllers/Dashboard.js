@@ -1,9 +1,4 @@
-const {
-  Perbaikans,
-  LoCounter,
-  Spareparts,
-  PerbaikanSpareparts,
-} = require("../models");
+const { Perbaikans, Spareparts, PerbaikanSpareparts } = require("../models");
 const { Op, fn, col } = require("sequelize");
 
 const getPerbaikanCount = async (status) => {
@@ -11,35 +6,6 @@ const getPerbaikanCount = async (status) => {
     where: {
       status: status,
     },
-  });
-};
-
-const getRejectedLo = async () => {
-  return await LoCounter.count({
-    where: {
-      status: "reject",
-    },
-  });
-};
-
-const getLatestRejected = async () => {
-  return await LoCounter.findAll({
-    distinct: true,
-    attributes: ["createdAt"],
-    order: [["id", "desc"]],
-    where: {
-      status: "reject",
-    },
-    include: [
-      {
-        association: "perbaikanLo",
-        attributes: ["noLaporan"],
-      },
-      {
-        association: "loUser",
-        attributes: ["fullName"],
-      },
-    ],
   });
 };
 
@@ -80,8 +46,6 @@ exports.getSummary = async (req, res) => {
     const awaitingStatus = await getPerbaikanCount("open");
     const revisionStatus = await getPerbaikanCount("revisi");
     const acceptedStatus = await getPerbaikanCount("accept");
-    const rejectedStatusByLo = await getRejectedLo();
-    const latestRejected = await getLatestRejected();
     const almostOutOfStockSparepart = await getAlmostOutOfStockSparepart();
     const mostUsedSparepart = await getMostUsedSparepart();
 
@@ -89,8 +53,6 @@ exports.getSummary = async (req, res) => {
       awaiting: awaitingStatus,
       revision: revisionStatus,
       accepted: acceptedStatus,
-      rejected: rejectedStatusByLo,
-      latestRejected: latestRejected,
       almostOutOfStock: almostOutOfStockSparepart,
       mostUsedSparepart: mostUsedSparepart,
     });
