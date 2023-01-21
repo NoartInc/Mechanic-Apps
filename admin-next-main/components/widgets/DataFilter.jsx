@@ -2,7 +2,7 @@ import { IconCheck, IconFilter } from '@tabler/icons'
 import React from 'react'
 import Modal from './Modal';
 
-const DataFilter = ({ children, onApply = null, text = null }) => {
+const DataFilter = ({ children, onApply = null, text = null, smallButton = false }) => {
     const [showFilter, setShowFilter] = React.useState(false);
 
     const onApplyFilter = () => {
@@ -21,8 +21,12 @@ const DataFilter = ({ children, onApply = null, text = null }) => {
 
     return (
         <div>
-            <button type="button" className="button button-primary" onClick={() => setShowFilter(true)}>
-                <IconFilter />
+            <button
+                type="button"
+                className={`button button-primary ${smallButton ? 'button-small' : ''}`.trim(' ')}
+                onClick={() => setShowFilter(true)}
+            >
+                <IconFilter size={smallButton ? 22 : 24} />
                 {text && (
                     <span>{text}</span>
                 )}

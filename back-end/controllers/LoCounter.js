@@ -15,7 +15,7 @@ const getRow = async (id) => {
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
-    include: dataRelations
+    include: dataRelations,
   });
 };
 
@@ -28,35 +28,34 @@ exports.findAll = async (req, res) => {
       orderDir: "ASC",
     });
 
-    
     // Date Range Filter
     if (req.query?.filters?.dateRange) {
-        const { startDate, endDate } = req.query?.filters?.dateRange;
-        conditions = {
-          ...conditions,
-          createdAt: {
-            [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
-          },
-        };
-      } else {
-        conditions = {
-          ...conditions,
-          createdAt: {
-            [Op.between]: [
-              `${moment().subtract(1, "months").format("YYYY-MM-DD")} 00:00:00`,
-              `${moment().format("YYYY-MM-DD")} 23:59:59`,
-            ],
-          },
-        };
-      }
-      
+      const { startDate, endDate } = req.query?.filters?.dateRange;
+      conditions = {
+        ...conditions,
+        createdAt: {
+          [Op.between]: [`${startDate} 00:00:00`, `${endDate} 23:59:59`],
+        },
+      };
+    } else {
+      conditions = {
+        ...conditions,
+        createdAt: {
+          [Op.between]: [
+            `${moment().subtract(1, "months").format("YYYY-MM-DD")} 00:00:00`,
+            `${moment().format("YYYY-MM-DD")} 23:59:59`,
+          ],
+        },
+      };
+    }
+
     const data = await LoCounter.findAndCountAll({
       attributes: {
         exclude: ["updatedAt"],
       },
       distinct: true,
       where: conditions,
-        include: dataRelations,
+      include: dataRelations,
       order: [[request.orderby, request.orderdir]],
       limit: Number(request.limit),
       offset: Number(request.offset),

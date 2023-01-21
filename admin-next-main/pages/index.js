@@ -11,11 +11,36 @@ import Layout from "../components/layouts/Layout";
 import SummaryWidget from "../components/widgets/SummaryWidget";
 import { get } from "../utils/api";
 import moment from "moment";
+import { useData } from "../utils/hooks/useData";
+import DataFilter from "../components/widgets/DataFilter";
+import DateRangeFilter from "../components/widgets/DateRangeFilter";
+import { useSelector } from "react-redux";
+import DataLoader from "../components/widgets/DataLoader";
 
-export default function index({ data }) {
+export default function Dashboard({ data }) {
+  const { user } = useSelector((state) => state.auth);
+  const loCounter = useData("/lo", {
+    dateRange: {
+      startDate: moment().subtract(1, "months").format("YYYY-MM-DD"),
+      endDate: moment().format("YYYY-MM-DD"),
+    },
+  });
+
+  const permittedAccess = () => {
+    const allowedAccess = ["LO", "Manager", "Administrator"];
+    return allowedAccess.includes(user?.userRole?.roleName);
+  };
+
+  const summaryWidgetClass = `grid grid-cols-2 ${
+    permittedAccess() ? "md:grid-cols-4" : "md:grid-cols-3"
+  } gap-x-3`;
+  const overviewSummaryClass = `grid grid-cols-1 ${
+    permittedAccess() ? "md:grid-cols-3" : "md:grid-cols-2"
+  } gap-x-3`;
+
   return (
     <Layout title="Dashboard Overview">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3">
+      <div className={summaryWidgetClass}>
         <SummaryWidget
           icon={IconClock}
           label="Menunggu"
@@ -33,25 +58,45 @@ export default function index({ data }) {
           value={data?.accepted}
           type="primary"
         />
-        <SummaryWidget
-          icon={IconReportOff}
-          label="Reject by LO"
-          value={data?.rejected}
-          type="danger"
-        />
+        {permittedAccess() && (
+          <SummaryWidget
+            icon={IconReportOff}
+            label="Reject by LO"
+            value={data?.rejected}
+            type="danger"
+          />
+        )}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-x-3">
-        <div className="card-box mb-3">
-          <h4 className="mb-4">Reject terbaru dari LO</h4>
-          {data?.latestRejected?.map((item, index) => (
-            <RejectedItem
-              key={index}
-              laporan={item?.perbaikanLo?.noLaporan}
-              user={item?.loUser?.fullName}
-              waktu={item?.createdAt}
-            />
-          ))}
-        </div>
+      <div className={overviewSummaryClass}>
+        {permittedAccess() && (
+          <div className="card-box mb-3">
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="flex-grow">Reject terbaru dari LO</h4>
+              <div className="flex-shrink-0">
+                <DataFilter onApply={() => loCounter.applyFilter()} smallButton>
+                  <DateRangeFilter
+                    onChange={(filter) => loCounter.setFilter(filter)}
+                    value={loCounter.filters?.dateRange}
+                  />
+                </DataFilter>
+              </div>
+            </div>
+            <div className="overflow-y-auto max-h-64 lo-counter-list">
+              {loCounter?.loading ? (
+                <DataLoader />
+              ) : (
+                loCounter?.list?.map((item, index) => (
+                  <RejectedItem
+                    key={index}
+                    laporan={item?.perbaikanLo?.noLaporan}
+                    user={item?.loUser?.fullName}
+                    waktu={item?.createdAt}
+                  />
+                ))
+              )}
+            </div>
+          </div>
+        )}
         <div className="card-box mb-3">
           <h4 className="mb-4">Sparepart yang akan habis</h4>
           {data?.almostOutOfStock?.map((item, index) => (
@@ -75,10 +120,7 @@ export default function index({ data }) {
 
 const RejectedItem = ({ laporan, user, waktu }) => {
   return (
-    <div
-      key={index}
-      className="flex justify-between mb-2 border-b border-b-gray-100 pb-1"
-    >
+    <div className="flex justify-between mb-2 border-b border-b-gray-100 pb-1">
       <div className="flex-grow">
         <div className="flex gap-x-2">
           <div className="p-1 rounded-lg bg-gray-50 self-start mt-px">
@@ -90,7 +132,7 @@ const RejectedItem = ({ laporan, user, waktu }) => {
           </div>
         </div>
       </div>
-      <div className="flex-shrink-0 w-16">
+      <div className="flex-shrink-0 w-16 pr-1">
         <h6 className="text-sm text-gray-600 text-right">
           {moment(waktu).format("DD/MM/YY HH:mm")}
         </h6>
@@ -101,10 +143,7 @@ const RejectedItem = ({ laporan, user, waktu }) => {
 
 const OutStockItem = ({ sparepart, stok }) => {
   return (
-    <div
-      key={index}
-      className="flex justify-between mb-2 border-b border-b-gray-100 pb-1"
-    >
+    <div className="flex justify-between mb-2 border-b border-b-gray-100 pb-1">
       <div className="flex-grow">
         <div className="flex gap-x-2">
           <div className="p-1 rounded-lg bg-gray-50 self-start mt-px">
@@ -126,10 +165,7 @@ const OutStockItem = ({ sparepart, stok }) => {
 
 const MostSparepart = ({ sparepart, count }) => {
   return (
-    <div
-      key={index}
-      className="flex justify-between mb-2 border-b border-b-gray-100 pb-1"
-    >
+    <div className="flex justify-between mb-2 border-b border-b-gray-100 pb-1">
       <div className="flex-grow">
         <div className="flex gap-x-2">
           <div className="p-1 rounded-lg bg-gray-50 self-start mt-px">
