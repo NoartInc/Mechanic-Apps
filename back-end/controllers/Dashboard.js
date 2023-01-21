@@ -40,7 +40,6 @@ const getLatestRejected = async () => {
         attributes: ["fullName"],
       },
     ],
-    limit: 10,
   });
 };
 

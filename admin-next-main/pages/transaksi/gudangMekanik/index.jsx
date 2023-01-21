@@ -3,7 +3,7 @@ import Layout from "../../../components/layouts/Layout";
 import DataTable from "../../../components/widgets/DataTable";
 import { useData } from "../../../utils/hooks/useData";
 
-const title = "Gudang Mekanik";
+export const title = "Gudang Mekanik";
 const pageUrl = "/transaksi/gudangMekanik";
 export const apiUrl = "/gudangMekanik";
 
