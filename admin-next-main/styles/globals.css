@@ -224,12 +224,47 @@
   @apply p-3 md:p-4 rounded-lg shadow-sm flex flex-col bg-white;
 }
 
+.card-box {
+  @apply p-3 md:p-4 rounded-lg shadow-sm bg-white;
+}
+
+.animated-card {
+  @apply relative overflow-hidden transition-all duration-200 ease-in-out;
+  @apply transform hover:shadow-lg hover:shadow-gray-300 hover:-translate-y-1;
+}
+
 .card-page-footer {
   @apply flex justify-between items-center border-t pt-4;
 }
 
 .data-table-content {
   max-height: 75vh;
+}
+
+.summary-badge {
+  @apply absolute -top-5 -right-1 w-0 h-0 transform -rotate-45;
+  border-top: 24px solid transparent;
+  border-bottom: 24px solid transparent;
+}
+
+.summary-badge-success {
+  border-left-width: 24px;
+  @apply border-l-green-600;
+}
+
+.summary-badge-warning {
+  border-left-width: 24px;
+  @apply border-l-orange-400;
+}
+
+.summary-badge-primary {
+  border-left-width: 24px;
+  @apply border-l-blue-600;
+}
+
+.summary-badge-danger {
+  border-left-width: 24px;
+  @apply border-l-red-600;
 }
 
 .data-table-body {

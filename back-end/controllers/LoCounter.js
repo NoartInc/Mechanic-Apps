@@ -6,7 +6,7 @@ const {
   paginatedData,
 } = require("../utils/helper");
 
-const dataRelations = ["perbaikanLo", "LO"];
+const dataRelations = ["perbaikanLo", "loUser"];
 
 const searchable = ["status"];
 

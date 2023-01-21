@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       models.LoCounter.belongsTo(models.Users,{
         foreignKey: "user",
         sourceKey: "id",
-        as: "LO"
+        as: "loUser"
       })
     }
   }
