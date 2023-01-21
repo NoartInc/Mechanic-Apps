@@ -20,7 +20,7 @@ export const get = async (url, params) => {
     const result = await api.get(url, { params });
     return Promise.resolve(result.data);
   } catch (error) {
-    return Promise.reject(error.response.data);
+    return Promise.reject(error?.response?.data);
   }
 };
 
@@ -29,7 +29,7 @@ export const post = async (url, data = {}) => {
     const result = await api.post(url, data);
     return Promise.resolve(result.data);
   } catch (error) {
-    return Promise.reject(error.response.data);
+    return Promise.reject(error?.response?.data);
   }
 };
 
@@ -38,7 +38,7 @@ export const put = async (url, data = {}) => {
     const result = await api.put(url, data);
     return Promise.resolve(result.data);
   } catch (error) {
-    return Promise.reject(error.response.data);
+    return Promise.reject(error?.response?.data);
   }
 };
 
@@ -47,7 +47,7 @@ export const patch = async (url, data = {}) => {
     const result = await api.patch(url, data);
     return Promise.resolve(result.data);
   } catch (error) {
-    return Promise.reject(error.response.data);
+    return Promise.reject(error?.response?.data);
   }
 };
 
@@ -56,7 +56,7 @@ export const destroy = async (url) => {
     const result = await api.delete(url);
     return Promise.resolve(result.data);
   } catch (error) {
-    return Promise.reject(error.response.data);
+    return Promise.reject(error?.response?.data);
   }
 };
 
@@ -69,7 +69,7 @@ export const fileUpload = async (url, data, config) => {
     });
     return Promise.resolve(result.data);
   } catch (error) {
-    return Promise.reject(error.response.data);
+    return Promise.reject(error?.response?.data);
   }
 };
 
