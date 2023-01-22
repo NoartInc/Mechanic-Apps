@@ -6,7 +6,10 @@ import {
   IconUserExclamation,
   IconArchive,
   IconArchiveOff,
+  IconChevronRight,
+  IconChevronLeft,
 } from "@tabler/icons";
+import React from "react";
 import Layout from "../components/layouts/Layout";
 import SummaryWidget from "../components/widgets/SummaryWidget";
 import { get } from "../utils/api";
@@ -29,6 +32,20 @@ export default function Dashboard({ data }) {
   const permittedAccess = () => {
     const allowedAccess = ["LO", "Manager", "Administrator"];
     return allowedAccess.includes(user?.userRole?.roleName);
+  };
+
+  const loCounterPaginate = (type) => {
+    let currentPage = loCounter.page;
+    if (type === "prev") {
+      if (loCounter.page > 1) {
+        currentPage -= 1;
+      }
+    } else if (type === "next") {
+      if (loCounter.page < loCounter.lastPage) {
+        currentPage += 1;
+      }
+    }
+    loCounter.onPageChange(currentPage);
   };
 
   const summaryWidgetClass = `grid grid-cols-2 ${
@@ -62,7 +79,7 @@ export default function Dashboard({ data }) {
           <SummaryWidget
             icon={IconReportOff}
             label="Reject by LO"
-            value={data?.rejected}
+            value={loCounter?.total}
             type="danger"
           />
         )}
@@ -95,6 +112,26 @@ export default function Dashboard({ data }) {
                 ))
               )}
             </div>
+            {loCounter.lastPage > 1 && (
+              <div className="flex justify-center gap-x-3 items-center">
+                <button
+                  type="button"
+                  className="button button-outline-primary button-xsmall"
+                  disabled={loCounter.page === 1}
+                  onClick={() => loCounterPaginate("prev")}
+                >
+                  <IconChevronLeft />
+                </button>
+                <button
+                  type="button"
+                  className="button button-outline-primary button-xsmall"
+                  disabled={loCounter.page === loCounter.lastPage}
+                  onClick={() => loCounterPaginate("next")}
+                >
+                  <IconChevronRight />
+                </button>
+              </div>
+            )}
           </div>
         )}
         <div className="card-box mb-3">

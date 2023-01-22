@@ -156,7 +156,7 @@
 }
 
 .button:disabled {
-  @apply bg-gray-50;
+  @apply bg-gray-50 text-gray-400 !important;
 }
 
 .button-small {
