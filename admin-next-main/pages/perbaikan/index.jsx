@@ -28,6 +28,10 @@ export const statusList = [
     className: "bg-green-500 text-white"
   },
   {
+    status: "proses",
+    className: "bg-blue-500 text-white"
+  },
+  {
     status: "revisi",
     className: "bg-yellow-500 text-white",
     visibility: "Mekanik"

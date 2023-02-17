@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "gudangmekanik",
         sourceKey: "id",
         as: "gudangMekanikSparepart"
-      })
+      });
     }
   }
   PerbaikanSpareparts.init(

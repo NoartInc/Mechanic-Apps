@@ -65,6 +65,7 @@ const dataRelations = [
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
+    include: ["gudangMekanikSparepart"],
   },
   {
     association: "perbaikanKerusakans",
@@ -499,6 +500,13 @@ exports.exportData = async (req, res) => {
           attributes: ["mekanik"],
         },
         {
+          association: "perbaikanSpareparts",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: ["gudangMekanikSparepart"],
+        },
+        {
           association: "kerusakans",
           attributes: ["kerusakan", "durasi_in_seconds"],
         },
@@ -511,6 +519,11 @@ exports.exportData = async (req, res) => {
         header: "Tanggal",
         key: "createdAt",
         width: "15",
+        alignment: { 
+          vertical: "middle", 
+          horizontal: "left",
+          wrapText: true 
+        }
       },
       {
         header: "No. Laporan",
@@ -563,6 +576,12 @@ exports.exportData = async (req, res) => {
         width: "15",
       },
       {
+        header: "Sparepart",
+        key: "spareparts",
+        width: "25",
+        alignment: { wrapText: true }
+      },
+      {
         header: "Detail",
         key: "detail",
         width: "15",
@@ -583,6 +602,9 @@ exports.exportData = async (req, res) => {
       estimasi: getTimeDuration(item?.kerusakans?.reduce((acc, cur) => {
         return acc += cur?.durasi_in_seconds
       },0)),
+      spareparts: item?.perbaikanSpareparts?.map(perbaikanSparepart => {
+        return `${perbaikanSparepart?.gudangMekanikSparepart?.sparepart} = ${perbaikanSparepart?.jumlah}`;
+      })?.join('\r\n'),
       detail: {
         hyperlink: `${baseUrl}/perbaikan/${item?.id}`,
         text: `${baseUrl}/perbaikan/${item?.id}`

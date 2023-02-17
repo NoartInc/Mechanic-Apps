@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       status: {
-        type: Sequelize.ENUM("open", "revisi", "reject", "accept"),
+        type: Sequelize.ENUM("proses","open", "revisi", "reject", "accept"),
       },
       jenisPerbaikan: {
         type: Sequelize.ENUM("repairment", "maintenance"),

@@ -68,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
       uploadPhotos: DataTypes.STRING,
       noLaporan: DataTypes.STRING,
       jenisPerbaikan: DataTypes.ENUM("repairment", "maintenance"),
-      status: DataTypes.ENUM("open", "revisi", "reject", "accept"),
+      status: DataTypes.ENUM("proses","open", "revisi", "reject", "accept"),
     },
     {
       sequelize,

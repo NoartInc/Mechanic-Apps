@@ -190,7 +190,9 @@ const Add = () => {
               </div>
               <div className="flex-grow">{/* Separator Kolom Tengah */}</div>
               <div className="flex-shrink-0 w-full md:w-1/3">
-                <ReadOnlyInput label="Downtime" value={getTimeDiff(form.values.startDate, form.values.endDate)} />
+                {form.values.jenisPerbaikan !== "maintenance" && (
+                  <ReadOnlyInput label="Downtime" value={getTimeDiff(form.values.startDate, form.values.endDate)} />
+                )}
                 <ReadOnlyInput label="Estimasi" value={getTimeDuration(getKerusakanDuration(form.values.perbaikanKerusakans))} />
               </div>
             </div>

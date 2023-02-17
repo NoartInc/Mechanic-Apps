@@ -43,6 +43,7 @@ const getMostUsedSparepart = async () => {
 
 exports.getSummary = async (req, res) => {
   try {
+    const prosesStatus = await getPerbaikanCount("proses");
     const awaitingStatus = await getPerbaikanCount("open");
     const revisionStatus = await getPerbaikanCount("revisi");
     const acceptedStatus = await getPerbaikanCount("accept");
@@ -50,6 +51,7 @@ exports.getSummary = async (req, res) => {
     const mostUsedSparepart = await getMostUsedSparepart();
 
     return res.json({
+      proses: prosesStatus,
       awaiting: awaitingStatus,
       revision: revisionStatus,
       accepted: acceptedStatus,

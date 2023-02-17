@@ -8,6 +8,7 @@ import {
   IconArchiveOff,
   IconChevronRight,
   IconChevronLeft,
+  IconClockEdit,
 } from "@tabler/icons";
 import React from "react";
 import Layout from "../components/layouts/Layout";
@@ -49,7 +50,7 @@ export default function Dashboard({ data }) {
   };
 
   const summaryWidgetClass = `grid grid-cols-2 ${
-    permittedAccess() ? "md:grid-cols-4" : "md:grid-cols-3"
+    permittedAccess() ? "md:grid-cols-5" : "md:grid-cols-4"
   } gap-x-3`;
   const overviewSummaryClass = `grid grid-cols-1 ${
     permittedAccess() ? "md:grid-cols-3" : "md:grid-cols-2"
@@ -59,12 +60,17 @@ export default function Dashboard({ data }) {
     <Layout title="Dashboard Overview">
       <div className={summaryWidgetClass}>
         <SummaryWidget
+          icon={IconTool}
+          label="Proses"
+          value={data?.proses}
+        />
+        <SummaryWidget
           icon={IconClock}
           label="Menunggu"
           value={data?.awaiting}
         />
         <SummaryWidget
-          icon={IconTool}
+          icon={IconClockEdit}
           label="Revisi"
           value={data?.revision}
           type="warning"

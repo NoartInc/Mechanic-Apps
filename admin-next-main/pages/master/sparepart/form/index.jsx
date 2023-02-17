@@ -20,7 +20,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Add = () => {
-    const context = "Mekanik";
+    const context = "Sparepart";
     const router = useRouter();
     const [loading, setLoading] = React.useState(false);
     const form = useFormik({
