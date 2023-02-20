@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   PerbaikanKerusakans.init({
     perbaikan: DataTypes.INTEGER,
-    kerusakan: DataTypes.INTEGER
+    kerusakan: DataTypes.INTEGER,
+    jumlah: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'PerbaikanKerusakans',

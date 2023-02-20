@@ -92,12 +92,6 @@ const Edit = () => {
                 text: "Pilih Mekanik!"
             });
             return false;
-        } else if (!form.values?.perbaikanSpareparts.length) {
-            Toast.fire({
-                icon: "error",
-                text: "Mohon tambahkan sparepart!"
-            });
-            return false;
         } else if (!form.values?.perbaikanKerusakans.length) {
             Toast.fire({
                 icon: "error",

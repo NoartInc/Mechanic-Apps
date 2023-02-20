@@ -110,12 +110,6 @@ const Add = () => {
         text: "Pilih Mekanik!"
       });
       return false;
-    } else if (!form.values?.perbaikanSpareparts.length) {
-      Toast.fire({
-        icon: "error",
-        text: "Mohon tambahkan sparepart!"
-      });
-      return false;
     } else if (!form.values?.perbaikanKerusakans.length) {
       Toast.fire({
         icon: "error",
@@ -349,6 +343,7 @@ export const DetailKerusakan = ({ form }) => {
         id: randId(),
         kerusakan: selectedKerusakan?.value,
         label: selectedKerusakan?.label,
+        jumlah: selectedKerusakan?.jumlah,
         durasi: selectedKerusakan?.durasi,
         durasi_in_seconds: selectedKerusakan?.durasi_in_seconds,
         poin: selectedKerusakan?.poin
@@ -374,14 +369,19 @@ export const DetailKerusakan = ({ form }) => {
     setselectedKerusakan(data);
   }
 
+  const onJumlahChange = (event, index) => {
+    const { value } = event.target;
+    const jumlah = form.setFieldValue(`perbaikanKerusakans[${index}]['jumlah']`, Number(value))
+  }
+
   const removeKerusakan = (id) => {
     const updatedList = form.values.perbaikanKerusakans.filter(item => item?.id !== id);
     form.setFieldValue("perbaikanKerusakans", updatedList);
   }
 
-  const formatDurasi = (durasi) => {
+  const formatDurasi = (durasi, jumlah) => {
     let durationValue = durasi?.split(" ");
-    return `${durationValue[0]} ${durationTemplate.find(item => item?.value === durationValue[1])?.label}`;
+    return `${Number(durationValue[0])*Number(jumlah)} ${durationTemplate.find(item => item?.value === durationValue[1])?.label}`;
   }
 
   return (
@@ -417,6 +417,7 @@ export const DetailKerusakan = ({ form }) => {
               <thead>
                 <tr>
                   <th className="th-table text-left">Kerusakan</th>
+                  <th className="th-table" style={{ width: 100 }}>Jumlah</th>
                   <th className="th-table" style={{ width: 100 }}>Durasi</th>
                   <th className="th-table" style={{ width: 50 }}>&times;</th>
                 </tr>
@@ -425,7 +426,18 @@ export const DetailKerusakan = ({ form }) => {
                 {form.values.perbaikanKerusakans?.map((detail, index) => (
                   <tr className="tr-table" key={detail?.id}>
                     <td className="td-table">{detail?.label}</td>
-                    <td className="td-table text-center">{formatDurasi(detail?.durasi)}</td>
+                    <td className="td-table">
+                      <input
+                        type="number"
+                        className="text-input text-center"
+                        name={`jumlah_kerusakan_${detail?.id}`}
+                        id={`jumlah_kerusakan_${detail?.id}`}
+                        value={detail?.jumlah}
+                        min={1}
+                        onChange={(event) => onJumlahChange(event, index)}
+                      />
+                    </td>
+                    <td className="td-table text-center">{formatDurasi(detail?.durasi*detail?.jumlah)}</td>
                     <td className="td-table">
                       <button
                         type="button"
