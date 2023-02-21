@@ -73,7 +73,8 @@ const Add = () => {
           jumlah: item?.jumlah
         })),
         perbaikanKerusakans: values.perbaikanKerusakans.map(item => ({
-          kerusakan: item?.kerusakan
+          kerusakan: item?.kerusakan,
+          jumlah: item?.kerusakan
         }))
       })
         .then(result => {
@@ -437,7 +438,7 @@ export const DetailKerusakan = ({ form }) => {
                         onChange={(event) => onJumlahChange(event, index)}
                       />
                     </td>
-                    <td className="td-table text-center">{formatDurasi(detail?.durasi*detail?.jumlah)}</td>
+                    <td className="td-table text-center">{formatDurasi(detail?.durasi, detail?.jumlah)}</td>
                     <td className="td-table">
                       <button
                         type="button"

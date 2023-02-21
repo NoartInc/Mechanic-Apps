@@ -56,7 +56,8 @@ const Edit = () => {
                     jumlah: item?.jumlah
                 })),
                 perbaikanKerusakans: values.perbaikanKerusakans.map(item => ({
-                    kerusakan: item?.kerusakan
+                    kerusakan: item?.kerusakan,
+                    jumlah: item?.kerusakan
                 }))
             })
                 .then(result => {
