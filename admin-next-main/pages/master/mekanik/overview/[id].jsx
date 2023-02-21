@@ -30,10 +30,20 @@ const Mekanik = () => {
 
   const getTotalPoin = (list) => {
     let totalPoin = list.reduce((acc, cur) => {
+      let jumlahMekanikPerRecord = cur?.mekanikList?.length;
       let poinPerRecord = cur?.kerusakans?.reduce((accRecord, curRecord) => {
-        return accRecord += curRecord?.poin;
+        const jumlah = cur?.perbaikanKerusakans?.find(item => item?.kerusakan === curRecord?.id)?.jumlah;
+        const jumlahPoin = (curRecord?.poin / jumlahMekanikPerRecord) * jumlah;
+        console.log({
+          kerusakanId: curRecord?.id,
+          kerusakan: curRecord?.kerusakan,
+          poinAsli: curRecord?.poin,
+          poinPerOrang: jumlahPoin,
+          quantityPerbaikanMekanik: jumlah
+        });
+        return accRecord += jumlahPoin; // kalo poin di kali jumlah dulu trus baru dibagi ngaco gak , bener gitu sih lgoikanya?
       }, 0);
-      return acc += poinPerRecord;
+      return acc += poinPerRecord; 
     }, 0);
     setRow(prevState => ({ ...prevState, totalPoin: totalPoin }));
   }

@@ -43,6 +43,12 @@ const dataRelations = [
     },
   },
   {
+    association: "mekanikList",
+    attributes: {
+      exclude: ["createdAt", "updatedAt"],
+    },
+  },
+  {
     association: "spareparts",
     attributes: {
       exclude: ["createdAt", "updatedAt"],
@@ -126,6 +132,7 @@ exports.findAll = async (req, res) => {
     }
 
     // Mekanik Filter
+    // kena filter ini
     if (request?.filters?.mekanik) {
       withLimit = false;
       conditions = {

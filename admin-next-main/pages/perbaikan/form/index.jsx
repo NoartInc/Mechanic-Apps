@@ -28,9 +28,11 @@ const validationSchema = Yup.object().shape({
   jenisPerbaikan: Yup.string().required("Mohon pilih jenis perbaikan").oneOf(["repairment", "maintenance"])
 });
 
-export const getKerusakanDuration = (listKerusakan) => {
+export const getKerusakanDuration = (listKerusakan, listPerbaikanKerusakans = null) => {
   return listKerusakan?.reduce((acc, cur) => {
-    return acc += cur?.durasi_in_seconds;
+    const jumlah = !listPerbaikanKerusakans ? 1 : listPerbaikanKerusakans?.find(item => 
+      item?.kerusakan === cur?.id)?.jumlah;
+    return acc += cur?.durasi_in_seconds * jumlah;
   }, 0);
 }
 
@@ -74,7 +76,7 @@ const Add = () => {
         })),
         perbaikanKerusakans: values.perbaikanKerusakans.map(item => ({
           kerusakan: item?.kerusakan,
-          jumlah: item?.kerusakan
+          jumlah: item?.jumlah
         }))
       })
         .then(result => {

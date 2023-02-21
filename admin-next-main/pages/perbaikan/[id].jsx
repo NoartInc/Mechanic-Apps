@@ -47,9 +47,9 @@ const Detail = () => {
         return row?.perbaikanSpareparts?.find(item => item?.gudangmekanik === id)?.jumlah;
     }
 
-    const formatDurasi = (durasi) => {
+    const formatDurasi = (durasi, jumlah) => {
         let durationValue = durasi?.split(" ");
-        return `${durationValue[0]} ${durationTemplate.find(item => item?.value === durationValue[1])?.label}`;
+        return `${Number(durationValue[0])*Number(jumlah)} ${durationTemplate.find(item => item?.value === durationValue[1])?.label}`;
     }
 
     React.useEffect(() => {
@@ -140,7 +140,7 @@ const Detail = () => {
                             <div className="col-span-12 md:col-span-1"></div>
                             <div className="col-span-12 md:col-span-6">
                                 <DetailInfo label="Downtime" value={getTimeDiff(row?.startDate, row?.endDate)} smallText />
-                                <DetailInfo label="Estimasi" value={getTimeDuration(getKerusakanDuration(row?.kerusakans))} smallText />
+                                <DetailInfo label="Estimasi" value={getTimeDuration(getKerusakanDuration(row?.kerusakans, row?.perbaikanKerusakans))} smallText />
                             </div>
                         </div>
                         <DetailInfo label="Kerusakan" value="Durasi" header />
@@ -148,7 +148,7 @@ const Detail = () => {
                             <DetailInfo
                                 key={index}
                                 label={kerusakan?.kerusakan}
-                                value={formatDurasi(kerusakan?.durasi)}
+                                value={formatDurasi(kerusakan?.durasi, row?.perbaikanKerusakans?.find(item => item?.kerusakan === kerusakan?.id)?.jumlah)}
                             />
                         ))}
                     </div>
