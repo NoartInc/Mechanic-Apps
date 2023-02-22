@@ -514,6 +514,12 @@ exports.exportData = async (req, res) => {
           include: ["gudangMekanikSparepart"],
         },
         {
+          association: "perbaikanKerusakans",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+        {
           association: "kerusakans",
           attributes: ["kerusakan", "durasi_in_seconds"],
         },
@@ -607,7 +613,9 @@ exports.exportData = async (req, res) => {
       mekanik: item?.mekaniks?.map(mekanik => mekanik.mekanik)?.join('-'), 
       downtime: getTimeDiff(item?.startDate, item?.endDate),
       estimasi: getTimeDuration(item?.kerusakans?.reduce((acc, cur) => {
-        return acc += cur?.durasi_in_seconds
+        const jumlah = item?.perbaikanKerusakans?.find(perbaikanKerusakans => 
+          perbaikanKerusakans.keruakan === cur?.id)?.jumlah;
+        return acc += cur?.durasi_in_seconds * jumlah;
       },0)),
       spareparts: item?.perbaikanSpareparts?.map(perbaikanSparepart => {
         return `${perbaikanSparepart?.gudangMekanikSparepart?.sparepart} = ${perbaikanSparepart?.jumlah}`;

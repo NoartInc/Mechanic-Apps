@@ -346,7 +346,7 @@ export const DetailKerusakan = ({ form }) => {
         id: randId(),
         kerusakan: selectedKerusakan?.value,
         label: selectedKerusakan?.label,
-        jumlah: selectedKerusakan?.jumlah,
+        jumlah: selectedKerusakan?.jumlah ?? 1,
         durasi: selectedKerusakan?.durasi,
         durasi_in_seconds: selectedKerusakan?.durasi_in_seconds,
         poin: selectedKerusakan?.poin
@@ -435,7 +435,7 @@ export const DetailKerusakan = ({ form }) => {
                         className="text-input text-center"
                         name={`jumlah_kerusakan_${detail?.id}`}
                         id={`jumlah_kerusakan_${detail?.id}`}
-                        value={detail?.jumlah}
+                        value={detail?.jumlah ?? 1}
                         min={1}
                         onChange={(event) => onJumlahChange(event, index)}
                       />

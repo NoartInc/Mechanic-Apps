@@ -132,10 +132,10 @@ const Edit = () => {
                             id: item?.id,
                             kerusakan: item?.id,
                             label: item?.kerusakan,
-                            jumlah: item?.jumlah,
                             durasi: item?.durasi,
                             durasi_in_seconds: item?.durasi_in_seconds,
-                            poin: item?.poin
+                            poin: item?.poin,
+                            jumlah: result.perbaikanKerusakans?.find(perbaikanKerusakan => perbaikanKerusakan?.kerusakan === item?.id)?.jumlah
                         }))
                     });
                 }
