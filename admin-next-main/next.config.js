@@ -9,8 +9,8 @@ const nextConfig = {
         port: "",
       },
       {
-        protocol: "http",
-        hostname: "localhost",
+        protocol: process.env.NODE_ENV !== "production" ? "http" : "https",
+        hostname: process.env.NODE_ENV !== "production" ? "localhost" : "mekanik.transmetalroof.com",
         port: "6001",
       },
     ],

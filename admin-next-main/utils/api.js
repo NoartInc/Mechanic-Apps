@@ -6,7 +6,7 @@ import { Toast } from "./swal";
 export const baseUrl =
   process.env.NODE_ENV !== "production"
     ? "http://localhost:6001" // local laptop server
-    : "http://localhost:6001";
+    : "https://mekanik.transmetalroof.com:6001";
 // : "https://mechanic.transmetalroof.com:6001"; // server production
 
 export const api = axios.create({

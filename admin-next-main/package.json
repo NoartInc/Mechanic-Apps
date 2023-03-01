@@ -29,7 +29,7 @@
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
     "sharp": "^0.31.3",
-    "sweetalert2": "^11.6.16",
+    "sweetalert2": "^11.4.8",
     "yup": "^0.32.11"
   },
   "devDependencies": {
