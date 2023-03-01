@@ -31,7 +31,7 @@ export default function Dashboard({ data }) {
   });
 
   const permittedAccess = () => {
-    const allowedAccess = ["LO", "Manager", "Administrator"];
+    const allowedAccess = ["LO", "MANAGER", "ADMINISTRATOR"];
     return allowedAccess.includes(user?.userRole?.roleName);
   };
 
