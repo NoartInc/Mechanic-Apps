@@ -22,25 +22,25 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id", // id di tabel mesin
       });
       models.Perbaikans.belongsToMany(models.Mechanics, {
-        through: "perbaikanmechanics", // tabel penghubung antara tabel transaksisparepart & sparepart
+        through: models.PerbaikanMechanics, // tabel penghubung antara tabel transaksisparepart & sparepart
         as: "mekaniks", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "mekanik", // key di tabel transaksi transaksi
       });
       models.Perbaikans.belongsToMany(models.Mechanics, {
-        through: "perbaikanmechanics", // tabel penghubung antara tabel transaksisparepart & sparepart
+        through: models.PerbaikanMechanics, // tabel penghubung antara tabel transaksisparepart & sparepart
         as: "mekanikList", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "mekanik", 
       });
       models.Perbaikans.belongsToMany(models.GudangMechanics, {
-        through: "perbaikanspareparts", // tabel penghubung antara tabel transaksisparepart & sparepart
+        through: models.PerbaikanSpareparts, // tabel penghubung antara tabel transaksisparepart & sparepart
         as: "spareparts", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "gudangmekanik", // key di tabel transaksi transaksi
       });
       models.Perbaikans.belongsToMany(models.Kerusakans, {
-        through: "perbaikankerusakans", // tabel penghubung antara tabel transaksisparepart & sparepart
+        through: models.PerbaikanKerusakans, // tabel penghubung antara tabel transaksisparepart & sparepart
         as: "kerusakans", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "kerusakan", // key di tabel transaksi transaksi
