@@ -19,6 +19,7 @@ const dataRelations = [
       exclude: ["createdAt", "updatedAt"],
     },
     through: {
+      as: "transaksispareparthubs",
       attributes: ["jumlah", "harga"],
     },
   },
