@@ -21,7 +21,8 @@ import DateRangeFilter from "../components/widgets/DateRangeFilter";
 import { useSelector } from "react-redux";
 import DataLoader from "../components/widgets/DataLoader";
 
-export default function Dashboard({ data }) {
+export default function Dashboard() {
+  const [data, setData] = React.useState([]);
   const { user } = useSelector((state) => state.auth);
   const loCounter = useData("/lo", {
     dateRange: {
@@ -29,6 +30,11 @@ export default function Dashboard({ data }) {
       endDate: moment().format("YYYY-MM-DD"),
     },
   });
+
+  const getData = async () => {
+	const result = await get(`/dashboard/summary`);
+        setData(result);
+  }
 
   const permittedAccess = () => {
     const allowedAccess = ["LO", "MANAGER", "ADMINISTRATOR"];
@@ -55,6 +61,10 @@ export default function Dashboard({ data }) {
   const overviewSummaryClass = `grid grid-cols-1 ${
     permittedAccess() ? "md:grid-cols-3" : "md:grid-cols-2"
   } gap-x-3`;
+
+  React.useEffect(() => {
+	getData();
+  }, []);
 
   return (
     <Layout title="Dashboard Overview">
@@ -234,11 +244,3 @@ const CountBadge = ({ count, className }) => (
   </span>
 );
 
-export async function getStaticProps() {
-  const data = await get(`/dashboard/summary`);
-  return {
-    props: {
-      data,
-    },
-  };
-}
