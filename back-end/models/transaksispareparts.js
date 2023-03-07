@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       // ini model untuk lihat data saja
       models.TransaksiSpareparts.belongsToMany(models.Spareparts, {
-        through: "transaksispareparthubs", // tabel penghubung antara tabel transaksisparepart & sparepart
+        through: "TransaksiSparepartHubs", // tabel penghubung antara tabel transaksisparepart & sparepart
         as: "sparepartDetail", // digunakan saat memanggil relasi di controller
         foreignKey: "transaksiSparepart", // key di tabel transaksispareparthubs
         otherKey: "sparepart", // key di tabel transaksi transaksi
