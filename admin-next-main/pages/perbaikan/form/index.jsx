@@ -300,7 +300,7 @@ export const DetailSparepart = ({ form }) => {
                         id={`jumlah_${detail?.id}`}
                         value={detail?.jumlah}
                         min={1}
-                        max={detail?.stok > 0 ? detail?.stok : 1}
+                        // max={detail?.stok > 0 ? detail?.stok : 1}
                         onChange={(event) => onJumlahChange(event, index)}
                       />
                     </td>
