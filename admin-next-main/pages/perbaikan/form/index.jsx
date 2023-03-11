@@ -246,14 +246,7 @@ export const DetailSparepart = ({ form }) => {
   const onJumlahChange = (event, index) => {
     const { value } = event.target;
     const stok = form.values.perbaikanSpareparts[index]['stok'];
-    if (value < 1) {
-      Toast.fire({
-        icon: "error",
-        text: `Minimal jumlah adalah 1!`
-      });
-    } else {
-      form.setFieldValue(`perbaikanSpareparts[${index}]['jumlah']`, Number(value))
-    }
+    form.setFieldValue(`perbaikanSpareparts[${index}]['jumlah']`, Number(value))
   }
 
   const removeSparepart = (id) => {
