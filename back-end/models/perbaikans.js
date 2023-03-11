@@ -22,41 +22,25 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id", // id di tabel mesin
       });
       models.Perbaikans.belongsToMany(models.Mechanics, {
-<<<<<<< HEAD
         through: "PerbaikanMechanics", // tabel penghubung antara tabel transaksisparepart & sparepart
-=======
-        through: models.PerbaikanMechanics, // tabel penghubung antara tabel transaksisparepart & sparepart
->>>>>>> aa59f8cf3f06d41c77879195589df02de56d4f36
         as: "mekaniks", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "mekanik", // key di tabel transaksi transaksi
       });
       models.Perbaikans.belongsToMany(models.Mechanics, {
-<<<<<<< HEAD
         through: "PerbaikanMechanics", // tabel penghubung antara tabel transaksisparepart & sparepart
-=======
-        through: models.PerbaikanMechanics, // tabel penghubung antara tabel transaksisparepart & sparepart
->>>>>>> aa59f8cf3f06d41c77879195589df02de56d4f36
         as: "mekanikList", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "mekanik", 
       });
       models.Perbaikans.belongsToMany(models.GudangMechanics, {
-<<<<<<< HEAD
         through: "PerbaikanSpareparts", // tabel penghubung antara tabel transaksisparepart & sparepart
-=======
-        through: models.PerbaikanSpareparts, // tabel penghubung antara tabel transaksisparepart & sparepart
->>>>>>> aa59f8cf3f06d41c77879195589df02de56d4f36
         as: "spareparts", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "gudangmekanik", // key di tabel transaksi transaksi
       });
       models.Perbaikans.belongsToMany(models.Kerusakans, {
-<<<<<<< HEAD
         through: "PerbaikanKerusakans", // tabel penghubung antara tabel transaksisparepart & sparepart
-=======
-        through: models.PerbaikanKerusakans, // tabel penghubung antara tabel transaksisparepart & sparepart
->>>>>>> aa59f8cf3f06d41c77879195589df02de56d4f36
         as: "kerusakans", // digunakan saat memanggil relasi di controller
         foreignKey: "perbaikan", // key di tabel transaksispareparthubs
         otherKey: "kerusakan", // key di tabel transaksi transaksi

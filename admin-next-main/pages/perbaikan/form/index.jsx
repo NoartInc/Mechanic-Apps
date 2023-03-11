@@ -246,12 +246,7 @@ export const DetailSparepart = ({ form }) => {
   const onJumlahChange = (event, index) => {
     const { value } = event.target;
     const stok = form.values.perbaikanSpareparts[index]['stok'];
-    if (value > stok) {
-      Toast.fire({
-        icon: "error",
-        text: `Stok yang tersedia adalah ${stok}!`
-      });
-    } else if (value < 1) {
+    if (value < 1) {
       Toast.fire({
         icon: "error",
         text: `Minimal jumlah adalah 1!`
