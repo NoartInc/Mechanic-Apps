@@ -26,27 +26,27 @@ export const statusList = [
   {
     status: "open",
     className: "bg-green-500 text-white",
-    visibility: "MEKANIK"
+    visibility: "MEKANIK, ADMINISTRATOR"
   },
   {
     status: "proses",
     className: "bg-blue-500 text-white",
-    visibility: "MEKANIK"
+    visibility: "MEKANIK, ADMINISTRATOR"
   },
   {
     status: "revisi",
     className: "bg-yellow-500 text-white",
-    visibility: "MEKANIK"
+    visibility: "MEKANIK, ADMINISTRATOR"
   },
   {
     status: "reject",
     className: "bg-red-500 text-white",
-    visibility: "LO"
+    visibility: "LO, ADMINISTRATOR"
   },
   {
     status: "accept",
     className: "bg-gray-500 text-white",
-    visibility: "LO"
+    visibility: "LO, ADMINISTRATOR"
   }
 ]
 
@@ -155,8 +155,8 @@ const Perbaikan = () => {
   ];
 
   const getStatusList = () => {
-    if (statusList?.some(item => item?.visibility === user?.userRole?.roleName)) {
-      return statusList?.filter(item => item?.visibility === user?.userRole?.roleName);
+    if (statusList?.some(item => item?.visibility?.split(",")?.includes(user?.userRole?.roleName))) {
+      return statusList?.filter(item => item?.visibility?.split(",")?.includes(user?.userRole?.roleName));
     } else {
       return statusList;
     }
