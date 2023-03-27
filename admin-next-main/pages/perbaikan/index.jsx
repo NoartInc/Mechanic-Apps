@@ -26,27 +26,27 @@ export const statusList = [
   {
     status: "open",
     className: "bg-green-500 text-white",
-    visibility: "MEKANIK, ADMINISTRATOR"
+    visibility: "MEKANIK,ADMINISTRATOR"
   },
   {
     status: "proses",
     className: "bg-blue-500 text-white",
-    visibility: "MEKANIK, ADMINISTRATOR"
+    visibility: "MEKANIK,ADMINISTRATOR"
   },
   {
     status: "revisi",
     className: "bg-yellow-500 text-white",
-    visibility: "MEKANIK, ADMINISTRATOR"
+    visibility: "MEKANIK,ADMINISTRATOR"
   },
   {
     status: "reject",
     className: "bg-red-500 text-white",
-    visibility: "LO, ADMINISTRATOR"
+    visibility: "LO,ADMINISTRATOR"
   },
   {
     status: "accept",
     className: "bg-gray-500 text-white",
-    visibility: "LO, ADMINISTRATOR"
+    visibility: "LO,ADMINISTRATOR"
   }
 ]
 
