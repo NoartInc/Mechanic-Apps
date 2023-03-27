@@ -155,10 +155,11 @@ const Perbaikan = () => {
   ];
 
   const getStatusList = () => {
-    if (statusList?.some(item => item?.visibility?.split(",")?.includes(user?.userRole?.roleName))) {
-      return statusList?.filter(item => item?.visibility?.split(",")?.includes(user?.userRole?.roleName));
-    } else {
-      return statusList;
+    console.log(user?.userRole?.roleName);
+        if (statusList?.some(item => item?.visibility?.split(",")?.includes(user?.userRole?.roleName))) {
+          return statusList?.filter(item => item?.visibility?.split(",")?.includes(user?.userRole?.roleName));
+        } else {
+          return statusList;
     }
   }
 
