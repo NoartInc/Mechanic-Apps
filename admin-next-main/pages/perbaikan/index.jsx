@@ -26,17 +26,17 @@ export const statusList = [
   {
     status: "open",
     className: "bg-green-500 text-white",
-    visibility: "Mekanik"
+    visibility: "MEKANIK"
   },
   {
     status: "proses",
     className: "bg-blue-500 text-white",
-    visibility: "Mekanik"
+    visibility: "MEKANIK"
   },
   {
     status: "revisi",
     className: "bg-yellow-500 text-white",
-    visibility: "Mekanik"
+    visibility: "MEKANIK"
   },
   {
     status: "reject",
@@ -101,7 +101,7 @@ const Perbaikan = () => {
         width: 140
       },
       render: ({ value, item: data }) => {
-        if (!canAccess("update") || (value === "accept" && user?.userRole?.roleName !== "Administrator")) {
+        if (!canAccess("update") || (value === "accept" && user?.userRole?.roleName !== "ADMINISTRATOR")) {
           return (
             <span className={`p-1 px-2 rounded-md ${getStatusColor(value)} uppercase`}>
               {value}
