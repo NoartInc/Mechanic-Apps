@@ -134,8 +134,8 @@ const Detail = () => {
                         <h5 className="text-gray-700 font-semibold mb-2">Kerusakan</h5>
                         <div className="grid grid-cols-1 md:grid-cols-12">
                             <div className="col-span-12 md:col-span-5">
-                                <DetailInfo label="Mulai" value={moment(row?.startDate).format("DD/MM/YYYY HH:mm")} smallText />
-                                <DetailInfo label="Selesai" value={row?.endDate ? moment(row?.endDate).format("DD/MM/YYYY HH:mm") : "-"} smallText />
+                                <DetailInfo label="Mulai" value={moment.utc(row?.startDate).format("DD/MM/YYYY HH:mm")} smallText />
+                                <DetailInfo label="Selesai" value={row?.endDate ? moment.utc(row?.endDate).format("DD/MM/YYYY HH:mm") : "-"} smallText />
                             </div>
                             <div className="col-span-12 md:col-span-1"></div>
                             <div className="col-span-12 md:col-span-6">
